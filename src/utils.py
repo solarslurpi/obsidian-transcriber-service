@@ -1,23 +1,38 @@
+import asyncio
+import logging
+import os
+import sys
 
+from global_stuff import global_message_queue
 
-from pydantic_models import AudioProcessRequest, TranscriptionCache
-from youtube_download_code import YouTubeDownloader
-def have_local_mp3_and_chapters(audio_input: AudioProcessRequest) -> bool:
-    # audio_input has either a youtube url or a an mp3 file.  If it is a youtube url, the url
-    # is in the metadata. If it is an mp3 file, the file name in the local storage is the local_mp3 in the
-    # metadata.
-    pass
+def format_sse(event: str, data: dict) -> str:
+    message = f"event: {event}\ndata: {data}\n\n"
+    return message
 
-def look_up_transcription_cache(audio_input: AudioProcessRequest) -> bool:
+def handle_error_message(data: str):
+    message = format_sse("error", data)
+    asyncio.create_task(global_message_queue.put(message))
+    raise ValueError(data)
 
-    if YouTubeDownloader.isYouTube_url(audio_input):
-        for _, transcription_state in TranscriptionCache.cache.items():
-            if transcription_state.youtube_url == audio_input.youtube_url:
-                return transcription_state
-        return None
+def add_src_to_sys_path():
+    """
+    Adds the 'src' directory to sys.path if it's not already included.
+    Assumes the workspace directory is the parent of the parent directory
+    of the script that calls this function.
+    """
+    # Determine the directory containing this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    else:
-        for _, transcription_state in TranscriptionCache.cache.items():
-            if transcription_state.local_mp3 == audio_input.file.filename:
-                return transcription_state
-        return None
+    # Assume the workspace directory is two levels up from this script directory
+    workspace_dir = os.path.abspath(os.path.join(script_dir, '..', '..'))
+
+    # Path to the 'src' directory relative to the workspace directory
+    src_path = os.path.join(workspace_dir, 'src')
+
+    # Append the 'src' directory to sys.path if it's not already there
+    if src_path not in sys.path:
+        sys.path.append(src_path)
+
+    from logger_code import LoggerBase
+    logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
+    logger.debug(f"Added {src_path} to sys.path")

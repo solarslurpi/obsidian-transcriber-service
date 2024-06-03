@@ -1,11 +1,21 @@
+
+
+
 import asyncio
+import os
 import logging
-from fastapi import FastAPI, Depends, Request
+from typing import Optional
+
+from fastapi import FastAPI,  Request, Form, UploadFile
 from sse_starlette import EventSourceResponse
+
 from global_stuff import global_message_queue
 from logger_code import LoggerBase
-from router_code import router
-from pydantic_models import AudioProcessRequest, as_form
+from process_check import process_check
+from audio_processing_model import AudioProcessRequest
+from utils import handle_error_message
+
+
 
 app = FastAPI()
 # Set up logging filte
@@ -14,13 +24,25 @@ logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 logger_one = logging.getLogger('router_code')
 logger_one.setLevel(logging.DEBUG)
 
+
 @app.post("/api/v1/process_audio")
-async def init_process_audio(audio_input: AudioProcessRequest = Depends(as_form)):
-    logger.debug(f"app.init_process_audio: audio_input: {audio_input}")
-    # Determine if a transcript already exists, whether it is a YouTube URL or an mp3 file.
-    # Then go from there.
-    asyncio.create_task(router(audio_input))
+async def init_process_audio(youtube_url: Optional[str] = Form(None),
+                             file: Optional[UploadFile] = Form(None),
+                             audio_quality: str = Form("default")):
+    try:
+        audio_input = AudioProcessRequest(
+            youtube_url=youtube_url,
+            file=file,
+            audio_quality=audio_quality
+        )
+        logger.debug(f"app.init_process_audio: Audio input: {audio_input}")
+    except Exception as e:
+        handle_error_message(f"{e}")
+        return
+
+    asyncio.create_task(process_check(audio_input))
     return {"status": "Processing audio file."}
+
 
 @app.get("/api/v1/sse")
 async def sse_endpoint(request: Request):
@@ -43,7 +65,7 @@ async def event_generator(request: Request):
         # Just in case the message is an empty string or None.
         if message:
             logger.debug(f"app.event_generator: Message: **{message}**")
-            yield f"{message}\n\n"
+            yield f"{message}"
 
 @app.get("/api/v1/health")
 async def health_check():

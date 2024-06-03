@@ -3,20 +3,17 @@ import os
 import shutil
 from typing import Optional, List
 
-from dotenv import load_dotenv
 from fastapi import UploadFile
 from pydantic import BaseModel, Field
 
 
 from logger_code import LoggerBase
-from metadata_code import MetadataService
-from pydantic_models import AudioProcessRequest
-from youtube_download_code import is_youtube_url
+from metadata_code import MetadataExtractor
+from audio_processing_model import AudioProcessRequest
+from youtube_download_code import YouTubeDownloader
 
 # Create a logger named after the module
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
-
-load_dotenv()
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "default_local_directory")
 # Ensure the local directory exists
@@ -105,18 +102,13 @@ def get_audio_input_key(audio_input: AudioProcessRequest) -> str:
         logger.debug(f"transcripts_state_code.get_audio_input_key: Audio input is a youtube video: {audio_input.youtube_url}.")
         return f"{audio_input.youtube_url}_{audio_input.audio_quality}"
     elif audio_input.file:
-        logger.debug(f"transcripts_state_code.get_audio_input_key: Audio input is an uploaded mp3 file: {audio_input.local_mp3}.")
+        logger.debug(f"transcripts_state_code.get_audio_input_key: Audio input is an uploaded mp3 file: {audio_input.file.filename}.")
         return f"{audio_input.file.filename}_{audio_input.audio_quality}"
     else:
         raise ValueError("Either youtube_url or file must be provided in the request.")
 
-def initialize_transcription_state(audio_input: AudioProcessRequest, logger: LoggerBase) -> TranscriptionState:
+def initialize_transcription_state(audio_input: AudioProcessRequest) -> TranscriptionState:
     logger.debug(f"transcripts_state_code.initialize_transcription_state: audio_input: {audio_input}")
-    def save_upload_file(upload_file: UploadFile, destination: str) -> str:
-        with open(destination, "wb") as buffer:
-            shutil.copyfileobj(upload_file.file, buffer)
-        logger.debug(f"transcripts_state_code.initialize_transcription_state.save_upload_file: audio_input: {destination}")
-        return destination
 
     # The client comes in with an audio_input property. The key is based on this.
     key = get_audio_input_key(audio_input)
@@ -128,11 +120,12 @@ def initialize_transcription_state(audio_input: AudioProcessRequest, logger: Log
         logger.debug("state is alredy in the cache.")
         # Start the transcription process.
     else:
+        extractor = MetadataExtractor()
         # When creating, add in what the client has given us into the state instance.
-        if is_youtube_url(audio_input):
+        if YouTubeDownloader.is_youtube_url(audio_input):
             # Instantiate a new state with all the info we can.
             try:
-                metadata = MetadataService.extract_youtube_metadata(youtube_url=audio_input.youtube_url)
+                metadata = extractor.extract_youtube_metadata(youtube_url=audio_input.youtube_url, audio_quality=audio_input.audio_quality)
                 logger.debug("transcription_state_code.initialize_transcription_state: Metadata has been extracted from a YouTube video.")
                 state = TranscriptionState(youtube_url=audio_input.youtube_url, audio_quality=audio_input.audio_quality, metadata=metadata)
             except Exception as e:
@@ -140,11 +133,9 @@ def initialize_transcription_state(audio_input: AudioProcessRequest, logger: Log
                 raise Exception(f"Failed to extract YouTube metadata for URL {audio_input.youtube_url}: {e}")
         else:
             # Save the uploaded file to a local directory. This way we are all ready to go to the next step.
-            local_mp3 = os.path.join(LOCAL_DIRECTORY, audio_input.file.filename)
-            save_upload_file(audio_input.file, local_mp3)
-            metadata = MetadataService.extract_mp3_metadata(mp3_filepath=local_mp3)
-            state = TranscriptionState(local_mp3=local_mp3, audio_quality=audio_input.audio_quality)
+            metadata = extractor.extract_mp3_metadata(mp3_filepath=audio_input.local_mp3, audio_quality=audio_input.audio_quality)
+            state = TranscriptionState(local_mp3=audio_input.local_mp3, audio_quality=audio_input.audio_quality)
             logger.debug(f"state starts as uploaded mp3 file: {audio_input.youtube_url}.")
-            state = TranscriptionState(local_mp3=local_mp3, audio_quality=audio_input.audio_quality, metadata=metadata)
-    states.add_state(audio_input, state, logger)
+            state = TranscriptionState(local_mp3=audio_input.local_mp3, audio_quality=audio_input.audio_quality, metadata=metadata)
+    states.add_state(key, state, logger)
     return state

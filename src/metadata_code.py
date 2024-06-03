@@ -1,4 +1,4 @@
-# metadata_service.py
+import logging
 import re
 
 from mutagen.mp3 import MP3
@@ -9,10 +9,17 @@ import os
 from datetime import datetime
 
 from logger_code import LoggerBase
-from pydantic_models import global_state, AUDIO_QUALITY_MAP, COMPUTE_TYPE_MAP
+from audio_processing_model import  AUDIO_QUALITY_MAP
+import json
 
-class MetadataService:
-    def extract_youtube_metadata(self, youtube_url: str) -> None:
+logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
+
+class MetadataExtractor:
+    def __init__(self):
+        pass
+
+    def extract_youtube_metadata(self, youtube_url: str, audio_quality:str) -> None:
+        logger.debug(f"metadata_code.extract_youtube_metadata: Extracting metadata for {youtube_url}")
         ydl_opts = {
             'outtmpl': '%(title)s',
             'quiet': True,
@@ -25,32 +32,34 @@ class MetadataService:
             formatted_tags = ', '.join(tag.replace(' ', '_') for tag in tags)
             filename =  ydl.prepare_filename(info_dict)
             sanitized_filename = self.sanitize_filename(filename)
+            logger.debug(f"metadata_code.extract_youtube_metadata: Filename: {sanitized_filename}")
             metadata = {
                 "youTube URL": info_dict.get('webpage_url', ''),
                 "filename": sanitized_filename,
                 "tags": formatted_tags,
                 "description": info_dict.get('description', ''),
                 "duration": self.format_time(info_dict.get('duration', 0)),
-                "audio quality": AUDIO_QUALITY_MAP.get(global_state.audio_quality, ''),
+                "audio quality": AUDIO_QUALITY_MAP.get(audio_quality, ''),
                 "channel name": info_dict.get('uploader', ''),
                 "upload date": info_dict.get('upload_date', ''),
-                "uploader id": info_dict.get('uploader_id', '')
+                "uploader id": info_dict.get('uploader_id', ''),
+                "chapters": info_dict.get('chapters', [{'start_time': 0.0, 'end_time': 0.0, 'title': ''}])
             }
-            return metadata
+            return json.dumps(metadata)
 
-
-    def extract_mp3_metadata(self, mp3_filepath: str) -> Dict[str, str]:
+    def extract_mp3_metadata(self, mp3_filepath: str, audio_quality: str) -> Dict[str, str]:
         audio = MP3(mp3_filepath)
         duration = round(audio.info.length)
         upload_date = datetime.fromtimestamp(os.path.getmtime(mp3_filepath)).strftime('%Y-%m-%d')
         basefilename=os.path.basename(mp3_filepath)
-        global_state.update(basefilename=basefilename)
-        return {
+        metadata =  {
             "duration": self.format_time(duration),
             "upload_date": upload_date,
             "filename": basefilename,
-            "audio quality": AUDIO_QUALITY_MAP.get(global_state.audio_quality, ''),
+            "audio quality": AUDIO_QUALITY_MAP.get(audio_quality, ''),
+            "chapters":  [{'start_time': 0.0, 'end_time': 0.0, 'title': ''}]
         }
+        return json.dumps(metadata)
 
     def format_time(self, seconds: int) -> str:
         mins, secs = divmod(seconds, 60)
