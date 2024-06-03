@@ -1,51 +1,48 @@
 import logging
 import os
-import shutil
-from typing import Optional, List
+import torch
+from typing import Optional, Dict, List
 
-from fastapi import UploadFile
-from pydantic import BaseModel, Field
+
+from pydantic import BaseModel, Field, field_validator
 
 
 from logger_code import LoggerBase
-from metadata_code import MetadataExtractor
-from audio_processing_model import AudioProcessRequest
-from youtube_download_code import YouTubeDownloader
+from metadata_code import MetadataExtractor, Chapter
+from audio_processing_model import AudioProcessRequest, AUDIO_QUALITY_MAP, COMPUTE_TYPE_MAP
+from utils import send_message
 
 # Create a logger named after the module
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
-LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "default_local_directory")
-# Ensure the local directory exists
-if not os.path.exists(LOCAL_DIRECTORY):
-    os.makedirs(LOCAL_DIRECTORY)
 
-
-
-class Chapter(BaseModel):
-    title: str = Field(..., description="Title of the chapter.")
-    start: int = Field(..., description="Start time of the chapter in seconds.")
-    end: int = Field(..., description="End time of the chapter in seconds.")
-    transcription: Optional[str] = Field(None, description="Transcription for the chapter.")
 
 class TranscriptionState(BaseModel):
     # Manages the state and behavior of a single transcription.
     local_mp3: Optional[str] = Field(default=None, description="Local storage of mp3 file. This is where the transcription part will look for the audio file.")
     youtube_url: Optional[str] = Field(default=None, description="URL of the YouTube video. ")
-    audio_quality: str = Field(default="default", description="Determines what size model the whisper transcription will use. The larger model will produce better results at a high compute and time cost.")
-    compute_type: str = Field(default="default", description="Either float16 or float32.")
-    metadata: str = Field(default="default", description="YAML formatted.  Used for Obisidan frontmatter.  YouTube metadata is very rich.  mp3 file is not so rich in metadata..")
+    hf_model: str = Field(default=None, description="Set when initializing state from user's audio_input.audio_quality.")
+    hf_compute_type: torch.dtype = Field(default=None, description="Used by transcriber. Either float32 or float16")
+    metadata: Dict = Field(default={}, description="YouTube metadata is very rich.  mp3 file is not so rich in metadata..")
     chapters: List[Chapter] = Field(default_factory=list, description="List of chapters with start and end times and transcriptions.")
     transcription_time: int = Field(default=0,description="Number of seconds it took to transcribe the audio file.")
     transcript_done: bool = Field(default=False, description="True if the transcription is complete.")
 
-    @property
-    def num_chapters_with_transcripts(self) -> int:
-        return sum(1 for chapter in self.chapters if chapter.transcription)
+    @field_validator('hf_compute_type')
+    def check_tensor_dtype(cls, v):
+        if v not in [torch.float32, torch.float16]:
+            raise ValueError('hf_compute_type must be of type torch.float32 or torch.float16')
+        return v
 
-    @property
-    def num_chapters_total(self) -> int:
-        return len(self.chapters)
+    class Config:
+        arbitrary_types_allowed = True
+    # @property
+    # def num_chapters_with_transcripts(self) -> int:
+    #     return sum(1 for chapter in self.chapters if chapter.transcription)
+
+    # @property
+    # def num_chapters_total(self) -> int:
+    #     return len(self.chapters)
 
     def add_chapter(self, title: str, start: int, end: int, transcription: Optional[str] = None) -> None:
         self.chapters.append(Chapter(title=title, start=start, end=end, transcription=transcription))
@@ -98,14 +95,10 @@ class TranscriptionStates:
 states = TranscriptionStates()
 
 def get_audio_input_key(audio_input: AudioProcessRequest) -> str:
-    if audio_input.youtube_url:
-        logger.debug(f"transcripts_state_code.get_audio_input_key: Audio input is a youtube video: {audio_input.youtube_url}.")
-        return f"{audio_input.youtube_url}_{audio_input.audio_quality}"
-    elif audio_input.file:
-        logger.debug(f"transcripts_state_code.get_audio_input_key: Audio input is an uploaded mp3 file: {audio_input.file.filename}.")
-        return f"{audio_input.file.filename}_{audio_input.audio_quality}"
-    else:
-        raise ValueError("Either youtube_url or file must be provided in the request.")
+    name_part = audio_input.youtube_url if audio_input.youtube_url else os.path.basename(audio_input.file.filename)
+    quality_part = audio_input.audio_quality
+    key = name_part + "_" + quality_part
+    return key
 
 def initialize_transcription_state(audio_input: AudioProcessRequest) -> TranscriptionState:
     logger.debug(f"transcripts_state_code.initialize_transcription_state: audio_input: {audio_input}")
@@ -113,29 +106,23 @@ def initialize_transcription_state(audio_input: AudioProcessRequest) -> Transcri
     # The client comes in with an audio_input property. The key is based on this.
     key = get_audio_input_key(audio_input)
     state = states.get_state(key)
-    logger.debug(f"state key is: {key}")
+    logger.debug(f"transcripts_state_code.initialize_transcription_state: state key is: {key}")
     # Does the bin already have content?
     if state:
         # The wind is at this audio's back...
-        logger.debug("state is alredy in the cache.")
-        # Start the transcription process.
+        logger.debug("transcripts_state_code.initialize_transcription_state: state is alredy in the cache.")
     else:
+        logger.debug("transcripts_state_code.initialize_transcription_state: state is not in the cache. Getting the metadata.")
         extractor = MetadataExtractor()
-        # When creating, add in what the client has given us into the state instance.
-        if YouTubeDownloader.is_youtube_url(audio_input):
-            # Instantiate a new state with all the info we can.
-            try:
-                metadata = extractor.extract_youtube_metadata(youtube_url=audio_input.youtube_url, audio_quality=audio_input.audio_quality)
-                logger.debug("transcription_state_code.initialize_transcription_state: Metadata has been extracted from a YouTube video.")
-                state = TranscriptionState(youtube_url=audio_input.youtube_url, audio_quality=audio_input.audio_quality, metadata=metadata)
-            except Exception as e:
-                logger.error(f"Error extracting YouTube metadata: {e}")
-                raise Exception(f"Failed to extract YouTube metadata for URL {audio_input.youtube_url}: {e}")
-        else:
-            # Save the uploaded file to a local directory. This way we are all ready to go to the next step.
-            metadata = extractor.extract_mp3_metadata(mp3_filepath=audio_input.local_mp3, audio_quality=audio_input.audio_quality)
-            state = TranscriptionState(local_mp3=audio_input.local_mp3, audio_quality=audio_input.audio_quality)
-            logger.debug(f"state starts as uploaded mp3 file: {audio_input.youtube_url}.")
-            state = TranscriptionState(local_mp3=audio_input.local_mp3, audio_quality=audio_input.audio_quality, metadata=metadata)
+        metadata, chapters = extractor.extract_metadata(audio_input)
+        # Add in the audio quality and compute type as the hf mappings.
+        hf_model = AUDIO_QUALITY_MAP[audio_input.audio_quality]
+        hf_compute_type = COMPUTE_TYPE_MAP[audio_input.audio_quality]
+        # Save as much state as we know.
+        local_mp3 = audio_input.local_mp3 if audio_input.local_mp3 else None
+        youtube_url = audio_input.youtube_url if audio_input.youtube_url else None
+        state = TranscriptionState(local_mp3=local_mp3, youtube_url=youtube_url, audio_quality=audio_input.audio_quality, metadata=metadata, chapters=chapters, hf_model=hf_model, hf_compute_type=hf_compute_type)
+
     states.add_state(key, state, logger)
+    send_message("status","transcription_state_code.initialize_transcription_state: Transcription state has been initialized.",logger)
     return state

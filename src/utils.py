@@ -1,18 +1,24 @@
 import asyncio
+import inspect
 import logging
 import os
 import sys
 
 from global_stuff import global_message_queue
+from logger_code import LoggerBase
+
 
 def format_sse(event: str, data: dict) -> str:
     message = f"event: {event}\ndata: {data}\n\n"
     return message
 
-def handle_error_message(data: str):
-    message = format_sse("error", data)
+async def send_message(event: str, data: dict, logger: LoggerBase=None):
+    message = format_sse(event, data,)
     asyncio.create_task(global_message_queue.put(message))
-    raise ValueError(data)
+    if logger:
+        # Get the previous frame in the stack, otherwise it would be this function
+        func = inspect.currentframe().f_back.f_code
+        logger.debug(f"send_message: {message}, called by {func.co_filename}:{func.co_firstlineno}")
 
 def add_src_to_sys_path():
     """

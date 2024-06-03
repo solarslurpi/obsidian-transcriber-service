@@ -9,7 +9,7 @@ import torch
 from pydantic import BaseModel, Field, model_validator
 
 from logger_code import LoggerBase
-from utils import  handle_error_message
+from utils import  send_message
 
 
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
@@ -53,14 +53,12 @@ class AudioProcessRequest(BaseModel):
     @model_validator(mode='after')
     def check_youtube_url_or_file(cls, values):
         if values.youtube_url and values.file:
-            handle_error_message("Please provide either a YouTube URL or an MP3 file, not both.")
+            send_message("error","Please provide either a YouTube URL or an MP3 file, not both.")
         elif not values.youtube_url and not values.file:
-            handle_error_message("No YouTube URL or file provided.")
+            send_message("error","No YouTube URL or file provided.")
         if values.youtube_url:
             if not cls.is_valid_youtube_url(values.youtube_url):
-                handle_error_message("Invalid YouTube URL provided.")
-
-
+                send_message("error","Invalid YouTube URL provided.")
         return values
 
     @staticmethod

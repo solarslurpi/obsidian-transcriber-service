@@ -13,7 +13,7 @@ from global_stuff import global_message_queue
 from logger_code import LoggerBase
 from process_check import process_check
 from audio_processing_model import AudioProcessRequest
-from utils import handle_error_message
+from utils import send_message
 
 
 
@@ -37,7 +37,7 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
         )
         logger.debug(f"app.init_process_audio: Audio input: {audio_input}")
     except Exception as e:
-        handle_error_message(f"{e}")
+        send_message("error",f"{e}",logger)
         return
 
     asyncio.create_task(process_check(audio_input))

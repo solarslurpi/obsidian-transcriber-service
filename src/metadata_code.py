@@ -1,24 +1,34 @@
+import json
 import logging
 import re
-
-from mutagen.mp3 import MP3
-from typing import Dict
-import yt_dlp
-
 import os
 from datetime import datetime
+from typing import Optional
+
+from mutagen.mp3 import MP3
+from typing import Dict, List, Tuple
+import yt_dlp
+from pydantic import BaseModel, Field
+
 
 from logger_code import LoggerBase
-from audio_processing_model import  AUDIO_QUALITY_MAP
-import json
+from audio_processing_model import  AUDIO_QUALITY_MAP, AudioProcessRequest
+
+
 
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
+
+class Chapter(BaseModel):
+    title: str = Field(..., description="Title of the chapter.")
+    start: int = Field(..., description="Start time of the chapter in seconds.")
+    end: int = Field(..., description="End time of the chapter in seconds.")
+    transcription: Optional[str] = Field(None, description="Transcription for the chapter.")
 
 class MetadataExtractor:
     def __init__(self):
         pass
 
-    def extract_youtube_metadata(self, youtube_url: str, audio_quality:str) -> None:
+    def extract_youtube_metadata(self, youtube_url: str, audio_quality:str):
         logger.debug(f"metadata_code.extract_youtube_metadata: Extracting metadata for {youtube_url}")
         ydl_opts = {
             'outtmpl': '%(title)s',
@@ -45,9 +55,11 @@ class MetadataExtractor:
                 "uploader id": info_dict.get('uploader_id', ''),
                 "chapters": info_dict.get('chapters', [{'start_time': 0.0, 'end_time': 0.0, 'title': ''}])
             }
-            return json.dumps(metadata)
+            chapters_info =   info_dict.get('chapters', [{'start_time': 0.0, 'end_time': 0.0, 'title': '', 'transcription': None}])
+            chapters = [Chapter(title=chap['title'], start=chap['start_time'], end=chap['end_time'], transcription=chap.get('transcription')) for chap in chapters_info]
+            return metadata, chapters
 
-    def extract_mp3_metadata(self, mp3_filepath: str, audio_quality: str) -> Dict[str, str]:
+    def extract_mp3_metadata(self, mp3_filepath: str, audio_quality: str) :
         audio = MP3(mp3_filepath)
         duration = round(audio.info.length)
         upload_date = datetime.fromtimestamp(os.path.getmtime(mp3_filepath)).strftime('%Y-%m-%d')
@@ -57,9 +69,11 @@ class MetadataExtractor:
             "upload_date": upload_date,
             "filename": basefilename,
             "audio quality": AUDIO_QUALITY_MAP.get(audio_quality, ''),
-            "chapters":  [{'start_time': 0.0, 'end_time': 0.0, 'title': ''}]
         }
-        return json.dumps(metadata)
+        # mp3 files aren't broken into chapters. They are considered to have one chapter.
+        # setting the end to 0.0 tells the system that the audio is not divided into chapters.
+        chapter = Chapter(title='', start=0.0, end=0.0, transcription='')
+        return metadata, [chapter]
 
     def format_time(self, seconds: int) -> str:
         mins, secs = divmod(seconds, 60)
@@ -79,3 +93,21 @@ class MetadataExtractor:
         safe_filename = cleaned_name.replace(" ", "_")
 
         return safe_filename
+
+    def extract_metadata(self, audio_input: AudioProcessRequest) -> Tuple[Dict, List]:
+        logger.debug("metadata_code.extract_metadata: Getting the metadata.")
+        # When creating, add in what the client has given us into the state instance.
+        if audio_input.youtube_url:
+            # Instantiate a new state with all the info we can.
+            try:
+                metadata, chapters = self.extract_youtube_metadata(youtube_url=audio_input.youtube_url, audio_quality=audio_input.audio_quality)
+            except Exception as e:
+                logger.error(f"metadata_code.initialize_transcription_state:Error extracting YouTube metadata: {e}")
+                raise Exception(f"metadata_code.initialize_transcription_state: Failed to extract YouTube metadata for URL {audio_input.youtube_url}: {e}")
+        else:
+            try:
+                metadata, chapters = self.extract_mp3_metadata(mp3_filepath=audio_input.local_mp3, audio_quality=audio_input.audio_quality)
+            except Exception as e:
+                logger.error(f"metadata_code.initialize_transcription_state:Error extracting YouTube metadata: {e}")
+                raise Exception(f"metadata_code.initialize_transcription_state: Failed to extract YouTube metadata for URL {audio_input.youtube_url}: {e}")
+        return metadata, chapters
