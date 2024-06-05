@@ -2,6 +2,7 @@ import asyncio
 import inspect
 import logging
 import os
+import re
 import sys
 
 from global_stuff import global_message_queue
@@ -42,3 +43,8 @@ def add_src_to_sys_path():
     from logger_code import LoggerBase
     logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
     logger.debug(f"Added {src_path} to sys.path")
+
+def cleaned_name(uncleaned_name:str) -> str:
+
+    cleaned_name = re.sub(r"[^a-zA-Z0-9 \.-]", "", uncleaned_name)
+    return cleaned_name.replace(" ", "_")

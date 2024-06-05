@@ -57,15 +57,17 @@ async def sse_endpoint(request: Request):
     return EventSourceResponse(event_generator(request))
 
 async def event_generator(request: Request):
-
+    logger.debug("app.event_generator: Starting SSE event generator.")
     while True:
         if await request.is_disconnected():
             break
         message = await global_message_queue.get()
+        logger.debug("app.event_generator: Message received from the queue.")
         # Just in case the message is an empty string or None.
         if message:
             logger.debug(f"app.event_generator: Message: **{message}**")
-            yield f"{message}"
+            # yield f"data: {message}\n\n"  # Correct SSE format
+            yield "data: hello\n\n"
 
 @app.get("/api/v1/health")
 async def health_check():

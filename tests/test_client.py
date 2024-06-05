@@ -37,8 +37,15 @@ def handle_client():
         # line 4: b''
         if line != b'data: ' and line != b'':
             print(f"Line: {line}")
+        if line.startswith(b'event: '):
+            event_data = line.decode().replace('event: ', '')
+        elif line.startswith(b'data: '):
+            event_data += line.decode().replace('data: ', '')
+        print(f"Event data: {event_data}")
 
 
 if __name__ == "__main__":
-    connect_to_process_audio()
+
+    # response = connect_to_process_audio()
+    # print(f'Response from POST: {response.text}')
     handle_client()
