@@ -2,16 +2,14 @@ import asyncio
 import logging
 import os
 import time
-from typing import  Optional
 
-from pydantic import BaseModel, Field
 from pydub import AudioSegment
 import torch
 from transformers import pipeline
 
 from global_stuff import global_message_queue
 from logger_code import LoggerBase
-from transcription_state_code import TranscriptionState, ChapterWithTranscript
+from transcription_state_code import TranscriptionState
 from utils import send_message
 
 
@@ -22,7 +20,6 @@ LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 # Ensure the local directory exists
 if not os.path.exists(LOCAL_DIRECTORY):
     os.makedirs(LOCAL_DIRECTORY)
-
 
 class TranscribeAudio:
     def __init__(self):
@@ -44,9 +41,7 @@ class TranscribeAudio:
         asyncio.create_task(send_message("data", {'transcription_time': duration} , logger))
         logger.debug(f"transcription_code.TranscribeAudio.transcribe_chapters: All chapters transcribed. Transcription time: {duration} First Chapter: {state.chapters[0]}")
 
-
-
-    async def transcribe_chapter(self, local_mp3:str, model_name:str, compute_type:str, chapter:ChapterWithTranscript, logger: LoggerBase):
+    async def transcribe_chapter(self, local_mp3:str, model_name:str, compute_type:str, chapter:str, logger: LoggerBase):
         # Make audio slice
         audio_slice = self.make_audio_slice(local_mp3, chapter.start*1000, chapter.end*1000 )
         # # Load model
@@ -62,9 +57,9 @@ class TranscribeAudio:
         if audio_slice != local_mp3:
             os.remove(audio_slice)
 
-        chapter.transcription =  result['text']
-        chapter_json = chapter.model_dump_json()
-        asyncio.create_task(send_message("transcription", {'chapter': chapter_json}, logger))
+        chapter =  result['text']
+
+        asyncio.create_task(send_message("transcription", {'chapter': chapter}, logger))
 
 
     def make_audio_slice(self, local_mp3:str, start_ms:int, end_ms:int):

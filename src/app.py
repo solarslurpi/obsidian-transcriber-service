@@ -29,6 +29,8 @@ logger_one.setLevel(logging.DEBUG)
 async def init_process_audio(youtube_url: Optional[str] = Form(None),
                              file: Optional[UploadFile] = Form(None),
                              audio_quality: str = Form("default")):
+
+    err_msg = ''
     try:
         audio_input = AudioProcessRequest(
             youtube_url=youtube_url,
@@ -37,11 +39,18 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
         )
         logger.debug(f"app.init_process_audio: Audio input: {audio_input}")
     except Exception as e:
-        send_message("error",f"{e}",logger)
-        return
+        err_msg = f"error: {e}"
+        send_message(err_msg,logger)
 
-    asyncio.create_task(process_check(audio_input))
-    return {"status": "Processing audio file."}
+
+    try:
+        asyncio.create_task(process_check(audio_input))
+    except Exception as e:
+        err_msg = f"error: {e}"
+        send_message(err_msg,logger)
+
+    return f"status: {err_msg}"
+
 
 
 @app.get("/api/v1/sse")

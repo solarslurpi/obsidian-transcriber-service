@@ -26,7 +26,7 @@ class TranscriptionState(BaseModel):
     hf_model: str = Field(default=None, description="Set when initializing state from user's audio_input.audio_quality.")
     hf_compute_type: torch.dtype = Field(default=None, description="Used by transcriber. Either float32 or float16")
     metadata: Optional[Metadata] = Field(default=None, description="YouTube metadata is very rich.  mp3 file is not so rich in metadata..")
-    chapters_transcript: Optional[List[Transcript]] = Field(default_factory=list, description="List of chapters with start and end times and transcriptions.")
+    chapters_transcript: Optional[List[Transcript]] = Field(default_factory=list, description="Each entry in the list is the transcribed text of a chapter.")
     transcription_time: int = Field(default=0,description="Number of seconds it took to transcribe the audio file.")
     transcript_done: bool = Field(default=False, description="True if the transcription is complete.")
 
@@ -111,7 +111,10 @@ def initialize_transcription_state(audio_input: AudioProcessRequest) -> Transcri
     else:
         logger.debug("transcripts_state_code.initialize_transcription_state: state is not in the cache. Getting the metadata.")
         extractor = MetadataExtractor()
-        metadata = extractor.extract_metadata(audio_input)
+        try:
+            metadata = extractor.extract_metadata(audio_input)
+        except Exception as e:
+            raise
         # Add in the audio quality and compute type as the hf mappings.
         hf_model = AUDIO_QUALITY_MAP[audio_input.audio_quality]
         hf_compute_type = COMPUTE_TYPE_MAP[audio_input.audio_quality]

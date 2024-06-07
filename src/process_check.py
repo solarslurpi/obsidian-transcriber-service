@@ -19,7 +19,8 @@ logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 async def process_check(audio_input):
     logger.debug(f"process_check_code.process_check: audio_input: {audio_input}")
     # Fill up as much of the state as possible.
-    state = initialize_transcription_state(audio_input)
+    try:
+        state = initialize_transcription_state(audio_input)
     logger.debug("process_check_code.process_check: state initialized.")
     transcribe_audio_instance = TranscribeAudio()
     # If the mp3 file is readily available, transcribe it.
