@@ -8,23 +8,25 @@ from pydantic import BaseModel, Field, field_validator
 
 
 from logger_code import LoggerBase
-from metadata_code import MetadataExtractor, Chapter
+from metadata_code import MetadataExtractor, ChapterMetadata
 from audio_processing_model import AudioProcessRequest, AUDIO_QUALITY_MAP, COMPUTE_TYPE_MAP
+from metadata_code import Metadata
 from utils import send_message
 
 # Create a logger named after the module
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
+class Transcript(BaseModel):
+    transcript:str = Field(default=None, description="Transcription of the chapter.")
 
 
 class TranscriptionState(BaseModel):
     # Manages the state and behavior of a single transcription.
     local_mp3: Optional[str] = Field(default=None, description="Local storage of mp3 file. This is where the transcription part will look for the audio file.")
-    youtube_url: Optional[str] = Field(default=None, description="URL of the YouTube video. ")
     hf_model: str = Field(default=None, description="Set when initializing state from user's audio_input.audio_quality.")
     hf_compute_type: torch.dtype = Field(default=None, description="Used by transcriber. Either float32 or float16")
-    metadata: Dict = Field(default={}, description="YouTube metadata is very rich.  mp3 file is not so rich in metadata..")
-    chapters: List[Chapter] = Field(default_factory=list, description="List of chapters with start and end times and transcriptions.")
+    metadata: Optional[Metadata] = Field(default=None, description="YouTube metadata is very rich.  mp3 file is not so rich in metadata..")
+    chapters_transcript: Optional[List[Transcript]] = Field(default_factory=list, description="List of chapters with start and end times and transcriptions.")
     transcription_time: int = Field(default=0,description="Number of seconds it took to transcribe the audio file.")
     transcript_done: bool = Field(default=False, description="True if the transcription is complete.")
 
@@ -36,16 +38,12 @@ class TranscriptionState(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
-    # @property
-    # def num_chapters_with_transcripts(self) -> int:
-    #     return sum(1 for chapter in self.chapters if chapter.transcription)
-
-    # @property
-    # def num_chapters_total(self) -> int:
-    #     return len(self.chapters)
+        json_encoders = {
+            torch.dtype: lambda v: str(v).split('.')[-1]
+        }
 
     def add_chapter(self, title: str, start: int, end: int, transcription: Optional[str] = None) -> None:
-        self.chapters.append(Chapter(title=title, start=start, end=end, transcription=transcription))
+        self.chapters.append(ChapterMetadata(title=title, start=start, end=end, transcription=transcription))
 
     def update_chapter(self, start: int, transcription: str) -> None:
         for chapter in self.chapters:
@@ -57,9 +55,6 @@ class TranscriptionState(BaseModel):
 
     def clear_chapters(self) -> None:
         self.chapters = []
-
-
-
 
 
 class TranscriptionStates:
@@ -90,38 +85,41 @@ class TranscriptionStates:
         if key in self.cache:
             del self.cache[key]
 
+    def make_key(self, audio_input: AudioProcessRequest) -> str:
+        name_part = audio_input.youtube_url if audio_input.youtube_url else os.path.basename(audio_input.file.filename)
+        quality_part = audio_input.audio_quality
+        key = name_part + "_" + quality_part
+        return key
+
 # initialize global access to state storage.
 
 states = TranscriptionStates()
 
-def get_audio_input_key(audio_input: AudioProcessRequest) -> str:
-    name_part = audio_input.youtube_url if audio_input.youtube_url else os.path.basename(audio_input.file.filename)
-    quality_part = audio_input.audio_quality
-    key = name_part + "_" + quality_part
-    return key
+
 
 def initialize_transcription_state(audio_input: AudioProcessRequest) -> TranscriptionState:
     logger.debug(f"transcripts_state_code.initialize_transcription_state: audio_input: {audio_input}")
 
     # The client comes in with an audio_input property. The key is based on this.
-    key = get_audio_input_key(audio_input)
+    key = states.make_key(audio_input)
     state = states.get_state(key)
     logger.debug(f"transcripts_state_code.initialize_transcription_state: state key is: {key}")
-    # Does the bin already have content?
+    # Does audio+quality already have content?
     if state:
         # The wind is at this audio's back...
         logger.debug("transcripts_state_code.initialize_transcription_state: state is alredy in the cache.")
     else:
         logger.debug("transcripts_state_code.initialize_transcription_state: state is not in the cache. Getting the metadata.")
         extractor = MetadataExtractor()
-        metadata, chapters = extractor.extract_metadata(audio_input)
+        metadata = extractor.extract_metadata(audio_input)
         # Add in the audio quality and compute type as the hf mappings.
         hf_model = AUDIO_QUALITY_MAP[audio_input.audio_quality]
         hf_compute_type = COMPUTE_TYPE_MAP[audio_input.audio_quality]
         # Save as much state as we know.
         local_mp3 = audio_input.local_mp3 if audio_input.local_mp3 else None
         youtube_url = audio_input.youtube_url if audio_input.youtube_url else None
-        state = TranscriptionState(local_mp3=local_mp3, youtube_url=youtube_url, audio_quality=audio_input.audio_quality, metadata=metadata, chapters=chapters, hf_model=hf_model, hf_compute_type=hf_compute_type)
+        # The chapters don't have transcripts in them yet.
+        state = TranscriptionState(local_mp3=local_mp3, youtube_url=youtube_url, audio_quality=audio_input.audio_quality, metadata=metadata, hf_model=hf_model, hf_compute_type=hf_compute_type)
 
     states.add_state(key, state, logger)
     send_message("status","transcription_state_code.initialize_transcription_state: Transcription state has been initialized.",logger)

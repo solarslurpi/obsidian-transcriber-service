@@ -1,4 +1,4 @@
-
+'''This script gets the metadata from a few YouTube URLs and writes the metadata to a file.  Having the metadata locally helps in tests as well as understanding.'''
 import json
 import os
 

@@ -2,16 +2,16 @@ import asyncio
 import logging
 import os
 import time
-from typing import Dict
+from typing import  Optional
 
+from pydantic import BaseModel, Field
 from pydub import AudioSegment
 import torch
 from transformers import pipeline
 
 from global_stuff import global_message_queue
 from logger_code import LoggerBase
-from metadata_code import Chapter
-from transcription_state_code import TranscriptionState
+from transcription_state_code import TranscriptionState, ChapterWithTranscript
 from utils import send_message
 
 
@@ -22,6 +22,7 @@ LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 # Ensure the local directory exists
 if not os.path.exists(LOCAL_DIRECTORY):
     os.makedirs(LOCAL_DIRECTORY)
+
 
 class TranscribeAudio:
     def __init__(self):
@@ -45,7 +46,7 @@ class TranscribeAudio:
 
 
 
-    async def transcribe_chapter(self, local_mp3:str, model_name:str, compute_type:str, chapter:Chapter, logger: LoggerBase):
+    async def transcribe_chapter(self, local_mp3:str, model_name:str, compute_type:str, chapter:ChapterWithTranscript, logger: LoggerBase):
         # Make audio slice
         audio_slice = self.make_audio_slice(local_mp3, chapter.start*1000, chapter.end*1000 )
         # # Load model
