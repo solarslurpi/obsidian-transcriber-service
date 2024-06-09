@@ -1,33 +1,8 @@
-'''The tests in this code are to understand and evaluate sending SSE messages and how the client interprets them. The message types that are sent include:
-- `data:{status: message}` - Sent to keep the client updated on progress (or not)
-- `data:{data: message}`
-- `data:{error: message}`
-- `data: {debug: message}` - Provides more detailed information.  This is useful if the process is going along in unexpected ways.
-
-'youtube_url': 'https://www.youtube.com/watch?v=KbZDsrs5roI'
-
-'''
 import logging
 import requests
 import threading
 
 from logger_code import LoggerBase
-
-
-
-
-def post_to_process_audio(logger):
-    url = "http://127.0.0.1:8000/api/v1/process_audio"
-    files=[]
-    payload = {'youtube_url': 'junk_url',
-    'audio_quality': 'default'}
-    headers = {
-    'accept': 'application/json'
-    }
-    logger.debug('before post')
-    response = requests.post(url, headers=headers, data=payload)
-    logger.debug('after post')
-    return response
 
 def handle_sse(logger):
     payload = {}
@@ -35,24 +10,60 @@ def handle_sse(logger):
     url = f"http://127.0.0.1:8000/api/v1/sse"
     logger.debug(f"Sending GET request to {url}")
 
-    # Set up the generator (stream=True) SSE is a streaming protocol.
     response = requests.request("GET", url, headers=headers, data=payload, stream=True)
-    # response.iter.lines() is a generator that yields lines from the response.
-    # The thread will block here until a line is received.
+
+    event_type = None
+    data_lines = []
+
     for line in response.iter_lines():
-        logger.debug(f" {line}")
+        if len(line) == 0:
+            # End of an event, process the event
+            if data_lines:
+                handle_event(event_type, data_lines, logger)
+            # Reset for the next event
+            event_type = None
+            data_lines = []
+        else:
+            line = line.decode('utf-8')
+            logger.debug(f" ****{line}****")
+            if line.startswith('event:'):
+                event_type = line.split(': ', 1)[1]
+            elif line.startswith('data:'):
+                data_lines.append(line[5:].strip())
+            elif line.startswith('id:'):
+                event_id = line.split(': ', 1)[1]
+            elif line.startswith('retry:'):
+                retry_timeout = line.split(': ', 1)[1]
+            elif line.strip() == '':
+                # End of an event, process the event
+                if data_lines:
+                    handle_event(event_type, data_lines, logger)
+                # Reset for the next event
+                event_type = None
+                data_lines = []
+
+def handle_event(event_type, data_lines, logger):
+    data = "\n".join(data_lines)
+    logger.info(f"Event: {event_type if event_type else 'message'}")
+    logger.info(f"Data: {data}")
 
 def test_receive_post_error_message(logger):
-    # Create a thread that to handle incoming sse messages.
     thread = threading.Thread(target=handle_sse, args=(logger,))
+    thread.start()
     response = post_to_process_audio(logger)
     logger.debug(f"Response: {response.text}")
 
-    # Start the new thread
-    thread.start()
+def post_to_process_audio(logger):
+    url = "http://127.0.0.1:8000/api/v1/process_audio"
+    payload = {'youtube_url': 'junk_url', 'audio_quality': 'default'}
+    headers = {'accept': 'application/json'}
+    logger.debug('before post')
+    response = requests.post(url, headers=headers, data=payload)
+    logger.debug('after post')
+    return response
 
 def main():
-    logger = LoggerBase.setup_logger(__name__,level=logging.DEBUG)
+    logger = LoggerBase.setup_logger(__name__, level=logging.DEBUG)
     test_receive_post_error_message(logger)
 
 if __name__ == "__main__":

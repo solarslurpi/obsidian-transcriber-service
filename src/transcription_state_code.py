@@ -11,7 +11,7 @@ from logger_code import LoggerBase
 from metadata_code import MetadataExtractor, ChapterMetadata
 from audio_processing_model import AudioProcessRequest, AUDIO_QUALITY_MAP, COMPUTE_TYPE_MAP
 from metadata_code import Metadata
-from utils import send_message
+from utils import send_sse_message
 
 # Create a logger named after the module
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
@@ -113,6 +113,7 @@ def initialize_transcription_state(audio_input: AudioProcessRequest) -> Transcri
         extractor = MetadataExtractor()
         try:
             metadata = extractor.extract_metadata(audio_input)
+
         except Exception as e:
             raise
         # Add in the audio quality and compute type as the hf mappings.
@@ -125,5 +126,5 @@ def initialize_transcription_state(audio_input: AudioProcessRequest) -> Transcri
         state = TranscriptionState(local_mp3=local_mp3, youtube_url=youtube_url, audio_quality=audio_input.audio_quality, metadata=metadata, hf_model=hf_model, hf_compute_type=hf_compute_type)
 
     states.add_state(key, state, logger)
-    send_message("status","transcription_state_code.initialize_transcription_state: Transcription state has been initialized.",logger)
+
     return state

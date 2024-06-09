@@ -5,21 +5,46 @@ import os
 import re
 import sys
 
+from pydantic import BaseModel
+
 from global_stuff import global_message_queue
 from logger_code import LoggerBase
 
+class MsgLogData(BaseModel):
+    sse_message: str
+    log_message: str
+
+    def to_json(self):
+        return self.model_dump_json()
+
+#class MsgLog(Exception):
+class MsgLog():
+    def __init__(self, sse_message, log_message):
+        self.data = MsgLogData(
+            sse_message=sse_message,
+            log_message=str(log_message)
+        )
+        super().__init__(self.data.to_json())
+
 
 def format_sse(event: str, data: dict) -> str:
-    message = f"event: {event}\ndata: {data}\n\n"
+    message = {}
+    message['event'] = event
+    message['data'] =  data
     return message
 
-async def send_message(event: str, data: dict, logger: LoggerBase=None):
-    message = format_sse(event, data,)
+def send_sse_message(event:str, data: dict):
+    message = format_sse(event, data)
+    asyncio.create_task(global_message_queue.put(message))
+
+async def msg_log(event:str, msg_for_sse: str, msg_for_logger: str, logger: LoggerBase=None):
+    # event is 'status', 'error', 'debug', 'data'
+    message = format_sse(event, msg_for_sse)
     asyncio.create_task(global_message_queue.put(message))
     if logger:
         # Get the previous frame in the stack, otherwise it would be this function
         func = inspect.currentframe().f_back.f_code
-        logger.debug(f"send_message: {message}, called by {func.co_filename}:{func.co_firstlineno}")
+        logger.debug(f"send_message: {msg_for_logger}, called by {func.co_filename}:{func.co_firstlineno}")
 
 def add_src_to_sys_path():
     """
@@ -48,3 +73,11 @@ def cleaned_name(uncleaned_name:str) -> str:
 
     cleaned_name = re.sub(r"[^a-zA-Z0-9 \.-]", "", uncleaned_name)
     return cleaned_name.replace(" ", "_")
+
+
+def parse_msg(input_string: str) -> str:
+    match = re.search(r"<BEG>(.*?)<END>", input_string)
+    if match:
+        return match.group(1)
+    else:
+        return "No valid message found."

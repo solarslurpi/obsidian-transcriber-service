@@ -2,20 +2,21 @@
 
 
 import asyncio
-import os
+import json
 import logging
 from typing import Optional
 
-from fastapi import FastAPI,  Request, Form, UploadFile
+from fastapi import FastAPI,  Request, Form, UploadFile, HTTPException
+from pydantic import ValidationError
 from sse_starlette import EventSourceResponse
 
 from global_stuff import global_message_queue
 from logger_code import LoggerBase
 from process_check import process_check
 from audio_processing_model import AudioProcessRequest
-from utils import send_message
+from utils import format_sse
 
-
+MESSAGE_STREAM_RETRY_TIMEOUT = 3000
 
 app = FastAPI()
 # Set up logging filte
@@ -30,26 +31,32 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
                              file: Optional[UploadFile] = Form(None),
                              audio_quality: str = Form("default")):
 
-    err_msg = ''
     try:
         audio_input = AudioProcessRequest(
             youtube_url=youtube_url,
-            file=file,
+            file=None,
             audio_quality=audio_quality
         )
-        logger.debug(f"app.init_process_audio: Audio input: {audio_input}")
+    except ValidationError as e:
+        # Pydantic ValidationError has its own structure for errors.
+        error_msg = e.errors()[0].get('msg','msg attribute not found')
+        message = format_sse("error", error_msg)
+        asyncio.create_task(global_message_queue.put(message))
+        # Wait for the message to be sent by the async generator
+        while not global_message_queue.empty():
+            await asyncio.sleep(0.1)
+        raise HTTPException(status_code=400, detail=e.errors())
+
     except Exception as e:
-        err_msg = f"error: {e}"
-        send_message(err_msg,logger)
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(status_code=500, detail="An unexpected error occurred.")
+
+    # create_task is run in its own event loop, meaning Exceptions occur outside the main event loop
+    # where the current code is executing.This is why the error is not caught by the try-except block.
+    asyncio.create_task(process_check(audio_input))
 
 
-    try:
-        asyncio.create_task(process_check(audio_input))
-    except Exception as e:
-        err_msg = f"error: {e}"
-        send_message(err_msg,logger)
-
-    return f"status: {err_msg}"
+    return f"status: Transcription process has started."
 
 
 
@@ -66,6 +73,7 @@ async def sse_endpoint(request: Request):
     return EventSourceResponse(event_generator(request))
 
 async def event_generator(request: Request):
+    id_cnt = 1
     logger.debug("app.event_generator: Starting SSE event generator.")
     while True:
         if await request.is_disconnected():
@@ -75,8 +83,14 @@ async def event_generator(request: Request):
         # Just in case the message is an empty string or None.
         if message:
             logger.debug(f"app.event_generator: Message: **{message}**")
-            # yield f"data: {message}\n\n"  # Correct SSE format
-            yield "data: hello\n\n"
+            yield {
+                "event":message.get('event', 'unknown'),
+                "id": id_cnt,
+                "retry": MESSAGE_STREAM_RETRY_TIMEOUT,
+                "data": message.get('data', 'No data found.')
+            }
+            id_cnt += 1
+            yield message
 
 @app.get("/api/v1/health")
 async def health_check():

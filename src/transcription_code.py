@@ -10,7 +10,7 @@ from transformers import pipeline
 from global_stuff import global_message_queue
 from logger_code import LoggerBase
 from transcription_state_code import TranscriptionState
-from utils import send_message
+from utils import msg_log
 
 
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
@@ -27,7 +27,6 @@ class TranscribeAudio:
 
     async def transcribe_chapters(self, state: TranscriptionState, logger: LoggerBase):
         # As the transcription progresses, the sequence of communication - both status updates and results are placed on the message queue to be delivered to the client.
-        asyncio.create_task(send_message("status", f"Transcribing {len(state.chapters)} chapter(s).", logger))
         asyncio.create_task(global_message_queue.put({'status': f'Transcribing {len(state.chapters)} chapter(s).'}))
         # Send the filename w/o extension to the client. This becomes the name of the obsidian note.
         start_time = time.time()
@@ -38,7 +37,8 @@ class TranscribeAudio:
         end_time = time.time()
         duration = end_time - start_time
         state.transcription_time = duration
-        asyncio.create_task(send_message("data", {'transcription_time': duration} , logger))
+        asyncio.create_task(global_message_queue.put("data", {'transcription_time': duration} ))
+        msg_log("status", "All chapters successfully transcribed.", f"All chapters successfully transcribed. Transcription time: {duration} seconds First Chapter: {state.chapters[0]}", logger)
         logger.debug(f"transcription_code.TranscribeAudio.transcribe_chapters: All chapters transcribed. Transcription time: {duration} First Chapter: {state.chapters[0]}")
 
     async def transcribe_chapter(self, local_mp3:str, model_name:str, compute_type:str, chapter:str, logger: LoggerBase):
@@ -59,7 +59,7 @@ class TranscribeAudio:
 
         chapter =  result['text']
 
-        asyncio.create_task(send_message("transcription", {'chapter': chapter}, logger))
+        # asyncio.create_task(send_message("transcription", {'chapter': chapter}, logger))
 
 
     def make_audio_slice(self, local_mp3:str, start_ms:int, end_ms:int):

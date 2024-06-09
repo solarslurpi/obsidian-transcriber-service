@@ -5,8 +5,9 @@ import os
 
 from logger_code import LoggerBase
 from transcription_code import TranscribeAudio
-from transcription_state_code import initialize_transcription_state, TranscriptionState
+from transcription_state_code import initialize_transcription_state
 from youtube_download_code import YouTubeDownloader
+from utils import msg_log
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 # Ensure the local directory exists
@@ -21,7 +22,11 @@ async def process_check(audio_input):
     # Fill up as much of the state as possible.
     try:
         state = initialize_transcription_state(audio_input)
-    logger.debug("process_check_code.process_check: state initialized.")
+        logger.debug("process_check_code.process_check: state initialized.")
+    except Exception as e:
+        # This is the highest level of the async event loop.  Send the error message to the client.
+        await msg_log("error", f"{e}", f"{e}", logger)
+        raise
     transcribe_audio_instance = TranscribeAudio()
     # If the mp3 file is readily available, transcribe it.
     if state is not None and state.local_mp3:

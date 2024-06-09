@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Optional
 
 from mutagen.mp3 import MP3
-from typing import Annotated, Dict, List, Tuple
+from typing import Annotated, Dict, List
 import yt_dlp
 from pydantic import BaseModel, Field, PlainSerializer
 
@@ -13,8 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from logger_code import LoggerBase
-from audio_processing_model import  AUDIO_QUALITY_MAP, AudioProcessRequest
-from utils import cleaned_name
+from utils import cleaned_name, MsgLog
 
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
@@ -110,12 +109,11 @@ class MetadataExtractor:
             try:
                 metadata  = self.extract_youtube_metadata(youtube_url=audio_input.youtube_url)
             except Exception as e:
-                logger.error(f"metadata_code.initialize_transcription_state:Error extracting YouTube metadata: {e}")
-                raise Exception(f"metadata_code.initialize_transcription_state: Failed to extract YouTube metadata for URL {audio_input.youtube_url}: {e}")
+                raise MsgLog(f"Error trying to extract YouTube metadata for  {audio_input.youtube_url}",e,logger)
         else:
             try:
                 metadata = self.extract_mp3_metadata(mp3_filepath=audio_input.local_mp3, audio_quality=audio_input.audio_quality)
             except Exception as e:
-                logger.error(f"metadata_code.initialize_transcription_state:Error extracting YouTube metadata: {e}")
-                raise Exception(f"metadata_code.initialize_transcription_state: Failed to extract YouTube metadata for URL {audio_input.youtube_url}: {e}")
+                raise MsgLog(f"Error trying to extract mp3 metadata for {audio_input.local_mp3}",e,logger)
+
         return metadata

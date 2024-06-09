@@ -5,7 +5,7 @@ import yt_dlp
 from logger_code import LoggerBase
 from audio_processing_model import AudioProcessRequest
 from transcription_state_code import TranscriptionState
-from utils import send_message
+
 
 
 class YouTubeDownloader:
@@ -47,16 +47,16 @@ class YouTubeDownloader:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
         if status == 'finished':
-            asyncio.run_coroutine_threadsafe(send_message('status', "Download finished successfully.", self.logger), loop)
+            # asyncio.run_coroutine_threadsafe(send_message('status', "Download finished successfully.", self.logger), loop)
             self.isComplete = True
         elif status == 'downloading':
             downloaded = d.get('downloaded_bytes')
             total = d.get('total_bytes')
             if total:
                 percentage = downloaded / total * 100
-                asyncio.run_coroutine_threadsafe(send_message('status', f"Downloading: {percentage:.1f}%", self.logger), loop)
+                # asyncio.run_coroutine_threadsafe(send_message('status', f"Downloading: {percentage:.1f}%", self.logger), loop)
         elif status == 'error':
-            asyncio.run_coroutine_threadsafe(send_message('error', f"An error occurred: {d.get('error', 'Unknown error')}", self.logger), loop)
+            # asyncio.run_coroutine_threadsafe(send_message('error', f"An error occurred: {d.get('error', 'Unknown error')}", self.logger), loop)
             self.isComplete = True
 
     def  is_youtube_url(request: AudioProcessRequest) -> bool:
