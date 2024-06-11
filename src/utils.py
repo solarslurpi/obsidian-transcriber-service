@@ -4,7 +4,6 @@ import logging
 import os
 import re
 import sys
-
 from pydantic import BaseModel
 
 from global_stuff import global_message_queue
@@ -17,7 +16,7 @@ class MsgLogData(BaseModel):
     def to_json(self):
         return self.model_dump_json()
 
-#class MsgLog(Exception):
+
 class MsgLog():
     def __init__(self, sse_message, log_message):
         self.data = MsgLogData(
@@ -45,6 +44,9 @@ async def msg_log(event:str, msg_for_sse: str, msg_for_logger: str, logger: Logg
         # Get the previous frame in the stack, otherwise it would be this function
         func = inspect.currentframe().f_back.f_code
         logger.debug(f"send_message: {msg_for_logger}, called by {func.co_filename}:{func.co_firstlineno}")
+
+
+
 
 def add_src_to_sys_path():
     """

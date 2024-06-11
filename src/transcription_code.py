@@ -9,6 +9,7 @@ from transformers import pipeline
 
 from global_stuff import global_message_queue
 from logger_code import LoggerBase
+from metadata_code import ChapterMetadata
 from transcription_state_code import TranscriptionState
 from utils import msg_log
 
@@ -25,7 +26,7 @@ class TranscribeAudio:
     def __init__(self):
         pass
 
-    async def transcribe_chapters(self, state: TranscriptionState, logger: LoggerBase):
+    async def transcribe_chapters(self, state: TranscriptionState):
         # As the transcription progresses, the sequence of communication - both status updates and results are placed on the message queue to be delivered to the client.
         asyncio.create_task(global_message_queue.put({'status': f'Transcribing {len(state.chapters)} chapter(s).'}))
         # Send the filename w/o extension to the client. This becomes the name of the obsidian note.
@@ -41,7 +42,7 @@ class TranscribeAudio:
         msg_log("status", "All chapters successfully transcribed.", f"All chapters successfully transcribed. Transcription time: {duration} seconds First Chapter: {state.chapters[0]}", logger)
         logger.debug(f"transcription_code.TranscribeAudio.transcribe_chapters: All chapters transcribed. Transcription time: {duration} First Chapter: {state.chapters[0]}")
 
-    async def transcribe_chapter(self, local_mp3:str, model_name:str, compute_type:str, chapter:str, logger: LoggerBase):
+    async def transcribe_chapter(self, local_mp3:str, model_name:str, compute_type:torch.dtype, chapter:ChapterMetadata):
         # Make audio slice
         audio_slice = self.make_audio_slice(local_mp3, chapter.start*1000, chapter.end*1000 )
         # # Load model
@@ -58,6 +59,8 @@ class TranscribeAudio:
             os.remove(audio_slice)
 
         chapter =  result['text']
+
+        return chapter
 
         # asyncio.create_task(send_message("transcription", {'chapter': chapter}, logger))
 

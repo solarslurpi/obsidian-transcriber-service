@@ -1,15 +1,25 @@
 
 import logging
+import os
 import re
+from dotenv import load_dotenv
+load_dotenv()
 
+from fastapi import UploadFile
+from pydantic import BaseModel, Field, field_validator
+import torch
 from typing import Optional
 
-import torch
-from pydantic import BaseModel, Field, field_validator
+
 
 from logger_code import LoggerBase
 
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
+
+
+LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
+# Ensure the local directory exists
+
 
 AUDIO_QUALITY_MAP = {
     "default":  "openai/whisper-tiny.en",
@@ -26,8 +36,8 @@ COMPUTE_TYPE_MAP = {
 }
 
 class AudioProcessRequest(BaseModel):
-    youtube_url: Optional[str] = None
-    file: Optional[str] = None  # Simplified for this example
+    youtube_url: Optional[str] = Field(None, description="YouTube URL to download audio from. Input requires either a YouTube URL or mp3 file.")
+    mp3_local: Optional[str] = Field(None, description="The stored local mp3 file.")
     audio_quality: str = Field(default="default", description="Audio quality setting for processing.")
 
     @field_validator('youtube_url')
@@ -42,3 +52,16 @@ class AudioProcessRequest(BaseModel):
             r'^(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/'
             r'((watch\?v=)|(embed/)|(v/)|(.+\?v=))?([^&=%\?]{11})')
         return youtube_regex.match(url) is not None
+
+
+def save_local_mp3(upload_file: UploadFile):
+    # Ensure the local directory exists
+    if not os.path.exists(LOCAL_DIRECTORY):
+        os.makedirs(LOCAL_DIRECTORY)
+
+    file_location = os.path.join(LOCAL_DIRECTORY, upload_file.filename)
+    with open(file_location, "wb+") as file_object:
+        file_object.write(upload_file.file.read())
+        file_object.close()
+    logger.debug(f"audio_processing_model.save_local_mp3: File saved to {file_location}")
+    return file_location

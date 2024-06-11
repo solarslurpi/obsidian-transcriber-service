@@ -6,10 +6,10 @@ from typing import Optional, Dict, List
 
 from pydantic import BaseModel, Field, field_validator
 
-
+from exceptions_code import LocalFileException, MetadataExtractionException
 from logger_code import LoggerBase
 from metadata_code import MetadataExtractor, ChapterMetadata
-from audio_processing_model import AudioProcessRequest, AUDIO_QUALITY_MAP, COMPUTE_TYPE_MAP
+from audio_processing_model import AudioProcessRequest, AUDIO_QUALITY_MAP, COMPUTE_TYPE_MAP, save_local_mp3
 from metadata_code import Metadata
 from utils import send_sse_message
 
@@ -56,7 +56,17 @@ class TranscriptionState(BaseModel):
     def clear_chapters(self) -> None:
         self.chapters = []
 
-
+    def cleanup(self) -> None:
+        """Cleanup resources held by the TranscriptionState."""
+        # Clear chapters
+        self.clear_chapters()
+        # Nullify other fields
+        self.local_mp3 = None
+        self.hf_model = None
+        self.hf_compute_type = None
+        self.metadata = None
+        self.transcription_time = 0
+        self.transcript_done = False
 class TranscriptionStates:
     # Manages a collection of multiple TranscriptionState instances.
     def __init__(self):
@@ -97,7 +107,7 @@ states = TranscriptionStates()
 
 
 
-def initialize_transcription_state(audio_input: AudioProcessRequest) -> TranscriptionState:
+async def initialize_transcription_state(audio_input: AudioProcessRequest) -> TranscriptionState:
     logger.debug(f"transcripts_state_code.initialize_transcription_state: audio_input: {audio_input}")
 
     # The client comes in with an audio_input property. The key is based on this.
@@ -112,18 +122,28 @@ def initialize_transcription_state(audio_input: AudioProcessRequest) -> Transcri
         logger.debug("transcripts_state_code.initialize_transcription_state: state is not in the cache. Getting the metadata.")
         extractor = MetadataExtractor()
         try:
-            metadata = extractor.extract_metadata(audio_input)
-
+            metadata = await extractor.extract_metadata(audio_input)
+        except MetadataExtractionException as e:
+            raise e
         except Exception as e:
             raise
-        # Add in the audio quality and compute type as the hf mappings.
+        # Add in the audio quality and compute type as the hf mappings.  These are used by the whisper model
         hf_model = AUDIO_QUALITY_MAP[audio_input.audio_quality]
         hf_compute_type = COMPUTE_TYPE_MAP[audio_input.audio_quality]
-        # Save as much state as we know.
-        local_mp3 = audio_input.local_mp3 if audio_input.local_mp3 else None
-        youtube_url = audio_input.youtube_url if audio_input.youtube_url else None
+        # The local mp3 filename is super important for the next step because it is what is used by the
+        # transcriber as mp3 audio input.
+        # If
+        # local_mp3_filepath = None
+        # if audio_input.file:
+        #     try:
+        #         local_mp3_filepath = save_local_mp3(audio_input.file)
+        #     except LocalFileException as e:
+        #         raise e
+        #     except Exception as e:
+        #         raise
+        # Prime the transcription state up with the info needed to transcribe the audio.
         # The chapters don't have transcripts in them yet.
-        state = TranscriptionState(local_mp3=local_mp3, youtube_url=youtube_url, audio_quality=audio_input.audio_quality, metadata=metadata, hf_model=hf_model, hf_compute_type=hf_compute_type)
+        state = TranscriptionState(local_mp3=audio_input.file.filename, audio_quality=audio_input.audio_quality, metadata=metadata, hf_model=hf_model, hf_compute_type=hf_compute_type)
 
     states.add_state(key, state, logger)
 

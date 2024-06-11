@@ -10,6 +10,7 @@ import os
 
 from dotenv import load_dotenv
 load_dotenv()
+import pytest
 # The actual name of the directory/folder holding file writes
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY")
 
@@ -20,6 +21,11 @@ from metadata_code import MetadataExtractor, Metadata
 logger = LoggerBase.setup_logger(__name__,level=logging.DEBUG)
 
 audio_input_youtube = AudioProcessRequest(youtube_url="https://www.youtube.com/watch?v=KbZDsrs5roI", audio_quality="default")
+
+@pytest.fixture
+def test_info_dict():
+    test_info_dict = "test_info_dict_KbZDsrs5roI.json"
+    return test_info_dict
 
 def load_youtube_info_dict(filename):
     filepath = f"{LOCAL_DIRECTORY}/{filename}"
@@ -41,15 +47,16 @@ def test_simple_metadata_building():
     )
     return metadata_instance
 
-def test_building_youtube_metadata(info_dict):
-    info_dict = load_youtube_info_dict(info_dict)
+def test_building_youtube_metadata(test_info_dict):
+    info_dict = load_youtube_info_dict(test_info_dict)
     extractor = MetadataExtractor()
     metadata = extractor.build_metadata_instance(info_dict)
+    print(metadata)
     return metadata
 
 def test_building_mp3_metadata():
     extractor = MetadataExtractor()
-    mp3_filepath = f"{LOCAL_DIRECTORY}/Bluelab_Pulse_Meter_Review.mp3"
+    mp3_filepath = f"{LOCAL_DIRECTORY}/Teaming_with_microbes_chapter_14.mp3"
     info_dict = extractor.build_mp3_info_dict(mp3_filepath=mp3_filepath)
     metadata = extractor.build_metadata_instance(  info_dict)
     return metadata

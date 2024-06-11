@@ -1,6 +1,6 @@
 import asyncio
 import pytest
-import httpx
+
 from dotenv import load_dotenv
 import os
 

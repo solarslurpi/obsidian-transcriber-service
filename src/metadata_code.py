@@ -12,8 +12,9 @@ from pydantic import BaseModel, Field, PlainSerializer
 from dotenv import load_dotenv
 load_dotenv()
 
+from exceptions_code import MetadataExtractionException
 from logger_code import LoggerBase
-from utils import cleaned_name, MsgLog
+from utils import cleaned_name, MsgLog, send_sse_message
 
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
@@ -26,8 +27,9 @@ CustomStr = Annotated[
     List, PlainSerializer(lambda x: ' '.join(x), return_type=str)
 ]
 class Metadata(BaseModel):
-    youtube_url: str = Field(default=None, alias="original_url", description="URL of the YouTube video.")
+    youtube_url: Optional[str] = Field(default=None, alias="original_url", description="URL of the YouTube video.")
     # filename: str = Field(..., description="Name of the mp3 file.")
+    title: Optional[str] = Field(default=None, description="Title of the YouTube video.")
     tags: Optional[CustomStr] = Field(default=None, description="Tags associated with the metadata. The CustomStr annotation is used to convert the list of tags provided by YouTube to a string.")
     description: Optional[str] = Field(default=None, description="Description associated with the metadata.")
     duration: Optional[str] = Field(default=None, description="Duration of the audio in hh:mm:ss.")
@@ -53,7 +55,12 @@ class MetadataExtractor:
             metadata = self.build_metadata_instance( info_dict)
 
 
-            return metadata
+        return metadata
+
+    def extract_mp3_metadata(self, mp3_file, audio_quality: str) -> Metadata:
+        info_dict = self.build_mp3_info_dict(mp3_file)
+        metadata = self.build_metadata_instance(info_dict)
+        return metadata
 
     def build_mp3_info_dict(self, mp3_filepath: str) -> Dict:
         audio = MP3(mp3_filepath)
@@ -90,30 +97,25 @@ class MetadataExtractor:
         hours, mins = divmod(mins, 60)
         return f"{hours:d}:{mins:02d}:{secs:02d}"
 
-    def sanitize_filename(self, filename: str) -> str:
-        # Remove the file extension
-        name_part = filename.rsplit('.', 1)[0]
 
-        # Replace full-width colons and standard colons with a hyphen or other safe character
-        name_part = name_part.replace('：', '_').replace(':', '_')
-        # Replace spaces with hyphens
-        safe_filename = cleaned_name(name_part)
-
-        return safe_filename
-
-    def extract_metadata(self, audio_input ) -> Metadata:
+    async def extract_metadata(self, audio_input ) -> Metadata:
         logger.debug("metadata_code.extract_metadata: Getting the metadata.")
         # When creating, add in what the client has given us into the state instance.
         if audio_input.youtube_url:
             # Instantiate a new state with all the info we can.
             try:
+                send_sse_message(event="status", data="Extracted Metadata.")
                 metadata  = self.extract_youtube_metadata(youtube_url=audio_input.youtube_url)
+                send_sse_message(event="status", data="Metadata extracted.")
+
             except Exception as e:
-                raise MsgLog(f"Error trying to extract YouTube metadata for  {audio_input.youtube_url}",e,logger)
+                raise MetadataExtractionException("Error extracting metadata") from e
+
         else:
             try:
-                metadata = self.extract_mp3_metadata(mp3_filepath=audio_input.local_mp3, audio_quality=audio_input.audio_quality)
+                # Should be quick turn around so not sending sse messages.
+                logger.debug(f"metadata_code.extract_metadata: Extracting metadata for {audio_input.file.filename}")
+                metadata = self.extract_mp3_metadata(mp3_file=audio_input.file, audio_quality=audio_input.audio_quality)
             except Exception as e:
-                raise MsgLog(f"Error trying to extract mp3 metadata for {audio_input.local_mp3}",e,logger)
-
+                raise MetadataExtractionException("Error extracting metadata") from e
         return metadata
