@@ -10,6 +10,7 @@ from exceptions_code import handle_exception, LocalFileException, MetadataExtrac
 from logger_code import LoggerBase
 from transcription_state_code import initialize_transcription_state
 from youtube_download_code import youtube_download, sanitize_title
+from utils import send_sse_message
 
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
@@ -21,6 +22,7 @@ if not os.path.exists(LOCAL_DIRECTORY):
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
 async def process_check(audio_input):
+    send_sse_message("status", "Starting Transcription.")
     logger.debug(f"process_check_code.process_check: audio_input: {audio_input}")
     # Fill up as much of the state as possible.
     state = None # Once instantiated, it is a TranscriptionState instance.

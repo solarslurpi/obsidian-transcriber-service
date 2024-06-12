@@ -96,7 +96,7 @@ class TranscriptionStates:
             del self.cache[key]
 
     def make_key(self, audio_input: AudioProcessRequest) -> str:
-        name_part = audio_input.youtube_url if audio_input.youtube_url else os.path.basename(audio_input.file.filename)
+        name_part = audio_input.youtube_url if audio_input.youtube_url else os.path.splitext(os.path.basename(audio_input.mp3_file))[0]
         quality_part = audio_input.audio_quality
         key = name_part + "_" + quality_part
         return key
@@ -111,39 +111,27 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tr
     logger.debug(f"transcripts_state_code.initialize_transcription_state: audio_input: {audio_input}")
 
     # The client comes in with an audio_input property. The key is based on this.
-    key = states.make_key(audio_input)
+    try:
+        key = states.make_key(audio_input)
+    except
     state = states.get_state(key)
     logger.debug(f"transcripts_state_code.initialize_transcription_state: state key is: {key}")
-    # Does audio+quality already have content?
     if state:
-        # The wind is at this audio's back...
         logger.debug("transcripts_state_code.initialize_transcription_state: state is alredy in the cache.")
     else:
         logger.debug("transcripts_state_code.initialize_transcription_state: state is not in the cache. Getting the metadata.")
         extractor = MetadataExtractor()
         try:
             metadata = await extractor.extract_metadata(audio_input)
+            send_sse_message(event="data", data=f"metadata: {metadata}")
         except MetadataExtractionException as e:
             raise e
         except Exception as e:
             raise
-        # Add in the audio quality and compute type as the hf mappings.  These are used by the whisper model
+
         hf_model = AUDIO_QUALITY_MAP[audio_input.audio_quality]
         hf_compute_type = COMPUTE_TYPE_MAP[audio_input.audio_quality]
-        # The local mp3 filename is super important for the next step because it is what is used by the
-        # transcriber as mp3 audio input.
-        # If
-        # local_mp3_filepath = None
-        # if audio_input.file:
-        #     try:
-        #         local_mp3_filepath = save_local_mp3(audio_input.file)
-        #     except LocalFileException as e:
-        #         raise e
-        #     except Exception as e:
-        #         raise
-        # Prime the transcription state up with the info needed to transcribe the audio.
-        # The chapters don't have transcripts in them yet.
-        state = TranscriptionState(local_mp3=audio_input.file.filename, audio_quality=audio_input.audio_quality, metadata=metadata, hf_model=hf_model, hf_compute_type=hf_compute_type)
+        state = TranscriptionState(local_mp3=audio_input.mp3_file, audio_quality=audio_input.audio_quality, metadata=metadata, hf_model=hf_model, hf_compute_type=hf_compute_type)
 
     states.add_state(key, state, logger)
 

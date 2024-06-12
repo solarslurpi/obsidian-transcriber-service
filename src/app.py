@@ -8,7 +8,7 @@ from typing import Optional
 
 
 
-from fastapi import FastAPI, Request, File, Form, UploadFile
+from fastapi import FastAPI, Request, File, Form, UploadFile, HTTPException
 from sse_starlette import EventSourceResponse
 from pydantic import ValidationError
 
@@ -31,8 +31,12 @@ logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 async def init_process_audio(youtube_url: Optional[str] = Form(None),
                              file: UploadFile = File(None),
                              audio_quality: str = Form("default")):
+    if youtube_url and file:
+        raise HTTPException(status_code=400, detail="Both youtube_url and file cannot have values.")
+    if not youtube_url and not file:
+        raise HTTPException(status_code=400, detail="Need either a YouTube URL or mp3 file.")
     mp3_file = None
-    if file.file and not youtube_url:
+    if file.file:
         mp3_file = save_local_mp3(file)
     try:
         audio_input = AudioProcessRequest(
@@ -43,20 +47,11 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
     except ValueError as e:
         raise await handle_exception(e, 400, e.errors())
     # Tasks run as an independent coroutine, and should handle its errors.
+
     asyncio.create_task(process_check(audio_input))
     return {"status": "Transcription process has started."}
 
-def save_local_mp3(upload_file: UploadFile):
-    # Ensure the local directory exists
-    if not os.path.exists(LOCAL_DIRECTORY):
-        os.makedirs(LOCAL_DIRECTORY)
 
-    file_location = os.path.join(LOCAL_DIRECTORY, upload_file.filename)
-    with open(file_location, "wb+") as file_object:
-        file_object.write(upload_file.file.read())
-        file_object.close()
-    logger.debug(f"audio_processing_model.save_local_mp3: File saved to {file_location}")
-    return file_location
 
 
 @app.get("/api/v1/sse")
@@ -80,8 +75,8 @@ async def event_generator(request: Request):
             break
         message = await global_message_queue.get()
         try:
-            event = message.event
-            data = message.data
+            event = message['event']
+            data = message['data']
             logger.debug(f"app.event_generator: Message received from the queue. Event: {event}, Data: {data}")
             # Just in case the message is an empty string or None.
             if message:
@@ -95,13 +90,23 @@ async def event_generator(request: Request):
             pass
 
 
-
 @app.get("/api/v1/health")
 async def health_check():
     logger.debug("app.health_check: Health check endpoint accessed.")
     return {"status": "ok"}
 
 
+def save_local_mp3(upload_file: UploadFile):
+    # Ensure the local directory exists
+    if not os.path.exists(LOCAL_DIRECTORY):
+        os.makedirs(LOCAL_DIRECTORY)
+
+    file_location = os.path.join(LOCAL_DIRECTORY, upload_file.filename)
+    with open(file_location, "wb+") as file_object:
+        file_object.write(upload_file.file.read())
+        file_object.close()
+    logger.debug(f"audio_processing_model.save_local_mp3: File saved to {file_location}")
+    return file_location
 
 if __name__ == "__main__":
     import uvicorn

@@ -28,8 +28,7 @@ CustomStr = Annotated[
 ]
 class Metadata(BaseModel):
     youtube_url: Optional[str] = Field(default=None, alias="original_url", description="URL of the YouTube video.")
-    # filename: str = Field(..., description="Name of the mp3 file.")
-    title: Optional[str] = Field(default=None, description="Title of the YouTube video.")
+    title: str = Field(default=None, description="Title field as it is in index_dict.  It will be the YouTube title or the basefilename of the mp3 file.")
     tags: Optional[CustomStr] = Field(default=None, description="Tags associated with the metadata. The CustomStr annotation is used to convert the list of tags provided by YouTube to a string.")
     description: Optional[str] = Field(default=None, description="Description associated with the metadata.")
     duration: Optional[str] = Field(default=None, description="Duration of the audio in hh:mm:ss.")
@@ -66,12 +65,12 @@ class MetadataExtractor:
         audio = MP3(mp3_filepath)
         duration = round(audio.info.length)
         upload_date = datetime.fromtimestamp(os.path.getmtime(mp3_filepath)).strftime('%Y-%m-%d')
-        basefilename=os.path.basename(mp3_filepath)
+        title=os.path.basename(mp3_filepath)
 
         info_dict = {
             "duration": duration,
             "upload_date": upload_date,
-            "filename": basefilename,
+            "title": title,
         }
         # mp3 files aren't broken into chapters. They are considered to have one chapter.
         # setting the end to 0.0 tells the system that the audio is not divided into chapters.
@@ -114,8 +113,8 @@ class MetadataExtractor:
         else:
             try:
                 # Should be quick turn around so not sending sse messages.
-                logger.debug(f"metadata_code.extract_metadata: Extracting metadata for {audio_input.file.filename}")
-                metadata = self.extract_mp3_metadata(mp3_file=audio_input.file, audio_quality=audio_input.audio_quality)
+                logger.debug(f"metadata_code.extract_metadata: Extracting metadata for {audio_input.mp3_file}")
+                metadata = self.extract_mp3_metadata(mp3_file=audio_input.mp3_file, audio_quality=audio_input.audio_quality)
             except Exception as e:
                 raise MetadataExtractionException("Error extracting metadata") from e
         return metadata

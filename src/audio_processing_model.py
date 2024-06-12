@@ -37,8 +37,9 @@ COMPUTE_TYPE_MAP = {
 
 class AudioProcessRequest(BaseModel):
     youtube_url: Optional[str] = Field(None, description="YouTube URL to download audio from. Input requires either a YouTube URL or mp3 file.")
-    mp3_local: Optional[str] = Field(None, description="The stored local mp3 file.")
+    mp3_file: Optional[str] = Field(None, description="The stored local mp3 file.")
     audio_quality: str = Field(default="default", description="Audio quality setting for processing.")
+
 
     @field_validator('youtube_url')
     def check_youtube_url(cls, v):

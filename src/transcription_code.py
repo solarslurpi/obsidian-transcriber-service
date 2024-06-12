@@ -29,7 +29,7 @@ class TranscribeAudio:
     async def transcribe_chapters(self, state: TranscriptionState):
         # As the transcription progresses, the sequence of communication - both status updates and results are placed on the message queue to be delivered to the client.
         asyncio.create_task(global_message_queue.put({'status': f'Transcribing {len(state.chapters)} chapter(s).'}))
-        # Send the filename w/o extension to the client. This becomes the name of the obsidian note.
+
         start_time = time.time()
         asyncio.create_task(global_message_queue.put({'filename': os.path.splitext(os.path.basename(state.local_mp3))[0]}))
         transcribe_tasks = [asyncio.create_task(self.transcribe_chapter(state.local_mp3, state.hf_model, state.hf_compute_type, chapter, logger)) for chapter in state.chapters]
