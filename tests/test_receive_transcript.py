@@ -8,7 +8,7 @@ from logger_code import LoggerBase
 
 '''The data messages that must be received by the client include:
 
-data: {data: basefilename}
+data: {data: title}
 data: {data: frontmatter}
 data: {data: num_chapters}
 data: {data: chapter}

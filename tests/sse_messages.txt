@@ -1,0 +1,92 @@
+id: message_id
+event: status
+data: Starting Transcription.
+retry: 3000
+: ping - 2024-06-13 18:06:19.553646+00:00
+id: message_id
+event: status
+data: Metadata extraction started.
+retry: 3000
+id: message_id
+event: status
+data: Metadata extraction completed.
+retry: 3000
+id: message_id
+event: data
+data: {'metadata': Metadata(youtube_url='https://www.youtube.com/watch?v=KbZDsrs5roI', title='Bluelab Pulse Meter Review', tags=[], description='I am really enjoying using the Bluelab Pulse Meter in my grow room! I go over how it works as well as some potential uses for living soil growers.\n\nWe currently have it available on our website for the best price online if anyone wants to try it. https://www.kisorganics.com/products/bluelab-pulse-multimedia-ec-mc-meter?_pos=1&_sid=cfeeacdab&_ss=r\n\nShop: www.KISorganics.com\nInstagram: @KISorganics\nTwitter: @KISorganics\nFacebook: www.Facebook.com/KISorganics', duration='0:00:00', channel='KIS Organics', upload_date='20240426', uploader_id='@kisorganics', chapters_metadata=[ChapterMetadata(title='Intro', start=0, end=15), ChapterMetadata(title='Features', start=15, end=66), ChapterMetadata(title='Soil EC', start=66, end=148), ChapterMetadata(title='Pulse App', start=148, end=301), ChapterMetadata(title='Conclusion', start=301, end=318)])}
+retry: 3000
+id: message_id
+event: status
+data: Downloaded: 100% of    2.42MiB
+retry: 3000
+id: message_id
+event: data
+data: {'num_chapters': 5}
+retry: 3000
+id: message_id
+event: data
+data: {'chapter': ChapterTranscript(chapter_metadata=ChapterMetadata(title='Intro', start=0, end=15), transcript='This is a test transcription 1'), 'number': 1}
+retry: 3000
+id: message_id
+event: data
+data: {'chapter': ChapterTranscript(chapter_metadata=ChapterMetadata(title='Features', start=15, end=66), transcript='This is a test transcription 2'), 'number': 2}
+retry: 3000
+id: message_id
+event: data
+data: {'chapter': ChapterTranscript(chapter_metadata=ChapterMetadata(title='Soil EC', start=66, end=148), transcript='This is a test transcription 3'), 'number': 3}
+retry: 3000
+id: message_id
+event: data
+data: {'chapter': ChapterTranscript(chapter_metadata=ChapterMetadata(title='Pulse App', start=148, end=301), transcript='This is a test transcription 4'), 'number': 4}
+retry: 3000
+id: message_id
+event: data
+data: {'chapter': ChapterTranscript(chapter_metadata=ChapterMetadata(title='Conclusion', start=301, end=318), transcript='This is a test transcription 5'), 'number': 5}
+retry: 3000
+id: message_id
+event: data
+data: {'transcription_time': 0.0069789886474609375}
+retry: 3000
+: ping - 2024-06-13 18:06:34.559243+00:00
+: ping - 2024-06-13 18:06:49.557774+00:00
+: ping - 2024-06-13 18:07:04.576061+00:00
+: ping - 2024-06-13 19:46:36.580480+00:00
+: ping - 2024-06-13 19:46:51.588368+00:00
+: ping - 2024-06-13 19:47:06.609651+00:00
+: ping - 2024-06-13 19:47:21.606286+00:00
+id: message_id
+event: status
+data: Starting Transcription.
+retry: 3000
+id: message_id
+event: data
+data: {'metadata': Metadata(youtube_url=None, title='Bluelab_Pulse_Meter_Review.mp3', tags=None, description=None, duration='0:05:18', channel=None, upload_date='2024-06-13', uploader_id=None, chapters_metadata=[ChapterMetadata(title='', start=0, end=0)])}
+retry: 3000
+id: message_id
+event: data
+data: {'num_chapters': 1}
+retry: 3000
+id: message_id
+event: data
+data: {'chapter': ChapterTranscript(chapter_metadata=ChapterMetadata(title='', start=0, end=0), transcript='This is a test transcription 1'), 'number': 1}
+retry: 3000
+id: message_id
+event: data
+data: {'transcription_time': 0.003999233245849609}
+retry: 3000
+: ping - 2024-06-13 19:47:36.619199+00:00
+: ping - 2024-06-13 19:47:51.633032+00:00
+id: message_id
+event: status
+data: Starting Transcription.
+retry: 3000
+id: message_id
+event: data
+data: {'num_chapters': 1}
+retry: 3000
+id: message_id
+event: data
+data: {'chapter': ChapterTranscript(chapter_metadata=ChapterMetadata(title='', start=0, end=0), transcript='This is a test transcription 1'), 'number': 1}
+retry: 3000
+: ping - 2024-06-13 19:48:06.637169+00:00
+: ping - 2024-06-13 19:48:21.650870+00:00

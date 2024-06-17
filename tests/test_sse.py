@@ -8,7 +8,7 @@ def handle_sse(logger):
     payload = {}
     headers = {'accept': 'application/json'}
     url = f"http://127.0.0.1:8000/api/v1/sse"
-    logger.debug(f"Sending GET request to {url}")
+    logger.debug(f"handle_sse: Sending GET request to {url}")
 
     response = requests.request("GET", url, headers=headers, data=payload, stream=True)
 
@@ -51,15 +51,20 @@ def test_receive_post_error_message(logger):
     thread = threading.Thread(target=handle_sse, args=(logger,))
     thread.start()
     response = post_to_process_audio(logger)
-    logger.debug(f"Response: {response.text}")
+    logging.debug(f"Response Status Code: {response.status_code}")
+    logging.debug(f"Response Body: {response.text}")
+    logging.debug(f"Response Headers: {response.headers}")
+    logging.debug(f"ResponseElapsed Time: {response.elapsed}")
 
 def post_to_process_audio(logger):
     url = "http://127.0.0.1:8000/api/v1/process_audio"
     payload = {'youtube_url': 'junk_url', 'audio_quality': 'default'}
     headers = {'accept': 'application/json'}
-    logger.debug('before post')
     response = requests.post(url, headers=headers, data=payload)
-    logger.debug('after post')
+    logging.debug(f"Response Status Code: {response.status_code}")
+    logging.debug(f"Response Body: {response.text}")
+    logging.debug(f"Response Headers: {response.headers}")
+    logging.debug(f"ResponseElapsed Time: {response.elapsed}")
     return response
 
 def main():

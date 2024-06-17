@@ -32,9 +32,12 @@ class LocalFileException(AppException):
     def __init__(self, message="Error during local file operations"):
         super().__init__(message)
 
-async def handle_exception(exception, status_code, detail, logger: LoggerBase=None):
-    error_msg = str(exception)
-    message = format_sse("error", error_msg)
-    logger.debug(f"handle_exception: {error_msg}")
-    await global_message_queue.put(message)
-    return HTTPException(status_code=status_code, detail=detail)
+class KeyException(AppException):
+    """Exception raised for errors during local file operations."""
+    def __init__(self, message="Error creating key for state cache."):
+        super().__init__(message)
+
+class AddChapterException(AppException):
+    """Exception raised for errors during chapter addition."""
+    def __init__(self, message="Error adding chapter to transcription state."):
+        super().__init__(message)

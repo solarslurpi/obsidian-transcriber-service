@@ -5,13 +5,10 @@ import time
 
 from pydub import AudioSegment
 import torch
-from transformers import pipeline
 
-from global_stuff import global_message_queue
 from logger_code import LoggerBase
-from metadata_code import ChapterMetadata
-from transcription_state_code import TranscriptionState
-from utils import msg_log
+from transcription_state_code import TranscriptionState, ChapterTranscript
+from utils import send_sse_message
 
 
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
@@ -28,37 +25,45 @@ class TranscribeAudio:
 
     async def transcribe_chapters(self, state: TranscriptionState):
         # As the transcription progresses, the sequence of communication - both status updates and results are placed on the message queue to be delivered to the client.
-        asyncio.create_task(global_message_queue.put({'status': f'Transcribing {len(state.chapters)} chapter(s).'}))
+        send_sse_message("data", {'num_chapters': len(state.chapters)})
 
         start_time = time.time()
-        asyncio.create_task(global_message_queue.put({'filename': os.path.splitext(os.path.basename(state.local_mp3))[0]}))
-        transcribe_tasks = [asyncio.create_task(self.transcribe_chapter(state.local_mp3, state.hf_model, state.hf_compute_type, chapter, logger)) for chapter in state.chapters]
+        transcribe_tasks = [asyncio.create_task(self.transcribe_chapter(state.local_mp3, state.hf_model, state.hf_compute_type, chapter)) for chapter in state.chapters]
 
-        await asyncio.gather(*transcribe_tasks)
+        texts = await asyncio.gather(*transcribe_tasks)
+        cnt = 1
+        for chapter, text in zip(state.chapters, texts):
+            chapter.transcript = text + f" {cnt}"
+            chapter_dict = chapter.model_dump()
+            send_sse_message("data", {'chapter': chapter_dict, 'number': cnt})
+            cnt += 1
+
         end_time = time.time()
         duration = end_time - start_time
         state.transcription_time = duration
-        asyncio.create_task(global_message_queue.put("data", {'transcription_time': duration} ))
-        msg_log("status", "All chapters successfully transcribed.", f"All chapters successfully transcribed. Transcription time: {duration} seconds First Chapter: {state.chapters[0]}", logger)
+        send_sse_message("data", {'transcription_time': duration})
+
         logger.debug(f"transcription_code.TranscribeAudio.transcribe_chapters: All chapters transcribed. Transcription time: {duration} First Chapter: {state.chapters[0]}")
 
-    async def transcribe_chapter(self, local_mp3:str, model_name:str, compute_type:torch.dtype, chapter:ChapterMetadata):
+    async def transcribe_chapter(self, local_mp3:str, model_name:str, compute_type:torch.dtype, chapter:ChapterTranscript):
         # Make audio slice
-        audio_slice = self.make_audio_slice(local_mp3, chapter.start*1000, chapter.end*1000 )
-        # # Load model
-        transcriber = pipeline("automatic-speech-recognition",
-                           model=model_name,
-                           device=0 if torch.cuda.is_available() else -1,
-                           torch_dtype=compute_type)
+        # c = chapter.chapter_metadata
+        # audio_slice = self.make_audio_slice(local_mp3, c.start*1000, c.end*1000 )
+        # # # Load model
+        # transcriber = pipeline("automatic-speech-recognition",
+        #                    model=model_name,
+        #                    device=0 if torch.cuda.is_available() else -1,
+        #                    torch_dtype=compute_type)
 
-        # Transcribe
-        result = transcriber(audio_slice, chunk_length_s=30, batch_size=8)
+        # # Transcribe
+        # result = transcriber(audio_slice, chunk_length_s=30, batch_size=8)
 
-        # Delete audio slice from chapters
-        if audio_slice != local_mp3:
-            os.remove(audio_slice)
+        # # Delete audio slice from chapters
+        # if audio_slice != local_mp3:
+        #     os.remove(audio_slice)
 
-        chapter =  result['text']
+        # chapter =  result['text']
+        chapter = "This is a test transcription"
 
         return chapter
 

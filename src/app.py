@@ -9,23 +9,36 @@ from typing import Optional
 
 
 from fastapi import FastAPI, Request, File, Form, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sse_starlette import EventSourceResponse
-from pydantic import ValidationError
+
 
 
 from global_stuff import global_message_queue
 from logger_code import LoggerBase
 from process_check_code import process_check
 from audio_processing_model import AudioProcessRequest
-from exceptions_code import handle_exception
+from utils import send_sse_message
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 # Ensure the local directory exists
 
 RETRY_TIMEOUT = 3000 # For sending SSE messages
 
-app = FastAPI()
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
+
+
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.post("/api/v1/process_audio")
 async def init_process_audio(youtube_url: Optional[str] = Form(None),
@@ -36,7 +49,7 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
     if not youtube_url and not file:
         raise HTTPException(status_code=400, detail="Need either a YouTube URL or mp3 file.")
     mp3_file = None
-    if file.file:
+    if file is not None:
         mp3_file = save_local_mp3(file)
     try:
         audio_input = AudioProcessRequest(
@@ -45,13 +58,12 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
             audio_quality=audio_quality
         )
     except ValueError as e:
-        raise await handle_exception(e, 400, e.errors())
+        send_sse_message("server-error", str(e))
+        return {"status": f"Error processing audio. Error: {e}"}
     # Tasks run as an independent coroutine, and should handle its errors.
 
     asyncio.create_task(process_check(audio_input))
     return {"status": "Transcription process has started."}
-
-
 
 
 @app.get("/api/v1/sse")
@@ -75,19 +87,35 @@ async def event_generator(request: Request):
             break
         message = await global_message_queue.get()
         try:
+            if message:
+                logger.debug(f"app.event_generator: Sending message: {message}")
+                yield message
+        except Exception as e:
+            logger.error(f"app.event_generator: Error sending message: {e}")
+
+message_id_counter = 0
+async def event_generator(request: Request):
+    global message_id_counter
+    logger.debug("app.event_generator: Starting SSE event generator.")
+    while True:
+        if await request.is_disconnected():
+            break
+        message = await global_message_queue.get()
+        try:
             event = message['event']
             data = message['data']
             logger.debug(f"app.event_generator: Message received from the queue. Event: {event}, Data: {data}")
             # Just in case the message is an empty string or None.
             if message:
+                message_id_counter += 1
                 yield {
                     "event": event,
-                    "id": "message_id",
+                    "id": str(message_id_counter),
                     "retry": RETRY_TIMEOUT,
                     "data": data
                 }
         except:
-            pass
+            logger.error(f"app.event_generator: Error sending message: {message}")
 
 
 @app.get("/api/v1/health")

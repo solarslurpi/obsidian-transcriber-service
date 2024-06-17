@@ -22,10 +22,7 @@ logger = LoggerBase.setup_logger(__name__,level=logging.DEBUG)
 
 audio_input_youtube = AudioProcessRequest(youtube_url="https://www.youtube.com/watch?v=KbZDsrs5roI", audio_quality="default")
 
-@pytest.fixture
-def test_info_dict():
-    test_info_dict = "test_info_dict_KbZDsrs5roI.json"
-    return test_info_dict
+
 
 def load_youtube_info_dict(filename):
     filepath = f"{LOCAL_DIRECTORY}/{filename}"
@@ -38,7 +35,7 @@ def load_youtube_info_dict(filename):
 def test_simple_metadata_building():
 
     metadata_instance = Metadata(
-        filename="example.mp4",
+        title="Example Video",
         tags=["tag1, tag2, tag3"],
         description="This is an example video",
         duration="00:10:00",

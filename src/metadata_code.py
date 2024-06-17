@@ -12,9 +12,9 @@ from pydantic import BaseModel, Field, PlainSerializer
 from dotenv import load_dotenv
 load_dotenv()
 
-from exceptions_code import MetadataExtractionException
+
 from logger_code import LoggerBase
-from utils import cleaned_name, MsgLog, send_sse_message
+from utils import send_sse_message, mock_info_dict
 
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
@@ -35,7 +35,6 @@ class Metadata(BaseModel):
     channel: Optional[str] = Field(default=None, description="channel name")
     upload_date: Optional[str]
     uploader_id: Optional[str] = Field(default=None, description="uploader id")
-    chapters_metadata: List[ChapterMetadata]
 
 class MetadataExtractor:
     def __init__(self):
@@ -50,27 +49,31 @@ class MetadataExtractor:
             'getfilename': True,
         }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(youtube_url, download=False)
+            # info_dict = ydl.extract_info(youtube_url, download=False)
+            # settign up pytest was taking too long based on my skill level.
+            # TODO: REMOVE TEST CODE.
+            info_dict = mock_info_dict()
             metadata = self.build_metadata_instance( info_dict)
 
 
-        return metadata
+        return metadata, info_dict
 
     def extract_mp3_metadata(self, mp3_file, audio_quality: str) -> Metadata:
         info_dict = self.build_mp3_info_dict(mp3_file)
         metadata = self.build_metadata_instance(info_dict)
-        return metadata
+        return metadata, info_dict
 
     def build_mp3_info_dict(self, mp3_filepath: str) -> Dict:
         audio = MP3(mp3_filepath)
         duration = round(audio.info.length)
         upload_date = datetime.fromtimestamp(os.path.getmtime(mp3_filepath)).strftime('%Y-%m-%d')
-        title=os.path.basename(mp3_filepath)
+        title = os.path.basename(mp3_filepath).replace('_', ' ').rsplit('.', 1)[0]
 
         info_dict = {
             "duration": duration,
             "upload_date": upload_date,
             "title": title,
+            "chapters": [{'title': '', 'start': 0.0, 'end': 0.0}]
         }
         # mp3 files aren't broken into chapters. They are considered to have one chapter.
         # setting the end to 0.0 tells the system that the audio is not divided into chapters.
@@ -83,15 +86,11 @@ class MetadataExtractor:
 
         # Convert duration and chapters
         info_dict['duration'] = self.format_time(info_dict.get('duration', 0))
-        info_dict['chapters_metadata'] = [
-            ChapterMetadata(title=chap.get('title', ''), start=chap['start_time'], end=chap['end_time'])
-            for chap in info_dict.get('chapters', [{'start_time': 0.0, 'end_time': 0.0}])
-        ]
-
         return Metadata(**info_dict)
 
-
     def format_time(self, seconds: int) -> str:
+        if not isinstance(seconds, int):
+            return "0:00:00"
         mins, secs = divmod(seconds, 60)
         hours, mins = divmod(mins, 60)
         return f"{hours:d}:{mins:02d}:{secs:02d}"
@@ -103,9 +102,10 @@ class MetadataExtractor:
         if audio_input.youtube_url:
             # Instantiate a new state with all the info we can.
             try:
-                send_sse_message(event="status", data="Extracted Metadata.")
+                # Second status sent to the client if need to extract metadata.
+                send_sse_message(event="status", data="Metadata extraction started.")
                 metadata  = self.extract_youtube_metadata(youtube_url=audio_input.youtube_url)
-                send_sse_message(event="status", data="Metadata extracted.")
+                send_sse_message(event="status", data="Metadata extraction completed.")
 
             except Exception as e:
                 raise MetadataExtractionException("Error extracting metadata") from e

@@ -1,50 +1,61 @@
 import asyncio
-import inspect
+import json
 import logging
 import os
 import re
 import sys
-from pydantic import BaseModel
+
+from dotenv import load_dotenv
+load_dotenv()
 
 from global_stuff import global_message_queue
-from logger_code import LoggerBase
-
-class MsgLogData(BaseModel):
-    sse_message: str
-    log_message: str
-
-    def to_json(self):
-        return self.model_dump_json()
 
 
-class MsgLog():
-    def __init__(self, sse_message, log_message):
-        self.data = MsgLogData(
-            sse_message=sse_message,
-            log_message=str(log_message)
-        )
-        super().__init__(self.data.to_json())
+LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 
+def format_sse(event: str, data: object) -> str:
+    """
+    Format a Server-Sent Event (SSE) message.
 
-def format_sse(event: str, data: dict) -> str:
+    Args:
+        event (str): The type of the event.
+        data (object): The data to be sent, either a string (for status events) or a Pydantic model (for other events).
+
+    Returns:
+        str: A formatted SSE message string.
+    """
+    if isinstance(data, str):
+        data_str = data
+    elif isinstance(data, dict):
+        data_str = json.dumps(data)
+    else:
+        raise ValueError(f"Invalid data type: {type(data)} Expected a string for status events or a dict for other events.")
     message = {}
-    message['event'] = event
-    message['data'] =  data
+    message["event"] = event
+    message["data"] = data_str
     return message
 
 def send_sse_message(event:str, data: dict):
     message = format_sse(event, data)
     asyncio.create_task(global_message_queue.put(message))
 
-async def msg_log(event:str, msg_for_sse: str, msg_for_logger: str, logger: LoggerBase=None):
-    # event is 'status', 'error', 'debug', 'data'
-    message = format_sse(event, msg_for_sse)
-    asyncio.create_task(global_message_queue.put(message))
-    if logger:
-        # Get the previous frame in the stack, otherwise it would be this function
-        func = inspect.currentframe().f_back.f_code
-        logger.debug(f"send_message: {msg_for_logger}, called by {func.co_filename}:{func.co_firstlineno}")
 
+def mock_info_dict():
+    # This will cause a circular dependency error if placed at the
+    # top of the file.  This is a mock not intended for production use.
+    from metadata_code import ChapterMetadata
+    if not hasattr(mock_info_dict, "_cache"):
+        filepath = f"{LOCAL_DIRECTORY}/test_info_dict_KbZDsrs5roI.json"
+        with open(filepath) as f:
+            mock_info_dict._cache = json.load(f)
+            # Convert duration and chapters
+            mock_info_dict._cache['duration'] = str(mock_info_dict._cache['duration'])
+            mock_info_dict._cache['chapters_metadata'] = [
+                ChapterMetadata(title=chap.get('title', ''), start=chap['start_time'], end=chap['end_time'])
+            for chap in mock_info_dict._cache.get('chapters', [{'start_time': 0.0, 'end_time': 0.0}])
+        ]
+
+    return mock_info_dict._cache
 
 
 
@@ -75,11 +86,3 @@ def cleaned_name(uncleaned_name:str) -> str:
 
     cleaned_name = re.sub(r"[^a-zA-Z0-9 \.-]", "", uncleaned_name)
     return cleaned_name.replace(" ", "_")
-
-
-def parse_msg(input_string: str) -> str:
-    match = re.search(r"<BEG>(.*?)<END>", input_string)
-    if match:
-        return match.group(1)
-    else:
-        return "No valid message found."

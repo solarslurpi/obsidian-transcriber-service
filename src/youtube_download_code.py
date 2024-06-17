@@ -4,8 +4,9 @@ import re
 
 import yt_dlp
 
-from exceptions_code import handle_exception, DownloadException
+from exceptions_code import  DownloadException
 from logger_code import LoggerBase
+from utils import send_sse_message
 
 logger = LoggerBase.setup_logger(__name__,level=logging.DEBUG)
 
@@ -31,23 +32,23 @@ def youtube_download(youtube_url:str, mp3_filename:str):
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([youtube_url])
     except DownloadException as e:
-        asyncio.run_coroutine_threadsafe(handle_exception(e, 500, "YouTube download failed."), logger)
+        send_sse_message("server-error", "YouTube download failed.")
+        raise DownloadException("YouTube download failed.") from e
 
 
 # progress_hook must remain synchronous.
-def progress_hook(self, d):
+def progress_hook(d):
     status = d.get('status')
 
-    if status == 'finished':
-        # TODO
-        pass
-    elif status == 'downloading':
-        downloaded = d.get('downloaded_bytes')
-        total = d.get('total_bytes')
-        if total:
-            percentage = downloaded / total * 100
+    if status == 'finished' or status == 'downloading':
+        # e.g.: _default_template = '100% of    2.42MiB'
+        pct_download = f"Downloaded: {d.get('_default_template')}"
+        send_sse_message("status", pct_download)
     elif status == 'error':
         # TODO
+        # There are different error numbers we could provide
+        # more info.  It would take a bit to get that sorted out. So for another time.
+        send_sse_message("server-error", 'Error downloading YouTube audio.')
         pass
 
 def sanitize_title(youtube_title: str) -> str:
