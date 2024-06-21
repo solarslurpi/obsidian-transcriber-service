@@ -14,7 +14,7 @@ logger = LoggerBase.setup_logger(__name__,level=logging.DEBUG)
 
 # yt_dlp is a synchronous wrapper around youtube-dl. The progress_hook is synchronous.
 def youtube_download(youtube_url:str, mp3_filename:str):
-    '''downloads the audio from a YouTube video and saves it as an mp3 file.'''
+    '''downloads the audio from a YouTube video and saves it as an mp3 file. The progess_hook callback sends sse status messagees.'''
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': mp3_filename ,

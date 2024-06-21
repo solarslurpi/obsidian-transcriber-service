@@ -1,12 +1,12 @@
 import logging
 import os
 import torch
-from typing import Optional, List
+from typing import Optional, List, Tuple, Dict
 
 
 from pydantic import BaseModel, Field, field_validator
 
-from exceptions_code import KeyException, MetadataExtractionException, AddChapterException
+from exceptions_code import KeyException, MetadataExtractionException
 from logger_code import LoggerBase
 from metadata_code import Metadata, MetadataExtractor
 from audio_processing_model import AudioProcessRequest, AUDIO_QUALITY_MAP, COMPUTE_TYPE_MAP
@@ -17,12 +17,9 @@ logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
 class Chapter(BaseModel):
     title: Optional[str] = Field(default=None, description="Title of the chapter.")
-    start: Optional[int] = Field(default=None, description="Start time of the chapter in seconds.")
-    end: Optional[int] = Field(default=None, description="End time of the chapter in seconds.")
+    start_time: Optional[float] = Field(default=None, description="Start time of the chapter in seconds.")
+    end_time: Optional[float] = Field(default=None, description="End time of the chapter in seconds.")
     transcript: Optional[str] = Field(default=None, description="Transcription of the chapter.")
-    number: Optional[int] = Field(default=None, description="Chapter number.")
-
-
 
 class TranscriptionState(BaseModel):
     # Manages the state and behavior of a single transcription.
@@ -31,7 +28,7 @@ class TranscriptionState(BaseModel):
     hf_compute_type: torch.dtype = Field(default=None, description="Used by transcriber. Either float32 or float16")
     metadata: Optional[Metadata] = Field(default=None, description="YouTube metadata is very rich.  mp3 file is not so rich in metadata..")
     chapters: Optional[List[Chapter]] = Field(default_factory=list, description="Each entry provides the metadata as well as the transcript text of a chapter of audio content.")
-    transcription_time: int = Field(default=0,description="Number of seconds it took to transcribe the audio file.")
+    transcription_time: float = Field(default=0.0,description="Number of seconds it took to transcribe the audio file.")
 
 
     @field_validator('hf_compute_type')
@@ -45,12 +42,6 @@ class TranscriptionState(BaseModel):
         json_encoders = {
             torch.dtype: lambda v: str(v).split('.')[-1]
         }
-
-    # def add_chapter(self, title: str, start: int, end: int, transcription: Optional[str] = None, number: Optional[int] = None) -> None:
-    #     try:
-    #         self.chapters.append(Chapter(title=title, start=start, end=end, transcription=transcription,number=number))
-    #     except AddChapterException as e:
-    #         raise e
 
     def update_chapter(self, start: int, transcription: str) -> None:
         for chapter in self.chapters:
@@ -114,7 +105,17 @@ states = TranscriptionStates()
 
 
 
-async def initialize_transcription_state(audio_input: AudioProcessRequest) -> TranscriptionState:
+async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tuple[TranscriptionState, Metadata]:
+    def build_chapters(chapter_dicts: List[Dict]) -> List[Chapter]:
+        chapters = []
+        try:
+            for chapter_dict in chapter_dicts:
+                chapter = Chapter(**chapter_dict)
+                chapters.append(chapter)
+        except Exception as e:
+            raise e
+        return chapters
+
     logger.debug(f"transcripts_state_code.initialize_transcription_state: audio_input: {audio_input}")
 
     # The client comes in with an audio_input property. The key is based on this.
@@ -130,32 +131,24 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tr
     logger.debug(f"transcripts_state_code.initialize_transcription_state: state key is: {key}")
     if state:
         logger.debug("transcripts_state_code.initialize_transcription_state: state is alredy in the cache.")
-        send_sse_message("data", {'metadata': state.metadata.model_dump(mode='json')})
+        return state
     else:
         logger.debug("transcripts_state_code.initialize_transcription_state: state is not in the cache. Getting the metadata.")
         extractor = MetadataExtractor()
         try:
-            metadata, info_dict = await extractor.extract_metadata(audio_input)
-            # The metadata needs to be sent as a json string.  It is a Metadata Pydantic class
-            metadata_dict = metadata.model_dump(mode='json')
-            send_sse_message("data", {'metadata': metadata_dict})
+            metadata, chapter_dicts = await extractor.extract_metadata_and_chapter_dicts(audio_input)
+            chapters = build_chapters(chapter_dicts)
         except MetadataExtractionException as e:
             raise e
         except Exception as e:
             raise
-           # Extract chapter metadata separately if needed
-        chapters = [
-            ChapterTranscript(title=chap.get('title', ''), start=chap.get('start', 0), end=chap.get('end', 0))
-            for chap in info_dict.get('chapters', [])
-        ]
 
     hf_model = AUDIO_QUALITY_MAP[audio_input.audio_quality]
     hf_compute_type = COMPUTE_TYPE_MAP['default']
+
     try:
         state = TranscriptionState(local_mp3=audio_input.mp3_file, hf_model=hf_model, hf_compute_type=hf_compute_type,  metadata=metadata, chapters=chapters)
+        states.add_state(key, state, logger)
     except Exception as e:
         raise e
-
-    states.add_state(key, state, logger)
-
     return state

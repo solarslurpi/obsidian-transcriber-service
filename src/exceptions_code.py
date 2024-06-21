@@ -41,3 +41,7 @@ class AddChapterException(AppException):
     """Exception raised for errors during chapter addition."""
     def __init__(self, message="Error adding chapter to transcription state."):
         super().__init__(message)
+class TranscriberException(AppException):
+    """Exception raised for errors during transcription."""
+    def __init__(self, message="Error during transcription."):
+        super().__init__(message)

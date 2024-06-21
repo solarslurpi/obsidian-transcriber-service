@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import sys
+import time
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -41,24 +42,30 @@ def send_sse_message(event:str, data: dict):
 
 
 def mock_info_dict():
-    # This will cause a circular dependency error if placed at the
-    # top of the file.  This is a mock not intended for production use.
-    from metadata_code import ChapterMetadata
+    '''Here we attach a cache to the mock_info_dict function to avoid reading the file multiple times.'''
     if not hasattr(mock_info_dict, "_cache"):
         filepath = f"{LOCAL_DIRECTORY}/test_info_dict_KbZDsrs5roI.json"
         with open(filepath) as f:
             mock_info_dict._cache = json.load(f)
-            # Convert duration and chapters
-            mock_info_dict._cache['duration'] = str(mock_info_dict._cache['duration'])
-            mock_info_dict._cache['chapters_metadata'] = [
-                ChapterMetadata(title=chap.get('title', ''), start=chap['start_time'], end=chap['end_time'])
-            for chap in mock_info_dict._cache.get('chapters', [{'start_time': 0.0, 'end_time': 0.0}])
-        ]
-
     return mock_info_dict._cache
 
+def mock_chapters(info_dict):
+    chapters_list = []
+    if not hasattr(mock_chapters, "_cache"):
+        chapters_list = info_dict.get('chapters', [])
+        if len(chapters_list) > 0:
+            # The chapters are deleted here because info_dict evolves into the metadata.
+            # The chapters end up in the TranscriptionState as part of the transcription text layout.
+            del info_dict['chapters']
+        else:
+            chapters_list = [{'start_time': 0.0, 'end_time': 0.0}]
+        mock_chapters._cache = chapters_list
 
+    return mock_chapters._cache
 
+def mock_youtube_download(youtube_url:str, mp3_filename:str):
+    time.sleep(2)
+    return
 def add_src_to_sys_path():
     """
     Adds the 'src' directory to sys.path if it's not already included.

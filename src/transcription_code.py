@@ -1,13 +1,15 @@
 import asyncio
 import logging
 import os
-import time
+
 
 from pydub import AudioSegment
 import torch
 
+from exceptions_code import TranscriberException
 from logger_code import LoggerBase
-from transcription_state_code import TranscriptionState, ChapterTranscript
+from transformers import pipeline
+from transcription_state_code import TranscriptionState, Chapter
 from utils import send_sse_message
 
 
@@ -27,8 +29,9 @@ class TranscribeAudio:
         # As the transcription progresses, the sequence of communication - both status updates and results are placed on the message queue to be delivered to the client.
         send_sse_message("data", {'num_chapters': len(state.chapters)})
 
-        start_time = time.time()
-        transcribe_tasks = [asyncio.create_task(self.transcribe_chapter(state.local_mp3, state.hf_model, state.hf_compute_type, chapter)) for chapter in state.chapters]
+        transcribe_tasks = [asyncio.create_task(self.transcribe_chapter(local_mp3=state.local_mp3,
+                                                                        model_name=state.hf_model,
+                                                                        compute_type=state.hf_compute_type, start_time=chapter.start_time, end_time=chapter.end_time)) for chapter in state.chapters]
 
         texts = await asyncio.gather(*transcribe_tasks)
         cnt = 1
@@ -38,27 +41,24 @@ class TranscribeAudio:
             send_sse_message("data", {'chapter': chapter_dict, 'number': cnt})
             cnt += 1
 
-        end_time = time.time()
-        duration = end_time - start_time
-        state.transcription_time = duration
-        send_sse_message("data", {'transcription_time': duration})
+        logger.debug(f"transcription_code.TranscribeAudio.transcribe_chapters: All chapters transcribed. ")
 
-        logger.debug(f"transcription_code.TranscribeAudio.transcribe_chapters: All chapters transcribed. Transcription time: {duration} First Chapter: {state.chapters[0]}")
+    async def transcribe_chapter(self, local_mp3:str, model_name:str, compute_type:torch.dtype, start_time:int, end_time:int):
+        # try:
+        #     audio_slice = self.make_audio_slice(local_mp3, start_time*1000, end_time*1000 )
+        #     # # # Load model
+        #     transcriber = pipeline("automatic-speech-recognition",
+        #                     model=model_name,
+        #                     device=0 if torch.cuda.is_available() else -1,
+        #                     torch_dtype=compute_type)
 
-    async def transcribe_chapter(self, local_mp3:str, model_name:str, compute_type:torch.dtype, chapter:ChapterTranscript):
-        # Make audio slice
-        # c = chapter.chapter_metadata
-        # audio_slice = self.make_audio_slice(local_mp3, c.start*1000, c.end*1000 )
-        # # # Load model
-        # transcriber = pipeline("automatic-speech-recognition",
-        #                    model=model_name,
-        #                    device=0 if torch.cuda.is_available() else -1,
-        #                    torch_dtype=compute_type)
+        #     # # Transcribe
+        #     result = transcriber(audio_slice, chunk_length_s=30, batch_size=8)
+        # except Exception as e:
+        #     logger.error("transcription_code.TranscribeAudio.transcribe_chapter: Error transcribing chapter.")
+        #     raise TranscriberException("Error transcribing chapter")
 
-        # # Transcribe
-        # result = transcriber(audio_slice, chunk_length_s=30, batch_size=8)
-
-        # # Delete audio slice from chapters
+        # # # Delete audio slice from chapters
         # if audio_slice != local_mp3:
         #     os.remove(audio_slice)
 

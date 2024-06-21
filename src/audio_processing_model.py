@@ -47,6 +47,16 @@ class AudioProcessRequest(BaseModel):
             raise ValueError(f"{v} is not valid. Please provide a valid YouTube URL.")
         return v
 
+    @field_validator('audio_quality')
+    def is_valid_audio_quality(cls,v):
+        # Remove and new lines or blanks at beginning and end of the string
+        v = v.strip(" \n")
+        # Verify that the audio quality is one of the keys in the AUDIO_QUALITY_MAP
+        if v not in AUDIO_QUALITY_MAP.keys():
+            logger.warning(f"{v} is not a valid audio quality. Defaulting to 'default' audio quality.")
+            return "default"
+        return v
+
     @staticmethod
     def is_valid_youtube_url(url: str) -> bool:
         youtube_regex = re.compile(
