@@ -38,7 +38,19 @@ def format_sse(event: str, data: object) -> str:
 
 def send_sse_message(event:str, data: dict):
     message = format_sse(event, data)
-    asyncio.create_task(global_message_queue.put(message))
+    # Get the current event loop, or create a new one if it doesn't exist
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:  # If called in a new thread where no loop is running
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    # Check if the loop is running; if not, run the task directly
+    if loop.is_running():
+        asyncio.create_task(global_message_queue.put(message))
+    else:
+        # Run the coroutine directly and wait for it to complete
+        loop.run_until_complete(global_message_queue.put(message))
 
 
 def mock_info_dict():

@@ -34,41 +34,37 @@ class TranscribeAudio:
                                                                         compute_type=state.hf_compute_type, start_time=chapter.start_time, end_time=chapter.end_time)) for chapter in state.chapters]
 
         texts = await asyncio.gather(*transcribe_tasks)
-        cnt = 1
+        chapter_number = 1
         for chapter, text in zip(state.chapters, texts):
-            chapter.transcript = text + f" {cnt}"
+            chapter.transcript = text + f" {chapter_number}"
             chapter_dict = chapter.model_dump()
-            send_sse_message("data", {'chapter': chapter_dict, 'number': cnt})
-            cnt += 1
+            send_sse_message("data", {'chapter': chapter_dict, 'number': chapter_number})
+            chapter_number += 1
 
         logger.debug(f"transcription_code.TranscribeAudio.transcribe_chapters: All chapters transcribed. ")
 
     async def transcribe_chapter(self, local_mp3:str, model_name:str, compute_type:torch.dtype, start_time:int, end_time:int):
-        # try:
-        #     audio_slice = self.make_audio_slice(local_mp3, start_time*1000, end_time*1000 )
-        #     # # # Load model
-        #     transcriber = pipeline("automatic-speech-recognition",
-        #                     model=model_name,
-        #                     device=0 if torch.cuda.is_available() else -1,
-        #                     torch_dtype=compute_type)
+        try:
+            audio_slice = self.make_audio_slice(local_mp3, start_time*1000, end_time*1000 )
+            # # # Load model
+            transcriber = pipeline("automatic-speech-recognition",
+                            model=model_name,
+                            device=0 if torch.cuda.is_available() else -1,
+                            torch_dtype=compute_type)
 
-        #     # # Transcribe
-        #     result = transcriber(audio_slice, chunk_length_s=30, batch_size=8)
-        # except Exception as e:
-        #     logger.error("transcription_code.TranscribeAudio.transcribe_chapter: Error transcribing chapter.")
-        #     raise TranscriberException("Error transcribing chapter")
+            # # Transcribe
+            result = transcriber(audio_slice, chunk_length_s=30, batch_size=8)
+        except Exception as e:
+            logger.error("transcription_code.TranscribeAudio.transcribe_chapter: Error transcribing chapter.")
+            raise TranscriberException("Error transcribing chapter")
 
-        # # # Delete audio slice from chapters
-        # if audio_slice != local_mp3:
-        #     os.remove(audio_slice)
+        # # Delete audio slice from chapters
+        if audio_slice != local_mp3:
+            os.remove(audio_slice)
 
-        # chapter =  result['text']
-        chapter = "This is a test transcription"
+        chapter =  result['text']
 
         return chapter
-
-        # asyncio.create_task(send_message("transcription", {'chapter': chapter}, logger))
-
 
     def make_audio_slice(self, local_mp3:str, start_ms:int, end_ms:int):
         if end_ms == 0: # The audio is not divided into chapters

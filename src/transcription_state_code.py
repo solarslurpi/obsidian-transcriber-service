@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 import torch
 from typing import Optional, List, Tuple, Dict
 
@@ -136,18 +137,22 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
         logger.debug("transcripts_state_code.initialize_transcription_state: state is not in the cache. Getting the metadata.")
         extractor = MetadataExtractor()
         try:
-            metadata, chapter_dicts = await extractor.extract_metadata_and_chapter_dicts(audio_input)
+            start_time = time.time()
+            metadata, chapter_dicts, mp3_filepath = extractor.extract_metadata_and_chapter_dicts(audio_input)
             chapters = build_chapters(chapter_dicts)
+            end_time = time.time()
+            metadata.download_time = int(end_time - start_time)
         except MetadataExtractionException as e:
             raise e
         except Exception as e:
             raise
-
+    # Set mp3_filepath to audio_input.mp3_file if not None, else mp3_filepath
+    mp3_filepath = audio_input.mp3_file if audio_input.mp3_file else mp3_filepath
     hf_model = AUDIO_QUALITY_MAP[audio_input.audio_quality]
     hf_compute_type = COMPUTE_TYPE_MAP['default']
 
     try:
-        state = TranscriptionState(local_mp3=audio_input.mp3_file, hf_model=hf_model, hf_compute_type=hf_compute_type,  metadata=metadata, chapters=chapters)
+        state = TranscriptionState(local_mp3=mp3_filepath, hf_model=hf_model, hf_compute_type=hf_compute_type,  metadata=metadata, chapters=chapters)
         states.add_state(key, state, logger)
     except Exception as e:
         raise e

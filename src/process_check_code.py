@@ -7,11 +7,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from transcription_code import TranscribeAudio
-from exceptions_code import  DownloadException, LocalFileException, MetadataExtractionException, TranscriptionException
+from exceptions_code import   LocalFileException, MetadataExtractionException, TranscriptionException
 from logger_code import LoggerBase
 from transcription_state_code import initialize_transcription_state
-from youtube_download_code import youtube_download, sanitize_title
-from utils import send_sse_message, mock_youtube_download
+from utils import send_sse_message
 
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
@@ -51,24 +50,6 @@ async def process_check(audio_input):
         return
 
     transcribe_audio_instance = TranscribeAudio()
-    # If the mp3 file is readily available, transcribe it.
-    if state is not None and state.metadata.youtube_url is None:
-        logger.debug("process_check_code.process_check: Source is an UploadFile. Off to transcription.")
-    else:
-        # If it is a youtube video, download first.
-        logger.debug("process_check_code.process_check: state is youtube_url. Off to download YouTube video.")
-        # In the case of a youtube video, the local mp3 filename is based on the youtube title.
-        state.local_mp3 = f'{LOCAL_DIRECTORY}/' + sanitize_title(state.metadata.title) + ".mp3"
-        try:
-            start_time = time.time()
-            mock_youtube_download(youtube_url=audio_input.youtube_url, mp3_filename=state.local_mp3)
-            # youtube_download(youtube_url=audio_input.youtube_url, mp3_filename=state.local_mp3)
-            end_time = time.time()
-            state.metadata.download_time = int(end_time - start_time)
-        except DownloadException as e:
-            send_sse_message("server-error", "YouTube download failed.")
-            # Keep the state in case the client wants to try again.
-            return
 
     "Each chapter is represented as a coroutine, allowing for concurrent processing. The code waits for all these coroutines to complete execution."
     try:
