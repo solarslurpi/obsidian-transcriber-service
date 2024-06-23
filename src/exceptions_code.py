@@ -45,3 +45,8 @@ class TranscriberException(AppException):
     """Exception raised for errors during transcription."""
     def __init__(self, message="Error during transcription."):
         super().__init__(message)
+
+class ProgressHookException(Exception):
+    def __init__(self, message="A custom error occurred"):
+        self.message = message
+        super().__init__(self.message)

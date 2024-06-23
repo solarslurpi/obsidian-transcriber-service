@@ -6,7 +6,7 @@ import torch
 
 from audio_processing_model import AudioProcessRequest, AUDIO_QUALITY_MAP, COMPUTE_TYPE_MAP
 from exceptions_code import DownloadException, MetadataExtractionException
-from metadata_code import MetadataExtractor
+from metadata_extractor_code import MetadataExtractor
 from process_check_code import process_check
 from transcription_state_code import TranscriptionState
 

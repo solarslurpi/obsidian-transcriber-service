@@ -16,7 +16,7 @@ load_dotenv()
 
 from .test_utils import audio_input, info_dict, logger, mock_metadata
 from logger_code import LoggerBase
-from metadata_code import MetadataExtractor
+from metadata_extractor_code import MetadataExtractor
 from transcription_state_code import initialize_transcription_state
 
 

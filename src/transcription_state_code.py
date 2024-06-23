@@ -9,7 +9,8 @@ from pydantic import BaseModel, Field, field_validator
 
 from exceptions_code import KeyException, MetadataExtractionException
 from logger_code import LoggerBase
-from metadata_code import Metadata, MetadataExtractor
+from metadata_extractor_code import MetadataExtractor
+from metadata_shared_code import Metadata
 from audio_processing_model import AudioProcessRequest, AUDIO_QUALITY_MAP, COMPUTE_TYPE_MAP
 from utils import send_sse_message
 
@@ -111,6 +112,7 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
         chapters = []
         try:
             for chapter_dict in chapter_dicts:
+                # At this point the chapter_dict contains the title, start_time, and end_time. The transcript is added later.
                 chapter = Chapter(**chapter_dict)
                 chapters.append(chapter)
         except Exception as e:
@@ -123,7 +125,7 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
     try:
         key = states.make_key(audio_input)
     except KeyException as e:
-        send_sse_message(f"server-error", str(e))
+        await send_sse_message(f"server-error", str(e))
         if state:
             state = None
         return
@@ -138,7 +140,7 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
         extractor = MetadataExtractor()
         try:
             start_time = time.time()
-            metadata, chapter_dicts, mp3_filepath = extractor.extract_metadata_and_chapter_dicts(audio_input)
+            metadata, chapter_dicts, mp3_filepath = await extractor.extract_metadata_and_chapter_dicts(audio_input)
             chapters = build_chapters(chapter_dicts)
             end_time = time.time()
             metadata.download_time = int(end_time - start_time)

@@ -16,7 +16,7 @@ LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY")
 
 from audio_processing_model import AudioProcessRequest
 from logger_code import LoggerBase
-from metadata_code import MetadataExtractor, Metadata
+from metadata_extractor_code import MetadataExtractor, Metadata
 
 logger = LoggerBase.setup_logger(__name__,level=logging.DEBUG)
 

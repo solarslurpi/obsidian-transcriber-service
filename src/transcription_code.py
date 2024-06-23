@@ -27,7 +27,7 @@ class TranscribeAudio:
 
     async def transcribe_chapters(self, state: TranscriptionState):
         # As the transcription progresses, the sequence of communication - both status updates and results are placed on the message queue to be delivered to the client.
-        send_sse_message("data", {'num_chapters': len(state.chapters)})
+        await send_sse_message("data", {'num_chapters': len(state.chapters)})
 
         transcribe_tasks = [asyncio.create_task(self.transcribe_chapter(local_mp3=state.local_mp3,
                                                                         model_name=state.hf_model,
@@ -36,9 +36,9 @@ class TranscribeAudio:
         texts = await asyncio.gather(*transcribe_tasks)
         chapter_number = 1
         for chapter, text in zip(state.chapters, texts):
-            chapter.transcript = text + f" {chapter_number}"
+            chapter.transcript = text
             chapter_dict = chapter.model_dump()
-            send_sse_message("data", {'chapter': chapter_dict, 'number': chapter_number})
+            await send_sse_message("data", {'chapter': chapter_dict, 'number': chapter_number})
             chapter_number += 1
 
         logger.debug(f"transcription_code.TranscribeAudio.transcribe_chapters: All chapters transcribed. ")
@@ -55,7 +55,7 @@ class TranscribeAudio:
             # # Transcribe
             result = transcriber(audio_slice, chunk_length_s=30, batch_size=8)
         except Exception as e:
-            logger.error("transcription_code.TranscribeAudio.transcribe_chapter: Error transcribing chapter.")
+            logger.error(f"transcription_code.TranscribeAudio.transcribe_chapter: Error {e}.")
             raise TranscriberException("Error transcribing chapter")
 
         # # Delete audio slice from chapters

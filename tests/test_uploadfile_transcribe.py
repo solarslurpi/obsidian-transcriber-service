@@ -7,7 +7,7 @@ import torch
 from fastapi import FastAPI, File, UploadFile, Form
 
 
-from metadata_code import ChapterMetadata
+from metadata_extractor_code import ChapterMetadata
 from transcription_code import TranscribeAudio
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")

@@ -13,7 +13,7 @@ load_dotenv()
 
 from audio_processing_model import AudioProcessRequest
 from logger_code import LoggerBase
-from metadata_code import Metadata, MetadataExtractor, ChapterMetadata
+from metadata_extractor_code import Metadata, MetadataExtractor, ChapterMetadata
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 

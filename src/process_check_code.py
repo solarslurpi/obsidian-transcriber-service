@@ -1,5 +1,4 @@
-# Example usage in process_check
-import asyncio
+
 import logging
 import os
 import time
@@ -23,7 +22,7 @@ logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
 async def process_check(audio_input):
     # First message to the client.
-    send_sse_message("status", "Starting Transcription.")
+    await send_sse_message("status", "Starting Transcription.")
     logger.debug(f"process_check_code.process_check: audio_input: {audio_input}")
     # Fill up as much of the state as possible.
     state = None # Once instantiated, it is a TranscriptionState instance.
@@ -58,14 +57,14 @@ async def process_check(audio_input):
         end_time = time.time()
         state.metadata.transcription_time = int(end_time - start_time)
         # Finally we have all the metadata info.
-        send_sse_message("data", {'metadata': state.metadata.model_dump(mode='json')})
+        await send_sse_message("data", {'metadata': state.metadata.model_dump(mode='json')})
     except TranscriptionException as e:
-        send_sse_message("server-error", "Error during transcription.")
+        await send_sse_message("server-error", "Error during transcription.")
         # Keep the state in case the client wants to try again.
         return
 
     except Exception as e:
-        send_sse_message("server-error", "An unexpected error occurred.")
+        await send_sse_message("server-error", "An unexpected error occurred.")
         # This is an unexpected error, so not sure the state is valid.
         if state:
             state = None

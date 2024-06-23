@@ -1,6 +1,6 @@
 import torch
 
-from metadata_code import ChapterMetadata
+from metadata_extractor_code import ChapterMetadata
 
 
 from transcription_state_code import ChapterTranscript, TranscriptionState

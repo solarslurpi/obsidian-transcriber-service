@@ -5,16 +5,20 @@ import os
 import re
 import sys
 import time
+from typing import Dict
 
+from asyncio import Future
 from dotenv import load_dotenv
 load_dotenv()
 
 from global_stuff import global_message_queue
+from logger_code import LoggerBase
 
+logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 
-def format_sse(event: str, data: object) -> str:
+def format_sse(event: str, data: object) -> Dict:
     """
     Format a Server-Sent Event (SSE) message.
 
@@ -36,22 +40,13 @@ def format_sse(event: str, data: object) -> str:
     message["data"] = data_str
     return message
 
-def send_sse_message(event:str, data: dict):
+async def put_message_in_queue(message):
+    await global_message_queue.put(message)
+    logger.debug(f"Message put in global queue: {message}")
+
+async def send_sse_message(event: str, data: dict):
     message = format_sse(event, data)
-    # Get the current event loop, or create a new one if it doesn't exist
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:  # If called in a new thread where no loop is running
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-    # Check if the loop is running; if not, run the task directly
-    if loop.is_running():
-        asyncio.create_task(global_message_queue.put(message))
-    else:
-        # Run the coroutine directly and wait for it to complete
-        loop.run_until_complete(global_message_queue.put(message))
-
+    await put_message_in_queue(message)
 
 def mock_info_dict():
     '''Here we attach a cache to the mock_info_dict function to avoid reading the file multiple times.'''

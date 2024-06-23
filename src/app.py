@@ -58,7 +58,7 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
             audio_quality=audio_quality
         )
     except ValueError as e:
-        send_sse_message("server-error", str(e))
+        await send_sse_message("server-error", str(e))
         return {"status": f"Error processing audio. Error: {e}"}
     # Tasks run as an independent coroutine, and should handle its errors.
 
@@ -78,24 +78,8 @@ async def sse_endpoint(request: Request):
 
     return EventSourceResponse(event_generator(request))
 
-
-
 async def event_generator(request: Request):
-    logger.debug("app.event_generator: Starting SSE event generator.")
-    while True:
-        if await request.is_disconnected():
-            break
-        message = await global_message_queue.get()
-        try:
-            if message:
-                logger.debug(f"app.event_generator: Sending message: {message}")
-                yield message
-        except Exception as e:
-            logger.error(f"app.event_generator: Error sending message: {e}")
-
-message_id_counter = 0
-async def event_generator(request: Request):
-    global message_id_counter
+    message_id_counter = 0
     logger.debug("app.event_generator: Starting SSE event generator.")
     while True:
         if await request.is_disconnected():
