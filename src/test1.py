@@ -1,80 +1,27 @@
-from functools import partial
-import asyncio
-import re
-import yt_dlp
 import os
-import logging
+import re
+from dotenv import load_dotenv
+load_dotenv()
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
-logger = logging.getLogger(__name__)
+def _sanitize_filename(current_mp3_filepath: str) -> str:
+    def cleaned_name(uncleaned_name:str) -> str:
+        # Remove non-alphanumeric characters except for spaces, periods, and hyphens.
+        cleaned_name = re.sub(r"[^a-zA-Z0-9 \.-]", "", uncleaned_name)
+        # Replace spaces with underscores.
+        cleaned_name = cleaned_name.replace(" ", "_")
+        # Replace full-width colons and standard colons with a hyphen or other safe character
+        cleaned_name = cleaned_name.replace('：', '_').replace(':', '_')
+        return cleaned_name
 
-# Assuming global_message_queue is defined somewhere in your code
-global_message_queue = asyncio.Queue()
+    current_mp3_basename = os.path.splitext(os.path.basename(current_mp3_filepath))[0]
+    cleaned_mp3_filename = cleaned_name(current_mp3_basename) + ".mp3"
+    cleaned_mp3_filepath = os.path.join(LOCAL_DIRECTORY, cleaned_mp3_filename)
+    os.rename(current_mp3_filepath, cleaned_mp3_filepath)
+    return cleaned_mp3_filepath
 
-def progress_hook(info_dict, queue, loop):
-    if info_dict['status'] == 'finished' or info_dict['status'] == 'downloading':
-        try:
-            default_message = info_dict['_default_template']
-            message = re.sub(r'\x1b\[.*?m', '', default_message)  # Remove ANSI escape sequences
-            message = re.sub(r'\s+', ' ', message).strip()  # Replace multiple spaces with a single space
-            print(message)
-            asyncio.run_coroutine_threadsafe(queue.put(message), loop)
-            if info_dict['status'] == 'finished':
-                asyncio.run_coroutine_threadsafe(queue.put("done"), loop)
-        except Exception as e:
-            print(f'Error: {e}')
-            raise e
+current_mp3_filepath = r'C:\Users\happy\Documents\Projects\obsidian-transcriber-service\local\Focus on： Substrate Components Impact on Substrate pH.mp3'
 
-def get_ydl_opts(queue, loop):
-    yt_dlp_hook_partial = partial(progress_hook, queue, loop)
-
-    ydl_opts = {
-        'simulate': False,  # Download the audio file
-        'format': 'bestaudio/best',
-        'outtmpl': os.path.join(LOCAL_DIRECTORY, '%(title)s.%(ext)s'),
-        'quiet': True,
-        'progress_hooks': [yt_dlp_hook_partial],  # Include the partial function here
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '96',  # 96 kbps was chosen as a good balance between quality and file size for the audio text.
-        }],
-        'postprocessor_args': [  # Settings best for transcription
-            '-ac', '1',  # Convert to mono
-            '-ar', '44100'  # Set sampling rate to 44.1 kHz
-        ],
-    }
-
-    return ydl_opts
-
-async def download_video(youtube_url):
-    loop = asyncio.get_running_loop()
-    ydl_opts = get_ydl_opts(global_message_queue, loop)
-
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(youtube_url, download=True)
-            mp3_filepath = set_audio_input_path(info_dict.get('title', 'untitled'))
-            metadata = build_metadata_instance(info_dict)
-            chapter_dicts = info_dict.get('chapters', [])
-    except Exception as e:
-        logger.error(f"Failed to download video for {youtube_url}: {e}")
-        raise e
-
-    return metadata, chapter_dicts, mp3_filepath
-
-def set_audio_input_path(title: str) -> str:
-    yt_dlp_filename = title + ".mp3"
-    mp3_filepath = os.path.join(LOCAL_DIRECTORY, yt_dlp_filename)
-    return mp3_filepath
-
-def build_metadata_instance(info_dict: dict) -> Metadata:
-    info_dict['duration'] = format_time(info_dict.get('duration', 0))
-    return Metadata(**info_dict)
-
-def format_time(seconds: int) -> str:
-    if not isinstance(seconds, int):
-        return "0:00:00"
-    mins, secs = divmod(seconds, 60)
-    hours, mins = divmod(mins, 60)
-    return f"{hours:d}:{mins:02d}:{secs:02d}"
+mp3_filepath = _sanitize_filename(current_mp3_filepath)
+print(f"Current mp3 filepath: {current_mp3_filepath}")
+print(f"Sanitized mp3 filepath: {mp3_filepath}")

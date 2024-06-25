@@ -25,11 +25,12 @@ class Chapter(BaseModel):
 
 class TranscriptionState(BaseModel):
     # Manages the state and behavior of a single transcription.
-    local_mp3: Optional[str] = Field(default=None, description="Local storage of mp3 file. This is where the transcription part will look for the audio file.")
+    basename: str = Field(default=None, description="Basename of the transcript note to be used by the client when creating the note.")
+    local_mp3: str = Field(default=None, description="Local storage of mp3 file. This is where the transcription part will look for the audio file.")
     hf_model: str = Field(default=None, description="Set when initializing state from user's audio_input.audio_quality.")
     hf_compute_type: torch.dtype = Field(default=None, description="Used by transcriber. Either float32 or float16")
-    metadata: Optional[Metadata] = Field(default=None, description="YouTube metadata is very rich.  mp3 file is not so rich in metadata..")
-    chapters: Optional[List[Chapter]] = Field(default_factory=list, description="Each entry provides the metadata as well as the transcript text of a chapter of audio content.")
+    metadata: Metadata = Field(default=None, description="Turned into YAML frontmatter for a (Obsidian) note. YouTube metadata is very rich.  mp3 file is not so rich in metadata..")
+    chapters: List[Chapter] = Field(default_factory=list, description="Each entry provides the metadata as well as the transcript text of a chapter of audio content.")
     transcription_time: float = Field(default=0.0,description="Number of seconds it took to transcribe the audio file.")
 
 
@@ -47,14 +48,26 @@ class TranscriptionState(BaseModel):
 
     def update_chapter(self, start: int, transcription: str) -> None:
         for chapter in self.chapters:
-            if chapter.start == start:
-                chapter.transcription = transcription
+            if chapter.start_time == start:
+                chapter.transcript = transcription
                 break
         else:
             raise ValueError(f"No chapter found with start time {start}")
 
     def clear_chapters(self) -> None:
         self.chapters = []
+
+    def is_complete(self) -> bool:
+        # Check if all required fields (excluding transcription_time) are set
+        required_fields = ['basename', 'local_mp3', 'hf_model', 'hf_compute_type', 'metadata', 'chapters']
+        for field in required_fields:
+            if getattr(self, field) is None:
+                return False
+        # Additionally, check that each chapter has transcription_text filled out
+        for chapter in self.chapters:
+            if not chapter.transcript:
+                return False
+            return True
 
     def cleanup(self) -> None:
         """Cleanup resources held by the TranscriptionState."""
@@ -134,8 +147,10 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
     logger.debug(f"transcripts_state_code.initialize_transcription_state: state key is: {key}")
     if state:
         logger.debug("transcripts_state_code.initialize_transcription_state: state is alredy in the cache.")
+        send_sse_message("status", "Sheer happiness! We already have the content.")
         return state
     else:
+        await send_sse_message(event="status", data="Working hard to prepping the content.  Be back in a bit.")
         logger.debug("transcripts_state_code.initialize_transcription_state: state is not in the cache. Getting the metadata.")
         extractor = MetadataExtractor()
         try:
@@ -152,10 +167,14 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
     mp3_filepath = audio_input.mp3_file if audio_input.mp3_file else mp3_filepath
     hf_model = AUDIO_QUALITY_MAP[audio_input.audio_quality]
     hf_compute_type = COMPUTE_TYPE_MAP['default']
-
+    # At this point, we have everything except the transcript_text of the chapters.
     try:
-        state = TranscriptionState(local_mp3=mp3_filepath, hf_model=hf_model, hf_compute_type=hf_compute_type,  metadata=metadata, chapters=chapters)
+        # Write code that gets the basename of mp3_filepath
+
+        basename = os.path.basename(mp3_filepath)
+        state = TranscriptionState(basename=basename, local_mp3=mp3_filepath, hf_model=hf_model, hf_compute_type=hf_compute_type,  metadata=metadata, chapters=chapters)
         states.add_state(key, state, logger)
+        await send_sse_message(event="status", data="Content has been prepped. All systems go for transcription.")
     except Exception as e:
         raise e
     return state

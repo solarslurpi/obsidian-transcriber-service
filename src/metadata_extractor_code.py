@@ -16,7 +16,7 @@ class MetadataExtractor:
     async def extract_metadata_and_chapter_dicts(self, audio_input):
         handler = self.get_handler(audio_input)
         try:
-            await send_sse_message(event="status", data="Metadata extraction started.")
+
             metadata, chapter_dicts, mp3_filepath = await handler.extract()
         except Exception as e:
             raise MetadataExtractionException("Error extracting metadata") from e

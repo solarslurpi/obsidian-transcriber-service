@@ -50,3 +50,8 @@ class ProgressHookException(Exception):
     def __init__(self, message="A custom error occurred"):
         self.message = message
         super().__init__(self.message)
+
+class YouTubeDownloadException(Exception):
+    def __init__(self, message="Exception raised either during YouTube downloading or post processing the content into metadata and chapters."):
+        self.message = message
+        super().__init__(self.message)

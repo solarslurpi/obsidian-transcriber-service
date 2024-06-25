@@ -26,9 +26,6 @@ class TranscribeAudio:
         pass
 
     async def transcribe_chapters(self, state: TranscriptionState):
-        # As the transcription progresses, the sequence of communication - both status updates and results are placed on the message queue to be delivered to the client.
-        await send_sse_message("data", {'num_chapters': len(state.chapters)})
-
         transcribe_tasks = [asyncio.create_task(self.transcribe_chapter(local_mp3=state.local_mp3,
                                                                         model_name=state.hf_model,
                                                                         compute_type=state.hf_compute_type, start_time=chapter.start_time, end_time=chapter.end_time)) for chapter in state.chapters]
