@@ -4,21 +4,29 @@ from dotenv import load_dotenv
 load_dotenv()
 import logging
 import os
-from typing import Optional
+from typing import Optional, List
 
 
 
-from fastapi import FastAPI, Request, File, Form, UploadFile, HTTPException
+from fastapi import FastAPI, Request, File, Form, UploadFile, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from sse_starlette import EventSourceResponse
 
 
-
+from exceptions_code import MissingContentException
 from global_stuff import global_message_queue
 from logger_code import LoggerBase
-from process_check_code import process_check
+from process_check_code import process_check, send_sse_data_messages
 from audio_processing_model import AudioProcessRequest
+from transcription_state_code import TranscriptionStates
 from utils import send_sse_message
+
+from mock_event_generator import mock_event_generator
+
+# initialize global access to state storage.
+
+states = TranscriptionStates()
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 # Ensure the local directory exists
@@ -27,6 +35,9 @@ RETRY_TIMEOUT = 3000 # For sending SSE messages
 
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
+class MissingContent(BaseModel):
+    key: str
+    missing_contents: List[str]
 
 
 app = FastAPI()
@@ -65,6 +76,26 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
     asyncio.create_task(process_check(audio_input))
     return {"status": "Transcription process has started."}
 
+@app.post("/api/v1/missing_content")
+# Body(...) tells fastapi that the input is json. It will then validate the input again the MissingContentRequest model.  If the input does not match the model, an error will be returned.
+async def missing_content(missing_content: MissingContent):
+    logger.debug(f"app.missing_content: Missing content list received: {missing_content}")
+    try:
+        state = states.get_state(missing_content.key)
+        if not state:
+            await send_sse_message("server-error", f"No state found for key: {missing_content.key}.  Do not know what content is wanted.")
+            raise KeyError(f"No state found for key: {missing_content.key}")
+    except KeyError as e:
+        return {"status": f"Error processing missing content. Error {e}"}
+    try:
+        # the missing_content prop is perhaps most useful for testing.  Understanding whethe a missing_content event has been sent.
+        await send_sse_data_messages(state, missing_content.missing_contents)
+    except MissingContentException as e:
+        await send_sse_message("server-error", f"Error processing missing content. Error: {e}")
+        return {"status": f"Error processing missing content. Error: {e}"}
+    return {"status": f"{', '.join(missing_content.missing_contents)}"}
+
+
 
 @app.get("/api/v1/sse")
 async def sse_endpoint(request: Request):
@@ -75,7 +106,8 @@ async def sse_endpoint(request: Request):
 
     logger.debug(f"app.get.sse: Request received: {method} {url} from {client_ip}")
     logger.debug(f"app.get.sse: User-Agent: {user_agent}")
-
+    # I should learn pytest better. I want to test sse messages.
+    # return EventSourceResponse(mock_event_generator(request))
     return EventSourceResponse(event_generator(request))
 
 async def event_generator(request: Request):

@@ -1,4 +1,4 @@
-
+import asyncio
 import logging
 import os
 import time
@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from transcription_code import TranscribeAudio
-from exceptions_code import   LocalFileException, MetadataExtractionException, TranscriptionException
+from exceptions_code import   LocalFileException, MetadataExtractionException, TranscriptionException, SendSSEDataException
 from logger_code import LoggerBase
 from transcription_state_code import initialize_transcription_state
 from utils import send_sse_message
@@ -32,16 +32,10 @@ async def process_check(audio_input):
 
         state = await initialize_transcription_state(audio_input)
         logger.debug("process_check_code.process_check: state initialized.")
-        # Send basename and num_chapters to the client since these are complete regardless if the state was already cached.
-        await send_sse_message("data", {'basename': state.basename})
-        await send_sse_message("data", {'num_chapters': len(state.chapters)})
+
         # If all the properties of the state are cached, we can send the all fields the client needs.
-        if state.is_complete():
-            await send_sse_message("status", "Lickity split! We already have the content.")
-            await send_sse_message("data", {'metadata': state.metadata.model_dump(mode='json')})
-            for chapter in state.chapters:
-                await send_sse_message("data", {'chapter': chapter.model_dump()})
-            await send_sse_message("status", "Finished.  Please come again!")
+        if state.is_complete(): # This means the state is already in the cache.
+            await send_sse_data_messages(state, ["key","basename","num_chapters","metadata","chapters"])
             return
 
 
@@ -73,8 +67,10 @@ async def process_check(audio_input):
         end_time = time.time()
         state.metadata.transcription_time = int(end_time - start_time)
         # Finally we have all the metadata info.")
-        await send_sse_message("data", {'metadata': state.metadata.model_dump(mode='json')})
-        await send_sse_message("status", "Finished.  Please come again!")
+        await send_sse_message("status", "Have the content.  Need a few moments to process.  Please hang on.")
+        # Ordered the num_chapters early on because keeping track of the number of chapters. This way the client can better keep track of incoming chapters.
+        await send_sse_data_messages(state,["key","num_chapters","basename","metadata","chapters"])
+
     except TranscriptionException as e:
         await send_sse_message("server-error", "Error during transcription.")
         # Keep the state in case the client wants to try again.
@@ -86,3 +82,31 @@ async def process_check(audio_input):
         if state:
             state = None
         return
+
+
+async def send_sse_data_messages(state, content_texts: list):
+    '''The data messages:
+    1. key
+    2. basename
+    3. num_chapters
+    4. metadata
+    5. chapters
+    key, basename, num_chapters are simple strings.  metadata is a dictionary. Chapters is a list of chapters, each chapter contains the start_time, end_time, and transcript text. A small delay is added between each message to allow the client to process the data and let the server process other tasks.'''
+    for content_text_property in content_texts:
+        try:
+            if content_text_property == "metadata":
+                await send_sse_message("data", {'metadata': state.metadata.model_dump(mode='json')})
+            elif content_text_property == "chapters":
+                for chapter in state.chapters:
+                    await send_sse_message("data", {'chapter': chapter.model_dump()})
+                    await asyncio.sleep(0.1)
+            elif content_text_property == "num_chapters":
+                value = len(state.chapters)
+                await send_sse_message("data", {content_text_property:value})
+            else:
+                value = getattr(state, content_text_property)
+                await send_sse_message("data", {content_text_property:value})
+            await asyncio.sleep(0.1)
+        except SendSSEDataException as e:
+            logger.error(f"process_check_code.send_sse_data_messages: Error {e}.")
+            raise e

@@ -1,0 +1,5 @@
+- test mp3.
+- test packets not arriving
+- test packets arriving in a different order.
+- fix whatever the issue is i caused with the 5 hour video.
+Note: the last two could be a python service who is set up to send these sse messages give a post and get ...

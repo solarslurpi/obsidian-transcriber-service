@@ -9,8 +9,7 @@ import torch
 from exceptions_code import TranscriberException
 from logger_code import LoggerBase
 from transformers import pipeline
-from transcription_state_code import TranscriptionState, Chapter
-from utils import send_sse_message
+from transcription_state_code import TranscriptionState
 
 
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
@@ -34,8 +33,7 @@ class TranscribeAudio:
         chapter_number = 1
         for chapter, text in zip(state.chapters, texts):
             chapter.transcript = text
-            chapter_dict = chapter.model_dump()
-            await send_sse_message("data", {'chapter': chapter_dict, 'number': chapter_number})
+            chapter.number = chapter_number
             chapter_number += 1
 
         logger.debug(f"transcription_code.TranscribeAudio.transcribe_chapters: All chapters transcribed. ")
