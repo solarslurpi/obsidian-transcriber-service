@@ -8,7 +8,7 @@ from typing import Optional, List
 
 
 
-from fastapi import FastAPI, Request, File, Form, UploadFile, HTTPException, Body
+from fastapi import FastAPI, Request, File, Form, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sse_starlette import EventSourceResponse
@@ -18,15 +18,12 @@ from exceptions_code import MissingContentException
 from global_stuff import global_message_queue
 from logger_code import LoggerBase
 from process_check_code import process_check, send_sse_data_messages
-from audio_processing_model import AudioProcessRequest
-from transcription_state_code import TranscriptionStates
+from audio_processing_model import AudioProcessRequest, save_local_audio_file
+from transcription_state_code import TranscriptionStatesSingleton
 from utils import send_sse_message
 
-from mock_event_generator import mock_event_generator
+# from mock_event_generator import mock_event_generator
 
-# initialize global access to state storage.
-
-states = TranscriptionStates()
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 # Ensure the local directory exists
@@ -55,17 +52,20 @@ app.add_middleware(
 async def init_process_audio(youtube_url: Optional[str] = Form(None),
                              file: UploadFile = File(None),
                              audio_quality: str = Form("default")):
-    if youtube_url and file:
-        raise HTTPException(status_code=400, detail="Both youtube_url and file cannot have values.")
-    if not youtube_url and not file:
-        raise HTTPException(status_code=400, detail="Need either a YouTube URL or mp3 file.")
-    mp3_file = None
-    if file is not None:
-        mp3_file = save_local_mp3(file)
+    # Sort out the upload file audio input.
+    match(youtube_url is not None, file is not None):
+        case (True, True):
+            raise HTTPException(status_code=400, detail="Both youtube_url and file cannot have values.")
+        case (False, False):
+            raise HTTPException(status_code=400, detail="Need either a YouTube URL or mp3 file.")
+        case (False, True):
+            audio_file = save_local_audio_file(file)
+        case (True, False):
+            audio_file =None
     try:
         audio_input = AudioProcessRequest(
             youtube_url=youtube_url,
-            mp3_file=mp3_file,
+            audio_file=audio_file,
             audio_quality=audio_quality
         )
     except ValueError as e:
@@ -81,6 +81,7 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
 async def missing_content(missing_content: MissingContent):
     logger.debug(f"app.missing_content: Missing content list received: {missing_content}")
     try:
+        states = TranscriptionStatesSingleton.get_states()
         state = states.get_state(missing_content.key)
         if not state:
             await send_sse_message("server-error", f"No state found for key: {missing_content.key}.  Do not know what content is wanted.")
@@ -113,44 +114,36 @@ async def sse_endpoint(request: Request):
 async def event_generator(request: Request):
     message_id_counter = 0
     logger.debug("app.event_generator: Starting SSE event generator.")
-    while True:
-        if await request.is_disconnected():
-            break
-        message = await global_message_queue.get()
-        try:
-            event = message['event']
-            data = message['data']
-            logger.debug(f"app.event_generator: Message received from the queue. Event: {event}, Data: {data}")
-            # Just in case the message is an empty string or None.
-            if message:
-                message_id_counter += 1
-                yield {
-                    "event": event,
-                    "id": str(message_id_counter),
-                    "retry": RETRY_TIMEOUT,
-                    "data": data
-                }
-        except:
-            logger.error(f"app.event_generator: Error sending message: {message}")
-
+    try:
+        while True:
+            if await request.is_disconnected():
+                break
+            message = await global_message_queue.get()
+            try:
+                event = message['event']
+                data = message['data']
+                if event == "server-error" or (event == "data" and data == 'done'):
+                    break
+                logger.debug(f"app.event_generator: Message received from the queue. Event: {event}, Data: {data}")
+                # Just in case the message is an empty string or None.
+                if message:
+                    message_id_counter += 1
+                    yield {
+                        "event": event,
+                        "id": str(message_id_counter),
+                        "retry": RETRY_TIMEOUT,
+                        "data": data
+                    }
+            except Exception as e:
+                logger.error(f"app.event_generator: Error sending message: {message}")
+    except KeyboardInterrupt:
+        logger.info("app.event_generator: KeyboardInterrupt received. ")
 
 @app.get("/api/v1/health")
 async def health_check():
     logger.debug("app.health_check: Health check endpoint accessed.")
     return {"status": "ok"}
 
-
-def save_local_mp3(upload_file: UploadFile):
-    # Ensure the local directory exists
-    if not os.path.exists(LOCAL_DIRECTORY):
-        os.makedirs(LOCAL_DIRECTORY)
-
-    file_location = os.path.join(LOCAL_DIRECTORY, upload_file.filename)
-    with open(file_location, "wb+") as file_object:
-        file_object.write(upload_file.file.read())
-        file_object.close()
-    logger.debug(f"audio_processing_model.save_local_mp3: File saved to {file_location}")
-    return file_location
 
 if __name__ == "__main__":
     import uvicorn

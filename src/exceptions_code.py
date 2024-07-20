@@ -1,11 +1,5 @@
 # exceptions_code.py
 
-from fastapi import HTTPException
-
-from global_stuff import global_message_queue
-from logger_code import LoggerBase
-from utils import format_sse
-
 class AppException(Exception):
     """Base exception class for the application."""
     def __init__(self, message="An error occurred"):

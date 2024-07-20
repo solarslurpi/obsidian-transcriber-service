@@ -25,7 +25,7 @@ async def get_metadata(audio_input):
     return metadata
 
 def build_state(metadata):
-    state = TranscriptionState(local_mp3=None, audio_quality='default', metadata=metadata, hf_model="openai/whisper-tiny.en", hf_compute_type=torch.float16)
+    state = TranscriptionState(local_audio_path=None, audio_quality='default', metadata=metadata, hf_model="openai/whisper-tiny.en", hf_compute_type=torch.float16)
     return state
 
 @pytest.fixture

@@ -5,7 +5,9 @@ import time
 from dotenv import load_dotenv
 load_dotenv()
 
+from pydantic import BaseModel, field_validator, ValidationError
 from transcription_code import TranscribeAudio
+from transcription_state_code import TranscriptionState
 from exceptions_code import   LocalFileException, MetadataExtractionException, TranscriptionException, SendSSEDataException
 from logger_code import LoggerBase
 from transcription_state_code import initialize_transcription_state
@@ -34,10 +36,9 @@ async def process_check(audio_input):
         logger.debug("process_check_code.process_check: state initialized.")
 
         # If all the properties of the state are cached, we can send the all fields the client needs.
-        if state.is_complete(): # This means the state is already in the cache.
+        if state.is_complete(): # This means the transcript text is already in the state instance.
             await send_sse_data_messages(state, ["key","basename","num_chapters","metadata","chapters"])
             return
-
 
     except MetadataExtractionException as e:
         await send_sse_message("server-error", "Error extracting metadata.")
@@ -72,33 +73,55 @@ async def process_check(audio_input):
         await send_sse_data_messages(state,["key","num_chapters","basename","metadata","chapters"])
 
     except TranscriptionException as e:
-        await send_sse_message("server-error", "Error during transcription.")
+        await send_sse_message("server-error", f"Error during transcription {e}")
         # Keep the state in case the client wants to try again.
-        return
+        raise
 
     except Exception as e:
-        await send_sse_message("server-error", "An unexpected error occurred.")
+        await send_sse_message("server-error", f"An unexpected error occurred: {e}")
         # This is an unexpected error, so not sure the state is valid.
         if state:
             state = None
-        return
+        raise
 
+class ContentTextsModel(BaseModel):
+    content_texts: list[str]
 
-async def send_sse_data_messages(state, content_texts: list):
+    @field_validator('content_texts')
+    def validate_content_texts(cls, v):
+        expected_set = {"key", "basename", "num_chapters", "metadata", "chapters"}
+        for item in v:
+            if item not in expected_set:
+                raise ValueError(f"Invalid content text: {item}")
+        return v
+
+async def send_sse_data_messages(state:TranscriptionState, content_texts: list):
     '''The data messages:
     1. key
     2. basename
     3. num_chapters
     4. metadata
     5. chapters
-    key, basename, num_chapters are simple strings.  metadata is a dictionary. Chapters is a list of chapters, each chapter contains the start_time, end_time, and transcript text. A small delay is added between each message to allow the client to process the data and let the server process other tasks.'''
+    key, basename, num_chapters are simple strings.  metadata is a dictionary. Chapters is a list of chapters, each chapter contains the start_time, end_time, and transcript text. A small delay is added between each message to allow the client to process the data and let the
+    server process other tasks.'''
+    try:
+        # Validate content_texts
+        ContentTextsModel(content_texts=content_texts)
+    except ValueError as e:
+        errors = e.errors()
+        invalid_values = [str(error['input']) for error in errors if 'input' in error]
+        logger.error(f"Number of validation errors: {len(errors)}")
+        logger.error(f"Invalid values: {invalid_values}")
+
+        await send_sse_message("status", f"Invalid values: {invalid_values}")
+        return
     for content_text_property in content_texts:
         try:
             if content_text_property == "metadata":
                 await send_sse_message("data", {'metadata': state.metadata.model_dump(mode='json')})
             elif content_text_property == "chapters":
                 for chapter in state.chapters:
-                    await send_sse_message("data", {'chapter': chapter.model_dump()})
+                    await send_sse_message("data", {'chapter': chapter.to_dict_with_start_end_strings()})
                     await asyncio.sleep(0.1)
             elif content_text_property == "num_chapters":
                 value = len(state.chapters)

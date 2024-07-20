@@ -1,8 +1,0 @@
-id: 1event: statusdata: Starting Transcription.retry: 3000
-id: 2event: datadata: {"num_chapters": 1}retry: 3000
-id: 3event: datadata: {"chapter": {"title": "Latest podcast with pathologist  Dr Nicole Gauthier talks about powdery mildew, botrytis, and more!", "start_time": 0.0, "end_time": 0.0, "transcript": " So plant diseases are the plants reaction to an infection. Okay, so there's infection and there are symptoms. So infection is when the pathogen, that's the fungus or bacterium or virus, when it infects the plant. So it can be days, weeks, months, depending on the system before you actually see symptoms and it's those symptoms that we call disease. So our symptoms can be wilt or leave curl or marginal leaf scorch or gliding. So the symptom is usually how we name a plant disease."}, "number": 1}retry: 3000
-id: 4event: datadata: {"metadata": {"youtube_url": "https://www.youtube.com/shorts/AJtTZpBmIUY ", "title": "Latest podcast with pathologist  Dr Nicole Gauthier talks about powdery mildew, botrytis, and more!", "audio_quality": "default", "tags": "", "description": "", "duration": "0:00:35", "channel": "KIS Organics", "upload_date": "20240612", "uploader_id": "@kisorganics", "download_time": 7, "transcription_time": 2}}retry: 3000
-: ping - 2024-06-25 12:17:26.395252+00:00
-: ping - 2024-06-25 12:17:41.413815+00:00
-: ping - 2024-06-25 12:17:56.416381+00:00
-: ping - 2024-06-25 12:18:11.404614+00:00

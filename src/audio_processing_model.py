@@ -6,11 +6,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from fastapi import UploadFile
+from pathvalidate import validate_filename, validate_filepath, ValidationError
 from pydantic import BaseModel, Field, field_validator
 import torch
 from typing import Optional
-
-
 
 from logger_code import LoggerBase
 
@@ -18,15 +17,16 @@ logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
-# Ensure the local directory exists
 
+# Audio formats that can be processed by the whisper model.
+SUPPORTED_AUDIO_FORMATS = {'.mp3', '.m4a', '.wav', '.flac', '.aac', '.ogg', '.opus'}
 
 AUDIO_QUALITY_MAP = {
-    "default":  "openai/whisper-tiny.en",
-    "tiny": "openai/whisper-tiny.en",
-    "small": "openai/whisper-small.en",
-    "medium": "openai/whisper-medium.en",
-    "large": "openai/whisper-large-v3"
+    "default":  "tiny.en",
+    "tiny": "tiny.en",
+    "small": "small.en",
+    "medium": "medium.en",
+    "large": "large-v3"
 }
 
 COMPUTE_TYPE_MAP = {
@@ -37,9 +37,27 @@ COMPUTE_TYPE_MAP = {
 
 class AudioProcessRequest(BaseModel):
     youtube_url: Optional[str] = Field(None, description="YouTube URL to download audio from. Input requires either a YouTube URL or mp3 file.")
-    mp3_file: Optional[str] = Field(None, description="The stored local mp3 file.")
+    audio_file: Optional[str] = Field(None, description="The stored local audio file.")
     audio_quality: str = Field(default="default", description="Audio quality setting for processing.")
 
+    @field_validator('audio_file')
+    def is_valid_audio_file_path(cls, v):
+        # Note: Audio file can be None if a YouTube URL is provided.
+        if v is None:
+            return None
+        try:
+            validate_filepath(file_path=v, platform='auto')
+        except ValidationError as e:
+            raise ValueError(f"{v} is not a valid file path. {e}")
+        try:
+            filename = os.path.basename(v)
+            validate_filename(filename, platform='auto')
+        except ValidationError as e:
+            raise ValueError(f"{v} is not a valid file path.")
+        file_extension = os.path.splitext(v)[1].lower()
+        if file_extension not in SUPPORTED_AUDIO_FORMATS:
+            raise ValueError(f"{v} has an unsupported audio format. Supported formats are: {', '.join(SUPPORTED_AUDIO_FORMATS)}")
+        return v
 
     @field_validator('youtube_url')
     def check_youtube_url(cls, v):
@@ -64,8 +82,7 @@ class AudioProcessRequest(BaseModel):
             r'((watch\?v=)|(embed/)|(v/)|(.+\?v=))?([^&=%\?]{11})')
         return youtube_regex.match(url) is not None
 
-
-def save_local_mp3(upload_file: UploadFile):
+def save_local_audio_file(upload_file: UploadFile):
     # Ensure the local directory exists
     if not os.path.exists(LOCAL_DIRECTORY):
         os.makedirs(LOCAL_DIRECTORY)
@@ -74,5 +91,5 @@ def save_local_mp3(upload_file: UploadFile):
     with open(file_location, "wb+") as file_object:
         file_object.write(upload_file.file.read())
         file_object.close()
-    logger.debug(f"audio_processing_model.save_local_mp3: File saved to {file_location}")
+    logger.debug(f"File saved to {file_location}")
     return file_location
