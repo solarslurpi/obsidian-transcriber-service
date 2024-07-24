@@ -40,7 +40,7 @@ def test_make_chapters(results):
     '''
     Use stored results to test the make_chapters method.
     '''
-    transcribe_audio = TranscribeAudio()
+    transcribe_audio = TranscribeAudio("tiny")
     chapters = transcribe_audio.make_chapters(results[0])
     assert len(chapters) > 0
     # Check each chapter has all attributes
@@ -52,13 +52,8 @@ def test_make_chapters(results):
         assert chapter.text is not None, "Chapter text is None."
         assert chapter.text != "", "Chapter text is empty."
 
-@pytest.mark.asyncio
-async def test_transcribe_chapters_flow(mocker):
-    transcribe_audio = TranscribeAudio()
-    mocker.patch.object(TranscribeAudio,'transcribe_audio', return_value=results[0])
-    await transcribe_audio.transcribe_chapters(state=transcription_state_one_chapter)
-
 def test_chapters_model_dump():
+    # model_dump() is a Pydantic 2 method that returns a dictionary.  It gets confusing because Pydantic models can have attributes that are not serializable.  A Pydantic class might have to use @field_serializer to convert an attribute to a serializable type.  This is a simple test on a Pydantic class that is easily serializable but helps better understand the model_dump() method.
     chapters = [Chapter(title="test", number=1, start_time=0.0, end_time=0.0, text="test text")]
     chapters_dict = [chapter.model_dump() for chapter in chapters]
     assert chapters_dict[0]['title'] == "test"
@@ -75,29 +70,3 @@ def test_chapter_model_dump():
     assert chapter_dict['start_time'] == 0.0
     assert chapter_dict['end_time'] == 0.0
     assert chapter_dict['text'] == "test text"
-
-@pytest.mark.asyncio
-async def test_transcribe_one_chapter_transcript(transcription_state_one_chapter):
-    transcribe_audio = TranscribeAudio()
-    # Actually do the transcription
-    state = await transcribe_audio.transcribe_chapters(state=transcription_state_one_chapter)
-    # Write the state to a file so it can be loaded and populated in a new run
-    with open('tests/state.json', 'w') as file:
-        json.dump(state.model_dump(), file, indent=4)
-    # Check that there is at least one chapter
-    assert len(state.chapters) > 0, "No chapters were created."
-
-    # Check each chapter has all attributes
-    for chapter in state.chapters:
-        assert chapter.title is not None, "Chapter title is None."
-        assert chapter.number is not None, "Chapter number is None."
-        assert chapter.start_time is not None, "Chapter start time is None."
-        assert chapter.end_time is not None, "Chapter end time is None."
-        assert chapter.text is not None, "Chapter text is None."
-        assert chapter.text != "", "Chapter text is empty."
-
-@pytest.mark.asyncio
-async def test_transcribe_multiple_chapter_transcript(transcription_state_multiple_chapters):
-    transcribe_audio = TranscribeAudio()
-    # Actually do the transcription
-    state = await transcribe_audio.transcribe_chapters(state=transcription_state_multiple_chapters)

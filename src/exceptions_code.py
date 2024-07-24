@@ -50,6 +50,11 @@ class YouTubeDownloadException(Exception):
         self.message = message
         super().__init__(self.message)
 
+class YouTubePostProcessingException(Exception):
+    def __init__(self, message="Exception raised during YouTube post processing the content into metadata and chapters."):
+        self.message = message
+        super().__init__(self.message)
+
 class SendSSEDataException(Exception):
     def __init__(self, message="Exception raised attempting to format state properties to send over sse."):
         self.message = message

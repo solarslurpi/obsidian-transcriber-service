@@ -9,11 +9,10 @@ import torch
 
 from exceptions_code import TranscriberException
 from logger_code import LoggerBase
-from transformers import pipeline
 from transcription_state_code import TranscriptionState, Chapter
 from utils import send_sse_message
 import whisper
-import json
+
 
 
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
@@ -25,8 +24,14 @@ if not os.path.exists(LOCAL_DIRECTORY):
     os.makedirs(LOCAL_DIRECTORY)
 
 class TranscribeAudio:
-    def __init__(self):
-        pass
+    def __init__(self, audio_quality:str):
+        try:
+            self.model = whisper.load_model(audio_quality)
+            logger.debug(f"Model loaded. Size: {audio_quality}")
+        except Exception as e:
+            logger.error(f"Error loading model. {e}")
+            send_sse_message("server-error", f"Error loading model. {e}")
+            raise TranscriberException(f"Error loading model. {e}")
 
     async def transcribe_chapters(self, state: TranscriptionState):
         # Check if GPU is available
@@ -35,13 +40,33 @@ class TranscribeAudio:
         else:
             device = 'CPU'
         logging.debug(f"Running on {device}")
-        audio_slices = self.make_audio_slices(state)
-        try:
+        # Run monitor_system and transcribe_audio_slices concurrently
+        # await asyncio.gather(
+        #     self.monitor_system(),
+        #     self.transcribe_audio_slices(state)
+        # )
+        state = await self.transcribe_audio_slices(state)
+        return state
 
-            transcribe_tasks = [asyncio.create_task(self.transcribe_audio(audio = audio_slice, audio_quality=state.hf_model) ) for audio_slice in audio_slices]
-            results_list = await asyncio.gather(*transcribe_tasks)
-        except TranscriberException as e:
-            raise e
+    async def transcribe_audio_slices(self, state: TranscriptionState):
+        audio_slices = self.make_audio_slices(state)
+
+        results_list = []
+        length_audio_slices = len(audio_slices)
+        await send_sse_message("status",f"Starting to transcribe {length_audio_slices} chapters.")
+        for index, audio_slice in enumerate(audio_slices, start=1):
+            try:
+                # I started thinking breaking up the audio into chapters (when available in the metadata) would be a way to speed up the transcription process.  However, I found out the whisper model is not thread safe.
+                # transcribe_tasks = [asyncio.create_task(self.transcribe_audio(audio = audio_slice, audio_quality=state.hf_model) ) for audio_slice in audio_slices]
+                # results_list = await asyncio.gather(*transcribe_tasks)
+                await send_sse_message("status",f"Transcribing chapter {index}/{length_audio_slices}")
+                logger.debug(f"Transcribing chapter {index}/{length_audio_slices}")
+                result = await self.transcribe_audio(audio = audio_slice, audio_quality=state.hf_model)
+
+                results_list.append(result)
+            except TranscriberException as e:
+                raise e
+
         await send_sse_message("status","Transcription Complete. On to collecting and sending the results.")
         logging.debug("***Transcription Complete. On to collecting and sending the results.***")
         # Check if the transcription did not come with chapter metadata information.  Chapters exists,
@@ -62,26 +87,12 @@ class TranscribeAudio:
         return state # The state is returned.  However it is a singleton.
 
     async def transcribe_audio(self, audio: str, audio_quality:str) -> str:
-        # whisper does not like to reuse a loaded model.  It is best to load the model each time.
+        # whisper is not thread safe.  It does not like to reuse a loaded model.
         logging.debug(f"--->Start Transcription for {audio}")
-        try:
-            model = whisper.load_model(audio_quality)
-            logger.debug("Model loaded")
-        except Exception as e:
-            logger.error(f"Error loading model. {e}")
-            send_sse_message("server-error", f"Error loading model. {e}")
-            raise TranscriberException(f"Error loading model. {e}")
-
-        # Run the transcription in a separate coroutine and monitor the system
-        # for CPU and GPU usage as a check if the system has not frozen.
-        transcription_task =  asyncio.to_thread(model.transcribe, audio)
-        monitoring_task = asyncio.create_task(self.monitor_system())
-        result = await transcription_task
-        # Delete audio slice
-        os.remove(audio)
-        monitoring_task.cancel()
+        result = self.model.transcribe(audio)
         logger.debug(f"<---Done transcribing {audio}.")
         return result
+
 
     async def monitor_system(self):
         try:
@@ -114,7 +125,7 @@ class TranscribeAudio:
                 else:
                     frozen_start_time = None
                 # Let the system keep going.
-                await asyncio.sleep(10)
+                await asyncio.sleep(1)
 
         except asyncio.CancelledError:
             logger.debug("Monitoring task was cancelled.")
@@ -155,13 +166,16 @@ class TranscribeAudio:
         current_duration = segments[0]['end'] - segments[0]['start']
         current_chapter = 1
         # Step 4: Iterate over the segments
-        for segment in segments[1:]:
+        for segment in segments[1:]: # This will cover all the text that was transcribed.
             segment_duration = segment['end'] - segment['start']
+            # The transcript is broken into time_length chapters (say 2 minutes for example).
+            # Until time_length is reached given the segment times, the text is added to the chunk which then becomes a Chapter.
             if current_duration + segment_duration <= time_length:
                 current_chunk['end_time'] = segment['end']
                 current_chunk['text'] += ' ' + segment['text']
                 current_duration += segment_duration
             else:
+                # Have the time_length text and start/stop times.  Create a chapter.
                 chapter = Chapter(title=' ', start_time=current_chunk['start_time'], end_time=current_chunk['end_time'], text=current_chunk['text'],number=current_chapter)
                 chapters.append(chapter)
                 current_chapter += 1

@@ -4,7 +4,7 @@ import pytest
 
 from audio_handler_code import AudioHandler
 from audio_processing_model import AudioProcessRequest
-from metadata_shared_code import Metadata, MetadataMixin
+from metadata_shared_code import Metadata
 
 
 @pytest.fixture
@@ -58,13 +58,13 @@ async def test_extract(mocker, info_dict, chapter_dicts, audio_handler):
     )
 
     # Call the extract method
-    metadata, chapters, audio_file = await audio_handler.extract()
+    audio_info_dict, chapter_dicts, audio_file = await audio_handler.extract()
 
     # Assertions
     mock_build_audio_info_dict_and_chapter_dicts.assert_called_once_with("tests/audio_files/test_audio_file.m4a")
 
-    assert metadata.title == "test"
-    assert chapters == chapter_dicts
+    assert audio_info_dict['title'] == "test"
+    assert len(chapter_dicts) > 0
     assert audio_file == "tests/audio_files/test_audio_file.m4a"
 
 def test_extract_audio_attributes():

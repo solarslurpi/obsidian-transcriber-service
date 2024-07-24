@@ -1,26 +1,21 @@
+import json
 import logging
 import os
 import time
 import torch
-from typing import Optional, List, Tuple, Dict, Annotated
+from typing import Optional, List, Tuple, Dict, Union
 
 
-from pydantic import BaseModel, Field, field_validator, ConfigDict, PlainSerializer
+from pydantic import BaseModel, Field, field_validator, ConfigDict, field_serializer
 
 from exceptions_code import KeyException, MetadataExtractionException
 from logger_code import LoggerBase
 from metadata_extractor_code import MetadataExtractor
-from metadata_shared_code import Metadata
+from metadata_shared_code import Metadata, build_metadata_instance
 from audio_processing_model import AudioProcessRequest, AUDIO_QUALITY_MAP, COMPUTE_TYPE_MAP
 from utils import send_sse_message
-import json
 
 
-# Define a custom serializer for torch.dtype
-CustomTorchDtype = Annotated[
-    torch.dtype,
-    PlainSerializer(lambda v: str(v).split('.')[-1], return_type=str)
-]
 # Create a logger named after the module
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
@@ -48,6 +43,16 @@ class Chapter(BaseModel):
             "number": self.number
         }
 
+def build_chapters(chapter_dicts: list[Dict]) -> list[Chapter]:
+    chapters = []
+    try:
+        for chapter_dict in chapter_dicts:
+            # At this point the chapter_dict contains the title, start_time, and end_time. The transcript is added later.
+            chapter = Chapter(**chapter_dict)
+            chapters.append(chapter)
+    except Exception as e:
+        raise e
+    return chapters
 
 class TranscriptionState(BaseModel):
     # Manages the state and behavior of a single transcription.
@@ -55,7 +60,7 @@ class TranscriptionState(BaseModel):
     basename: str = Field(..., description="Basename of the transcript note to be used by the client when creating the note.")
     local_audio_path: str = Field(..., description="Local storage of the audio file. ")
     hf_model: str = Field(default=None, description="Set when initializing state from user's audio_input.audio_quality.")
-    hf_compute_type: CustomTorchDtype = Field(default=None, description="Used by transcriber. Either float32 or float16")
+    hf_compute_type: Union[str,torch.dtype] = Field(default=None, description="Used by transcriber. Either float32 or float16")
     metadata: Metadata = Field(default=None, description="Turned into YAML frontmatter for a (Obsidian) note. YouTube metadata is very rich.  mp3 file is not so rich in metadata..")
     chapters: List[Chapter] = Field(default_factory=list, description="Each entry provides the metadata as well as the transcript text of a chapter of audio content.")
     transcription_time: float = Field(default=0.0,description="Number of seconds it took to transcribe the audio file.")
@@ -67,14 +72,31 @@ class TranscriptionState(BaseModel):
         return v
 
     @field_validator('hf_compute_type')
-    def check_tensor_dtype(cls, v):
-        if v not in [torch.float32, torch.float16]:
-            raise ValueError('hf_compute_type must be of type torch.float32 or torch.float16')
-        return v
+    def validate_hf_compute_type(cls, v):
+        if isinstance(v, str):
+            dtype_map = {'float32': torch.float32, 'float16': torch.float16}
+            if v in dtype_map:
+                return dtype_map[v]
+            else:
+                raise ValueError(f"Invalid dtype string: {v}")
+        elif isinstance(v, torch.dtype):
+            allowed_dtypes = {torch.float16, torch.float32}
+            if v in allowed_dtypes:
+                return v
+            else:
+                raise ValueError(f"Invalid torch.dtype: {v}. Must be torch.float16 or torch.float32.")
+        else:
+            raise ValueError(f"hf_compute_type must be a string or torch.dtype, not {type(v)}")
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
     )
+
+    @field_serializer('hf_compute_type')
+    def serialize_hf_compute_type(self, v: Union[str, torch.dtype]) -> str:
+        if isinstance(v, torch.dtype):
+            return str(v).split('.')[-1]  # This will return 'float16' or 'float32'
+        return v
 
     def update_chapter(self, start: int, transcription: str) -> None:
         for chapter in self.chapters:
@@ -122,17 +144,64 @@ class TranscriptionState(BaseModel):
         self.transcription_time = 0
         self.transcript_done = False
 
+
 class TranscriptionStates:
     # Manages a collection of multiple TranscriptionState instances.
     def __init__(self):
         self.cache = {}
+        self.state_file = 'state_cache/state_cache.json'
 
-    def add_state(self, key: str, transcription_state: TranscriptionState, logger: LoggerBase):
+    def add_state(self, transcription_state: TranscriptionState, logger: LoggerBase):
         '''This method stres an instance of the transcription_state in the cache dictionary with the specified key, making it available for retrieval during subsequent requests, assuming the application's state is preserved between those requests.'''
         if not isinstance(transcription_state, TranscriptionState):
             raise ValueError("transcription_state must be an instance of TranscriptionState.")
-        self.cache[key] = transcription_state
-        logger.debug(f"transcripts_state_code.TranscriptionStates.add_state: {key} added to cache.")
+        self.cache[transcription_state.key] = transcription_state
+        logger.debug(f"transcripts_state_code.TranscriptionStates.add_state: {transcription_state.key} added to cache.")
+        self.save_state(transcription_state, logger)
+
+
+    def save_state(self, state, logger: LoggerBase):
+        '''This method saves the transcription_state to a file with the specified key as the filename.'''
+        states_dict = {}
+        try:
+            with open(self.state_file, 'r') as file:
+                states_dict = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            states_dict = {}
+        except Exception as e:
+            logger.error(f"Error loading states from file: {e}")
+            return
+        # The state has been validated.
+        states_dict[state.key] = state.model_dump()
+        # Save the model to a JSON file
+        with open(self.state_file, 'w') as file:
+            json.dump(states_dict, file, indent=2)
+
+
+    def load_states(self):
+        '''Open state_cache.json and load any of the stored state dictionaries into the cache.'''
+        state_loaded = False
+        try:
+            with open(self.state_file, 'r') as file:
+                data = json.load(file)
+            for key, value in data.items():
+                try:
+                    # Create TranscriptionState object from the loaded data
+                    state = TranscriptionState(**value)
+                    # Verify the audio file is available locally for transcription. If it isn't available, skip this state.
+                    if not os.path.exists(state.local_audio_path):
+                        logger.error(f"Audio file {state.local_audio_path} not found. Skipping state.")
+                        continue
+                    self.cache[key] = state
+                    state_loaded = True
+                except (TypeError, KeyError, ValueError) as e:
+                    logger.error(f"Error creating TranscriptionState for key {key}: {e}")
+                    continue
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            logger.debug("No states to load.")
+            return state_loaded
+        return state_loaded
+
 
     def get_state(self, key: str) -> Optional[TranscriptionState]:
         logger.debug(f"Cache: {self.cache.get(key)}")
@@ -160,21 +229,12 @@ class TranscriptionStatesSingleton:
         return cls._instance
 
     @classmethod
-    def get_states(cls):
+    def get_states(cls,load_from_store:bool=True):
         if cls._instance is None:
             cls._instance = cls()
+        if load_from_store:
+            cls._instance.states.load_states()
         return cls._instance.states
-
-def build_chapters(chapter_dicts: List[Dict]) -> List[Chapter]:
-    chapters = []
-    try:
-        for chapter_dict in chapter_dicts:
-            # At this point the chapter_dict contains the title, start_time, and end_time. The transcript is added later.
-            chapter = Chapter(**chapter_dict)
-            chapters.append(chapter)
-    except Exception as e:
-        raise e
-    return chapters
 
 async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tuple[TranscriptionState, Metadata]:
     logger.debug(f"transcripts_state_code.initialize_transcription_state: audio_input: {audio_input}")
@@ -218,10 +278,10 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
         extractor = MetadataExtractor()
         try:
             start_time = time.time()
-            metadata, chapter_dicts, audio_filepath = await extractor.extract_metadata_and_chapter_dicts(audio_input)
-            chapters = build_chapters(chapter_dicts)
+            info_dict, chapter_dicts, audio_filepath = await extractor.extract_metadata_and_chapter_dicts(audio_input)
             end_time = time.time()
-            metadata.download_time = int(end_time - start_time)
+
+
         except MetadataExtractionException as e:
             raise e
         except Exception as e:
@@ -232,10 +292,14 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
     hf_compute_type = COMPUTE_TYPE_MAP['default']
     # At this point, we have everything except the transcript_text of the chapters.
     try:
+        metadata = build_metadata_instance(info_dict)
+        metadata.download_time = int(end_time - start_time)
+        chapters = build_chapters(chapter_dicts)
         # Write code that gets the basename of mp3_filepath
         filename_no_extension = os.path.splitext(os.path.basename(audio_filepath))[0]
         state = TranscriptionState(key=key, basename=filename_no_extension, local_audio_path=audio_filepath, hf_model=hf_model, hf_compute_type=hf_compute_type,  metadata=metadata, chapters=chapters)
-        states.add_state(key, state, logger)
+        # Since we are here, add the first process of audio prep prior to transcription to the cache
+        states.add_state(state, logger)
         await send_sse_message(event="status", data="Content has been prepped. All systems go for transcription.")
     except Exception as e:
         raise e

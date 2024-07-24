@@ -1,27 +1,20 @@
-# Testing breaking up transcripts that do not have chapters into sentence chunks. To fix an issue
-from langchain_text_splitters import SpacyTextSplitter
-# This is a long document we can split up.
-with open(r'C:\Users\happy\Documents\Projects\obsidian-transcriber-service\tests\non_chunked_transcripts\lots-oh-words.md') as f:
-    transcript = f.read()
+import json
+import os
 
-# Strip leading whitespace (including \n\n) from the transcript
-transcript = transcript.lstrip()
+from metadata_shared_code import Metadata
 
-# Split the transcript into lines
-lines = transcript.split('\n')
+YOUTUBE_CACHE_FILEPATH = os.path.join(os.getenv("YOUTUBE_CACHE_DIRECTORY", "youtube_cache"), "youtube_cache.json")
+youtube_url = 'https://www.youtube.com/watch?v=KbZDsrs5roI'
 
-# Extract the first line as the title
-title = lines[0]
-# Join the remaining lines back into a single string
-remaining_text = ''.join(lines[1:])
-text_splitter = SpacyTextSplitter(chunk_size=10000)
+def get_entry(youtube_url):
+    with open(YOUTUBE_CACHE_FILEPATH, 'r') as f:
+        cache_data = json.load(f)
+        for entry in cache_data:
+            if youtube_url in entry["metadata"]["youtube_url"]:
+                return entry['metadata'], entry['chapter_dicts'], entry['mp3_filepath']
+        return None
 
-texts = text_splitter.split_text(remaining_text)
 
-# Join sentences into one chunk with a space between each sentence
-formatted_text = '\n'.join(texts).replace('\n', ' ') + '\n\n'
-
-# Save to a file.
-# write to the non_chunked_transcripts folder
-with open(r'C:\Users\happy\Documents\Projects\obsidian-transcriber-service\tests\non_chunked_transcripts\output.md', 'w') as f:
-    f.write(formatted_text)
+metadata_dict, chapter_dicts, audio_filepath = get_entry(youtube_url)
+metadata = Metadata(**metadata_dict)
+print(f"metadata: {metadata}")

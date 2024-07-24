@@ -1,0 +1,32 @@
+{
+  "https://www.youtube.com/shorts/0rvxUNga68g_tiny": {
+    "key": "https://www.youtube.com/shorts/0rvxUNga68g_tiny",
+    "basename": "Bottom-up approach to note-taking with Obsidian",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/Bottom-up approach to note-taking with Obsidian.mp3",
+    "hf_model": "tiny.en",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "youtube_url": null,
+      "title": "Bottom-up approach to note-taking with Obsidian",
+      "audio_quality": "tiny",
+      "tags": "",
+      "description": "Check out my course for beginners, Obsidian for Everyone: https://courses.nicolevanderhoeven.com/o4e",
+      "duration": "0:00:58",
+      "channel": "Nicole van der Hoeven",
+      "upload_date": "20231010",
+      "uploader_id": "@nicolevdh",
+      "download_time": 6,
+      "transcription_time": 13
+    },
+    "chapters": [
+      {
+        "title": " ",
+        "start_time": 0.0,
+        "end_time": 58.2,
+        "text": " Hi, you might have already guessed that I also really like the bottom-up approach, and  there are basically three ways that I figure out what to work on.  The first is by exploring my notes and this could be by using the search pane, or by  using the Quickswitcher, or my favorite is Excalibrate.  Excalibrate lets me examine the links and relationships between notes.  The second way that I do this is through using Data View Queries.  Here to Data View Queries that I use, one tells me the notes by the number of outgoing  links and the top 10 of that is going to show me the maps of content that I already have  that I might want to elaborate on.  This one is notes by number of incoming links, so notes that I am linking to a lot in  other notes.  And the third way is by using randomness to have Obsidian Resurface notes that maybe you  hadn't considered working on.  If you want more details on this, I'm going to leave a link in the description below, do a  video that I made on emergent note taking.",
+        "number": 1
+      }
+    ],
+    "transcription_time": 0.0
+  }
+}

@@ -5,18 +5,18 @@ from tinytag import TinyTag
 
 from audio_processing_model import AudioProcessRequest
 from logger_code import LoggerBase
-from metadata_shared_code import MetadataMixin, Metadata
+from metadata_shared_code import Metadata
+
 
 logger = LoggerBase.setup_logger(__name__)
 
-class AudioHandler(MetadataMixin):
+class AudioHandler():
     def __init__(self, audio_input: AudioProcessRequest):
         self.audio_input = audio_input
 
-    async def extract(self) -> Tuple[Metadata, List, str]:
-        info_dict, chapters = self._build_audio_info_dict_and_chapter_dicts(self.audio_input.audio_file)
-        metadata= self.build_metadata_instance(info_dict)
-        return metadata, chapters, self.audio_input.audio_file
+    async def extract(self) -> Tuple[Dict, List, str]:
+        audio_info_dict, chapter_dicts = self._build_audio_info_dict_and_chapter_dicts(self.audio_input.audio_file)
+        return audio_info_dict, chapter_dicts, self.audio_input.audio_file
 
     def _build_audio_info_dict_and_chapter_dicts(self, audio_filepath: str) -> Tuple[Dict, List]:
         # Using the TinyTag library to extract metadata from the audio file.

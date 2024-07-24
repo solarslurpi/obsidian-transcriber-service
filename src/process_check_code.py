@@ -7,7 +7,7 @@ load_dotenv()
 
 from pydantic import BaseModel, field_validator, ValidationError
 from transcription_code import TranscribeAudio
-from transcription_state_code import TranscriptionState
+from transcription_state_code import TranscriptionState, TranscriptionStatesSingleton
 from exceptions_code import   LocalFileException, MetadataExtractionException, TranscriptionException, SendSSEDataException
 from logger_code import LoggerBase
 from transcription_state_code import initialize_transcription_state
@@ -37,6 +37,7 @@ async def process_check(audio_input):
 
         # If all the properties of the state are cached, we can send the all fields the client needs.
         if state.is_complete(): # This means the transcript text is already in the state instance.
+            logger.debug("State is complete. No reason to process further. Sending content to the client.")
             await send_sse_data_messages(state, ["key","basename","num_chapters","metadata","chapters"])
             return
 
@@ -58,18 +59,20 @@ async def process_check(audio_input):
             state = None
         return
 
-    transcribe_audio_instance = TranscribeAudio()
+    transcribe_audio_instance = TranscribeAudio(audio_input.audio_quality)
 
     "Each chapter is represented as a coroutine, allowing for concurrent processing. The code waits for all these coroutines to complete execution."
     try:
         start_time = time.time()
         # The data chapters are sent in transcribe_chapters.
-        await transcribe_audio_instance.transcribe_chapters(state)
+        state = await transcribe_audio_instance.transcribe_chapters(state)
         end_time = time.time()
         state.metadata.transcription_time = int(end_time - start_time)
         # Finally we have all the metadata info.")
         await send_sse_message("status", "Have the content.  Need a few moments to process.  Please hang on.")
         # Ordered the num_chapters early on because keeping track of the number of chapters. This way the client can better keep track of incoming chapters.
+        states = TranscriptionStatesSingleton().get_states()
+        states.save_state(state, logger)
         await send_sse_data_messages(state,["key","num_chapters","basename","metadata","chapters"])
 
     except TranscriptionException as e:

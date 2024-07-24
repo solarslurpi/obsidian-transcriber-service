@@ -1,20 +1,23 @@
 import asyncio
+import json
 from functools import partial
 import logging
 import os
 import re
 import yt_dlp
 from typing import List, Tuple
-from exceptions_code import ProgressHookException, YouTubeDownloadException
+from exceptions_code import ProgressHookException, YouTubeDownloadException, YouTubePostProcessingException
 from global_stuff import global_message_queue
 from logger_code import LoggerBase
-from metadata_shared_code import MetadataMixin, Metadata
-from utils import format_sse, send_sse_message
+from metadata_shared_code import Metadata
+
+from utils import format_sse
 
 from dotenv import load_dotenv
 
 load_dotenv()
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
+YOUTUBE_CACHE_FILEPATH = os.path.join(os.getenv("YOUTUBE_CACHE_DIRECTORY", "youtube_cache"), "youtube_cache.json")
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
 def progress_hook(info_dict, queue, loop):
@@ -35,28 +38,39 @@ def progress_hook(info_dict, queue, loop):
             print(f'Error: {e}')
             raise e
 
-class YouTubeHandler(MetadataMixin):
+class YouTubeHandler():
     def __init__(self, audio_input):
         self.audio_input = audio_input
 
-    async def extract(self) -> Tuple[Metadata, List, str]:
+    async def extract(self) -> Tuple[dict, List, str]:
         """
         Extracts metadata and audio from a YouTube video synchronously.
         """
         loop = asyncio.get_event_loop()
         download_task = asyncio.create_task(self.download_video(self.audio_input.youtube_url, global_message_queue, loop))
         # The transcription can't start until the download is complete. So... wait for it.
-        metadata, chapter_dicts, mp3_filepath = await download_task
-        return metadata, chapter_dicts, mp3_filepath
+        metadata_dict, chapter_dicts, mp3_filepath = await download_task
+        return metadata_dict, chapter_dicts, mp3_filepath
 
     async def download_video(self, url: str, queue: asyncio.Queue, loop: asyncio.AbstractEventLoop) -> Tuple[Metadata, List, str]:
         ydl_opts = self.get_ydl_opts(queue, loop)
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info_dict = await loop.run_in_executor(None, ydl.extract_info, url, True)
+                try:
+                    # The info that can be extracted is listed at https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#output-template
+                    info_dict = await loop.run_in_executor(None, ydl.extract_info, url, True)
+                except yt_dlp.utils.DownloadError as e:
+                    logger.error(f"Failed to download video for {url}: {e}")
+                    raise YouTubeDownloadException(f"Failed to download video for {url}: {e}")
+                except yt_dlp.utils.PostProcessingError as e:
+                    logger.error(f"Failed to post-process video for {url}: {e}")
+                    raise YouTubePostProcessingException(f"Failed to post-process video for {url}: {e}")
+                except Exception as e:
+                    logger.error(f"An error occurred: {e}")
                 # Go through the tags list in info_dict and replace spaces within each tag with underscores.
-                if 'tags' in info_dict:
-                    info_dict['tags'] = [re.sub(r'\s+', '_', tag) for tag in info_dict['tags']]
+                if 'tags' in info_dict: # tags are a list.
+                    tags_list = [re.sub(r'\s+', '_', tag) for tag in info_dict['tags']]
+                    info_dict['tags'] = ', '.join(tags_list)
                 potential_problems_filepath = info_dict['requested_downloads'][0]['filepath']
                 logger.debug(f"The file: {potential_problems_filepath} exists: {os.path.exists(potential_problems_filepath)}")
                 sanitized_filename = re.sub(r'[:]', '-', info_dict['title'])  # Replace colon with hyphen
@@ -68,15 +82,15 @@ class YouTubeHandler(MetadataMixin):
                     logger.warning(f"Warning: The file '{mp3_filepath}' already exists.")
                 # add in the audio quality.
                 info_dict['audio_quality'] = self.audio_input.audio_quality
-                metadata = self.build_metadata_instance(info_dict)
                 chapter_dicts = info_dict.get('chapters', [])
                 if not chapter_dicts:
                     chapter_dicts = [{'title': info_dict.get('title',''), 'start_time': 0.0, 'end_time': 0.0}]
         except YouTubeDownloadException as e:
             logger.error(f"Failed to download video for {url}: {e}")
             raise e
+        # Lose the properties yt-dlp adds that we don't need by converting to a Metadata object.
 
-        return metadata, chapter_dicts, mp3_filepath
+        return info_dict, chapter_dicts, mp3_filepath
 
     def get_ydl_opts(self, queue: asyncio.Queue, loop: asyncio.AbstractEventLoop) -> dict:
         ydl_opts = {
@@ -102,20 +116,3 @@ class YouTubeHandler(MetadataMixin):
             ],
         }
         return ydl_opts
-
-
-    # def _sanitize_filename(self, current_mp3_filepath: str) -> str:
-    #     def cleaned_name(uncleaned_name:str) -> str:
-    #         # Remove non-alphanumeric characters except for spaces, periods, and hyphens.
-    #         cleaned_name = re.sub(r"[^a-zA-Z0-9 \.-]", "", uncleaned_name)
-    #         # Replace spaces with underscores.
-    #         cleaned_name = cleaned_name.replace(" ", "_")
-    #         # Replace full-width colons and standard colons with a hyphen or other safe character
-    #         cleaned_name = cleaned_name.replace('：', '_').replace(':', '_')
-    #         return cleaned_name
-
-    #     current_mp3_basename = os.path.splitext(os.path.basename(current_mp3_filepath))[0]
-    #     cleaned_mp3_filename = cleaned_name(current_mp3_basename) + ".mp3"
-    #     cleaned_mp3_filepath = os.path.join(LOCAL_DIRECTORY, cleaned_mp3_filename)
-    #     os.rename(current_mp3_filepath,cleaned_mp3_filepath)
-    #     return cleaned_mp3_filepath

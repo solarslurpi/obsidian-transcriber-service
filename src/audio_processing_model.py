@@ -88,8 +88,11 @@ def save_local_audio_file(upload_file: UploadFile):
         os.makedirs(LOCAL_DIRECTORY)
 
     file_location = os.path.join(LOCAL_DIRECTORY, upload_file.filename)
-    with open(file_location, "wb+") as file_object:
-        file_object.write(upload_file.file.read())
-        file_object.close()
-    logger.debug(f"File saved to {file_location}")
+    if not os.path.exists(file_location):
+        with open(file_location, "wb+") as file_object:
+            file_object.write(upload_file.file.read())
+            file_object.close()
+        logger.debug(f"File saved to {file_location}")
+    else:
+        logger.debug(f"File {file_location} already exists.")
     return file_location

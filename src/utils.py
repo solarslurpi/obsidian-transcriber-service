@@ -7,7 +7,7 @@ import sys
 import time
 from typing import Dict
 
-from asyncio import Future
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -17,6 +17,8 @@ from logger_code import LoggerBase
 logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
+
+
 
 def format_sse(event: str, data: object) -> Dict:
     """

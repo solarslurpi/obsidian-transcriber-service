@@ -1,0 +1,268 @@
+{
+  "https://www.youtube.com/shorts/0rvxUNga68g_tiny": {
+    "key": "https://www.youtube.com/shorts/0rvxUNga68g_tiny",
+    "basename": "Bottom-up approach to note-taking with Obsidian",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/Bottom-up approach to note-taking with Obsidian.mp3",
+    "hf_model": "tiny.en",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "youtube_url": null,
+      "title": "Bottom-up approach to note-taking with Obsidian",
+      "audio_quality": "tiny",
+      "tags": "",
+      "description": "Check out my course for beginners, Obsidian for Everyone: https://courses.nicolevanderhoeven.com/o4e",
+      "duration": "0:00:58",
+      "channel": "Nicole van der Hoeven",
+      "upload_date": "20231010",
+      "uploader_id": "@nicolevdh",
+      "download_time": 6,
+      "transcription_time": 13
+    },
+    "chapters": [
+      {
+        "title": " ",
+        "start_time": 0.0,
+        "end_time": 58.2,
+        "text": " Hi, you might have already guessed that I also really like the bottom-up approach, and  there are basically three ways that I figure out what to work on.  The first is by exploring my notes and this could be by using the search pane, or by  using the Quickswitcher, or my favorite is Excalibrate.  Excalibrate lets me examine the links and relationships between notes.  The second way that I do this is through using Data View Queries.  Here to Data View Queries that I use, one tells me the notes by the number of outgoing  links and the top 10 of that is going to show me the maps of content that I already have  that I might want to elaborate on.  This one is notes by number of incoming links, so notes that I am linking to a lot in  other notes.  And the third way is by using randomness to have Obsidian Resurface notes that maybe you  hadn't considered working on.  If you want more details on this, I'm going to leave a link in the description below, do a  video that I made on emergent note taking.",
+        "number": 1
+      }
+    ],
+    "transcription_time": 0.0
+  },
+  "https://www.youtube.com/shorts/O8PjL86ZJB4_tiny": {
+    "key": "https://www.youtube.com/shorts/O8PjL86ZJB4_tiny",
+    "basename": "How do you know what frontmatter and links you should add",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/How do you know what frontmatter and links you should add.mp3",
+    "hf_model": "tiny.en",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "youtube_url": "https://www.youtube.com/shorts/O8PjL86ZJB4",
+      "title": "How do you know what frontmatter and links you should add?",
+      "audio_quality": "tiny",
+      "tags": "",
+      "description": "How do you know what frontmatter and links you should add? I think you should start with nothing, or as few of them as possible, and then add them later when you realise you need them. Starting with too many from the beginning is going to just add unnecessary complexity.\n\nCheck out my Obsidian for Beginners course: https://courses.nicolevanderhoeven.com/o4e",
+      "duration": "0:01:00",
+      "channel": "Nicole van der Hoeven",
+      "upload_date": "20230624",
+      "uploader_id": "@nicolevdh",
+      "download_time": 6,
+      "transcription_time": 13
+    },
+    "chapters": [
+      {
+        "title": " ",
+        "start_time": 0.0,
+        "end_time": 60.0,
+        "text": " Hi, Caliby, thanks for the comments. I think this is a really good point and a valid concern, so I wanted to clarify a bit more.  When I show in my videos, the front matter I have and the links and how I take notes already with the links,  that presents a false impression that that's what I did from the beginning. It is not.  In the beginning, I didn't know anything about front matter or what kind of connections were going to be important,  and I didn't even use links because one of the things Obsidian is really good at is that it shows you the unlinked mentions.  So you can just type it normally and then if you decide to make something a link in the future,  then it's not like those connections are lost. Obsidian will show you those in the unlinked references.  So I would recommend that you start like I did with as few front matter and links and systems as you can get away with  and then I think you'll eventually find your way to one that works for you. Good luck!",
+        "number": 1
+      }
+    ],
+    "transcription_time": 0.0
+  },
+  "https://www.youtube.com/shorts/mhd2Evgx6z0_tiny": {
+    "key": "https://www.youtube.com/shorts/mhd2Evgx6z0_tiny",
+    "basename": "Dedicate Time to Zoom Out!",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/Dedicate Time to Zoom Out!.mp3",
+    "hf_model": "tiny.en",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "youtube_url": "https://www.youtube.com/shorts/mhd2Evgx6z0",
+      "title": "Dedicate Time to Zoom Out!",
+      "audio_quality": "tiny",
+      "tags": "obsidian, linking_your_thinking, obsidian_app, pkm",
+      "description": "\ud83c\udf0c GET IDEAVERSE: https://start.linkingyourthinking.com/ideaverse-for-obsidian\n\ud83d\ude80 GET OBSIDIAN FLIGHT SCHOOL: https://www.linkingyourthinking.com/obsidian-flight-school\n\ud83c\udfdb\ufe0f JOIN THE MOST EPIC WORKSHOP: https://linkingyourthinking.com\n\ud83d\udcda LEARN \"HOW TO WORK A BOOK\": https://www.linkingyourthinking.com/how-to-work-a-book\n\n00:00 - Start\n\n\ud83d\udd06 GET WEEKLY INSIGHTS: https://www.linkingyourthinking.com/newsletter/yt\n\ud83d\udca5 SUBSCRIBE TO THIS CHANNEL: https://www.youtube.com/channel/UC85D7ERwhke7wVqskV_DZUA?sub_confirmation=1\n\n\ud83d\udc26 TWEET: https://twitter.com/NickMilo \n\ud83d\udcd6 READ: https://medium.com/@nickmilo22/my-pkm-story-3763985b7a3e\n\ud83c\udfac LEARN OBSIDIAN: https://youtu.be/QgbLb6QCK88 \n\ud83d\uddff DOWNLOAD OBSIDIAN: https://obsidian.md/\n\ud83d\udce9 EMAIL: support@linkingyourthinking.com \n\n\ud83d\udd16 TAGS: #Obsidian #obsidianapp #Obsidiannotetakingapp #LinkingYourThinking",
+      "duration": "0:00:47",
+      "channel": "Linking Your Thinking with Nick Milo",
+      "upload_date": "20240719",
+      "uploader_id": "@linkingyourthinking",
+      "download_time": 6,
+      "transcription_time": 11
+    },
+    "chapters": [
+      {
+        "title": " ",
+        "start_time": 0.0,
+        "end_time": 46.64,
+        "text": " You need to have time to zoom out.  We get so fixated on our patterns that we get into,  and our world becomes so small and narrow.  If you don't have dedicated time to zoom out,  you're going to get stuck in these patterns  that keep on repeating.  And typically, whatever was there,  like whatever opportunity,  it's not going to stay the same size.  It actually might start getting smaller over time,  because you're just kind of in the same rut.  You're just kind of spinning your wheels in the same rut.  Instead, what you need to do is zoom out.  Like you need to have time to go on a personal retreat  and do a life audit and get this like zoom out  on your life.  Go to a different space.  And that is going to lead to so many more aha moments.  And deeper, calm and understanding,  than simply doing the same stuff that's leading to burnout.",
+        "number": 1
+      }
+    ],
+    "transcription_time": 0.0
+  },
+  "https://www.youtube.com/watch?v=CyIFemoE200_medium": {
+    "key": "https://www.youtube.com/watch?v=CyIFemoE200_medium",
+    "basename": "Chemical vs Organic Cultivation",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/Chemical vs Organic Cultivation.mp3",
+    "hf_model": "medium.en",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "youtube_url": "https://www.youtube.com/watch?v=CyIFemoE200",
+      "title": "Chemical vs Organic Cultivation",
+      "audio_quality": "medium",
+      "tags": "",
+      "description": "Shop: www.KISorganics.com\nInstagram: @KISorganics\nTwitter: @KISorganics\nFacebook: www.Facebook.com/KISorganics",
+      "duration": "0:09:03",
+      "channel": "KIS Organics",
+      "upload_date": "20240722",
+      "uploader_id": "@kisorganics",
+      "download_time": 11,
+      "transcription_time": 114
+    },
+    "chapters": [
+      {
+        "title": " ",
+        "start_time": 0.0,
+        "end_time": 139.28,
+        "text": " Okay, so one of the first decisions that you have to make as a grower is how you want to grow.  Whether you want to use chemical nutrients or mineral salts, or you want to grow using organic practices or some combination of both.  Now, if you're taking this course, you're probably more in organics like we are,  but it's important to still understand what the pros and cons are and the benefits and maybe the the detriments of using  mineral salts or  gardening organically. So let's just start with some of the pros of  using chemical fertilizers. So the pros  are  one, the their salts. So all these things are chemical salts,  and they're immediately available to the plant.  So your nutrient uptake is  immediate.  Now with organic cultivation, one of the things to keep in mind is that when we add  our nutrients in the form of organic amendments like alfalfa meal or  I  don't know, neem cake or  anything, even gypsum, things like that, the nutrients are slow to be released.  So that means we're looking at let's say  seven to ten up to fourteen days and  it's going to vary depending on the moisture content of your soil, the biological activity in the soil, and  also the  particle size of  whatever it is that you're adding. A smaller particle is going to have greater surface area,  it's going to get broken down faster and become available sooner. And certain things like I  think of like silica sand or glacial rock dust, those sorts of things are going to take a very long time to break down  weeks to months and may not even be available that first or second cycle with your plants.  So that is something to be aware of with organic cultivation.  One other thing to be aware of is as far as the plant's concerned,  nitrates are nitrates,  phosphates are phosphates,",
+        "number": 1
+      },
+      {
+        "title": " ",
+        "start_time": 139.48,
+        "end_time": 276.76,
+        "text": " you know, calcium is calcium. It's how we get there. So you know,  N equals N whether we apply ammonium nitrates or whether we apply  feather meal for example. Now the process to get there with organic cultivation is  this nitrogen cycling process that's really  beneficial for a lot of other reasons.  It's also attaching carbon to the nitrogen, for example, when we use something like feather meal.  And so it's going to have other plant benefits.  But that being said, as far as the plant is concerned, if it's getting, you know,  20 ppm of nitrates from ammonium nitrate versus feather meal, it's going to react and grow the same.  One other thing to think about with mineral salts is that you have a lot more tools in your toolbox.  You can address  deficiencies much faster.  You have the ability to flush the media and then reintroduce nutrients much quicker.  So there's a lot of benefits there. With organics,  we just have fewer tools in our toolbox.  So we have to be more educated and we have to be more thoughtful in terms of how we're handling things.  One of the cons actually I want to add  with chemical fertilizers is plants will crash  really fast. So if you're not staying on top of your fertility and you're feeding your plant slowly,  so if you have an issue, whether in your reservoir or in your program,  you can see that a lot faster with chemical fertilizers than you were with organic cultivation.  Again, this is nutrients are available in ionic form and we'll talk a little bit more about that later in the course.  One other advantage to chemical fertilizers in some ways, and this is debatable, but is that they're very affordable.  They're typically derived from fossil fuels, but they're not terribly expensive.  You can grow with Miracle Grow, for example, for pennies on the dollar.  Now we can achieve even more affordable options using organic cultivation,  but again, this takes a little bit more thoughtfulness on our part.  And one of the big benefits of organic cultivation is that it's more sustainable.",
+        "number": 2
+      },
+      {
+        "title": " ",
+        "start_time": 276.76,
+        "end_time": 404.76,
+        "text": " Chemical fertilizers are not as sustainable.  They require a lot of energy to create.  And this gets me to my next point.  Another con of them is they don't build soil structure or they don't build our soil.  They're not adding organic matter.  They're not improving the quality of our soil.  They're not adding organic matter.  They're not adding organic matter.  They're not adding organic matter.  They're not adding organic matter.  They're not improving the quality of our soil.  That's something that organic cultivation does do.  So it allows our soils to improve over time, which is really key if we want to reuse the media.  Put that over there.  Let me see. A couple other things.  One of the pros of chemical fertilizers is it allows you to grow in conditions that you may not be able to,  plants might traditionally not want to grow or be able to grow.  So if we have very, very poor soils or environments where we don't even really have soil,  and we need to grow in water, for example, using aquaculture, that's where chemical fertilizers may really shine.  NASA, for example, most of their research is using chemical fertilizer.  So it allows us to grow in poor soils.  Now we can build soil quality over time with organic cultivation,  but if we don't have good soils, it's going to be really difficult to grow organically.  Let me see if I have any other notes here that I'd written down.  Oh, here's a big one.  I would say if done correctly, like if you use a good chemical fertilizer, like Jaxx, for example,  you have a lot less risk of heavy metals.  So it's easier to manage heavy metals.  Because you can just source clean salts, you can use a clean media, and you have less issues there.",
+        "number": 3
+      },
+      {
+        "title": " ",
+        "start_time": 405.76,
+        "end_time": 526.76,
+        "text": " Whereas in organics, again, it's doable, it just takes more education and more thoughtfulness  in terms of how we're managing our soil, because typically with mineral salts, we're not reusing our media.  Now, some people will wash and reuse it, but traditionally it's tossed out and new media is brought in.  Whereas in organics, we're reusing our media in a lot of cases,  and that requires us to manage our heavy metals very carefully.  One other advantage to chemical fertilizers to be aware of is you can grow a large plant in a tiny pot.  Because we are feeding the plant continually, we can get away with a tiny container.  Whereas with organic cultivation, we're going to need a much larger mass of soil to feed the plant and keep feeding it.  Otherwise, we're just going to end up on a bottled nutrient program, even if we're using organics,  which is really frankly not much better.  Now, if we want to talk about maximizing yield and potentially plant health,  and we want to be agnostic about it, meaning that we're not going to get involved into an ethical debate around organics versus mineral salts,  then really realistically from a plant perspective, the best option for growing the biggest plants would be some sort of hybrid method.  That's where we use organic media and then incorporate a small amount of mineral salts to feed the plant  and give it a little bit boost of ionic salts, mineral nutrients, when it needs them.  So we can tailor a program potentially that would not be certified organic,  but would allow us to grow with the biggest yields and the biggest plants.  Because we see this with all the giant pumpkin growers.  I've worked with a number of growers that are using that.  And again, that just opens up more tools to the toolbox.  Now, in my own personal garden, I choose to just use organics,  but I'm aware that that's not the situation for everyone and not everyone may have the exact same feelings about it that I do.",
+        "number": 4
+      },
+      {
+        "title": " ",
+        "start_time": 526.76,
+        "end_time": 539.76,
+        "text": " So I think it's important to, in some respects, be agnostic about it and acknowledge the fact that like a hybrid method is the best way to grow the biggest plants.  And we'll talk more about this in depth. And if you have questions, you can comment and reach out.",
+        "number": 5
+      }
+    ],
+    "transcription_time": 0.0
+  },
+  "https://www.youtube.com/shorts/8fNFd2Xswjs_tiny": {
+    "key": "https://www.youtube.com/shorts/8fNFd2Xswjs_tiny",
+    "basename": "The most dangerous problem in math",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/The most dangerous problem in math.mp3",
+    "hf_model": "tiny.en",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "youtube_url": null,
+      "title": "The most dangerous problem in math",
+      "audio_quality": "tiny",
+      "tags": "veritasium, math, mathematics, collatz_conjecture, Ulam_conjecture, Kakutani's_problem, Thwaites_conjecture, 3n+1",
+      "description": "The Collatz Conjecture is easy enough for almost anyone to understand but notoriously difficult to solve.",
+      "duration": "0:01:00",
+      "channel": "Veritasium",
+      "upload_date": "20240424",
+      "uploader_id": "@veritasium",
+      "download_time": 6,
+      "transcription_time": 13
+    },
+    "chapters": [
+      {
+        "title": " ",
+        "start_time": 0.0,
+        "end_time": 60.32,
+        "text": " This is the most dangerous problem in mathematics.  Here's how it works.  Pick a number, seven.  Good choice.  We're going to apply two rules.  If the number is odd, we multiply by three and add one.  Three times seven is 21, plus one is 22.  If the number is even, we divide by two.  22 divided by two is 11.  Now we keep applying these two rules.  It's 40, which is even.  So we divide by two, 20 divided by two, 10 divided by two, five odd.  Multiply by three, 15, add one, 16 divided by two.  That's eight and then four, two and one.  Now one is odd.  So we multiply by three and add one, which equals four.  But four goes to two, goes to one.  So we're in a loop.  And the lowest number is one.  Now the conjecture is this.  Every positive integer.  If you apply these rules, we'll eventually end up  in the four, two, one loop.",
+        "number": 1
+      }
+    ],
+    "transcription_time": 0.0
+  },
+  "https://www.youtube.com/watch?v=4Pc6EqS0KHw_medium": {
+    "key": "https://www.youtube.com/watch?v=4Pc6EqS0KHw_medium",
+    "basename": "After Harvest SOPs",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/After Harvest SOPs.mp3",
+    "hf_model": "medium.en",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "youtube_url": "https://www.youtube.com/watch?v=4Pc6EqS0KHw",
+      "title": "After Harvest SOPs",
+      "audio_quality": "medium",
+      "tags": "",
+      "description": "Shop: www.KISorganics.com\nInstagram: @KISorganics\nTwitter: @KISorganics\nFacebook: www.Facebook.com/KISorganics",
+      "duration": "0:02:47",
+      "channel": "KIS Organics",
+      "upload_date": "20240722",
+      "uploader_id": "@kisorganics",
+      "download_time": 6,
+      "transcription_time": 48
+    },
+    "chapters": [
+      {
+        "title": " ",
+        "start_time": 0.0,
+        "end_time": 119.44,
+        "text": " Okay, so after harvesting, one of the most important things that you can do to get ready  for the next cycle is to do a really good job of cleaning your room and preparing for  the next round.  So we just finished harvesting and as you can see for the most part we just cut the  stems and then left the root ball.  So now what I'm going to do is I'm going to come back through, I'm going to pull out all  of my blue mat stuff.  We're going to take this out and check it for leaks as well as wash it.  You can just soak it in a bucket like this with some water, maybe a light bleach solution.  I'm going to come through and I'm going to wash the floors, mop them with a light bleach  solution after sweeping or blowing out the space.  I'm going to come through and I'm going to wipe down my lights just to make sure that  I'm getting full efficacy.  There's no dust or anything blocking them.  You can only do that if you have lights that you can wipe down as in a glass surface.  If you have something with exposed diodes or just conformal coating, I'd be really careful  about wiping that down, especially with anything other than just water.  So that's a consideration too.  But then I'm going to come through, take it and the reason we want to remove the roots,  you don't have to do this step, but the reason that we do it, at least remove the main root  This guy's really in here.  And I'm not getting all the root fragments.  I'm not being that careful.  But the roots of the plants are where you're going to find the most heavy metals as well  as hoplite and viroid and things like that.  So if you're dealing with any pathogens or you're concerned about heavy metals, it's  always a good idea to remove them.  Got a little worm right here.  Leave him in the bed.  And then I'm just going to take this root ball out, shake off the soil.  And then that's going to go to my compost pile.",
+        "number": 1
+      },
+      {
+        "title": " ",
+        "start_time": 119.44,
+        "end_time": 166.82,
+        "text": " And I'll do that for all the root balls.  I think I have six planted in this bed.  I could have gone as high as nine, but I have plant count limits for my medical license  here in Washington State.  So I could only do 15 plants, which meant I did 12 in each bed.  So I'm just going to go through and pull that out.  Again, wipe everything down that I can.  Because the soil is staying in place and I can't clean the soil, I want to make sure  everything else in the room has been wiped down and cleaned to the best of my ability.  And that's really about it.  I did a soil test while the plants were still in flower.  So once the bed is cleaned out, I can immediately amend it with those amendments, wash the blue  mats and get those reinstalled, and get my next round started right away.",
+        "number": 2
+      }
+    ],
+    "transcription_time": 0.0
+  },
+  "https://www.youtube.com/watch?v=NthulrqIUKQ_medium": {
+    "key": "https://www.youtube.com/watch?v=NthulrqIUKQ_medium",
+    "basename": "Seed Starter Formulations-Considerations",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/Seed Starter Formulations-Considerations.mp3",
+    "hf_model": "medium.en",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "youtube_url": "https://www.youtube.com/watch?v=NthulrqIUKQ",
+      "title": "Seed Starter Formulations:Considerations",
+      "audio_quality": "medium",
+      "tags": "",
+      "description": "Shop: www.KISorganics.com\nInstagram: @KISorganics\nTwitter: @KISorganics\nFacebook: www.Facebook.com/KISorganics",
+      "duration": "0:07:45",
+      "channel": "KIS Organics",
+      "upload_date": "20240722",
+      "uploader_id": "@kisorganics",
+      "download_time": 7,
+      "transcription_time": 69
+    },
+    "chapters": [
+      {
+        "title": " ",
+        "start_time": 0.0,
+        "end_time": 127.69999999999999,
+        "text": " Okay, so let's talk today about seed starter mixes and formulations as well as considerations when starting seeds.  So first and foremost, I want to say that seeds contain all the nutrients that they need to germinate and initially grow.  Once they get a little bit larger, they're gonna need fertility,  but you don't really want a lot of fertility in your seed starter mix.  One nice thing about seed starter is  there's a lot of good options out there if you don't want to make your own.  You can use Jiffy Pots, you can use  commercially made seed starter mixes, and you can find ones, you know, even the ones at Home Depot would work.  This is our seed starter mix.  What we use is a combination of peat moss,  coco coir, vermiculite,  and a little bit of calcium and organic fertilizer. And that's a good  general seed starter  recipe to follow, and I'll give you more details here in a moment.  But one of the things that we want to think about when  considering a seed starter mix is we want something that's gonna have very good gas exchange,  very good water holding capacity, and allow for us to also  retain a lot of moisture. So when we go to water, we want a mix that's going to allow for good root growth and  here's one that I watered recently, and you can see the roots of these corn are coming out the bottom.  And also it's not gonna have large aeration.  See how it's small here? Because large aeration is actually gonna prevent, could prevent or restrict germination.  So by comparison in our  regular soil mixes, we use a combination of medium and large pumice.  This is just way too large to fit into these smaller cell trays.  So you want to be using a fine vermiculite or fine perlite in your seed starter mix.  In general,  levels of aeration would be higher. So in a living soil, you know, something like our mix over here,  we're using approximately 33-34% aeration.  That's a combination of 2 thirds medium, 1 third large pumice. Now with our seed starter mix,",
+        "number": 1
+      },
+      {
+        "title": " ",
+        "start_time": 127.94,
+        "end_time": 255.3,
+        "text": " we're gonna be closer to 40 to 50 percent aeration of whether that's the fine perlite or vermiculite.  And then the rest of that's gonna be either peat moss or coca-cora.  Now do you want to use earthworm castings or compost in your seed starter mix?  And this is a little bit of a complicated question and you just need to be thoughtful in your decision here. So  there are benefits to using earthworm castings or using high quality compost in your seed starter mix.  The advantage there is you're gonna get more beneficial biology, better nutrient cycling.  It's gonna provide some levels of nutrients as well and also help with the overall tilt of your seed starter mix.  The disadvantages are that compost could also be bringing in biology that you don't want. Pathogens like  things that cause damping off and other  fungal pathogens as well as fungus gnats, which are  annoying and if they get out of control populations get too high, they will start eating plant roots. So  that's just a decision that everyone kind of has to make on their own. A lot of people are very successful  adding, you know, 10 to 15 percent compost. Some people go as high as 50 percent compost, which I typically don't recommend.  But you can do it successfully.  So you're gonna want to experiment with what makes sense in your mix just being aware of those risks associated with using  compost or earthworm castings.  So beyond that, getting back to our formulation, you're looking at let's say  40 to 50 percent perlite.  That other  50 to 60 percent would be made up of a combination of peat moss,  coccocore, or maybe a tiny amount of compost in the 10 to 15 percent range.  Once you have a mix that you like in that regard, you test it out, it holds water,  it does well, then you're going to add a little bit of  agricultural lime or oyster shell or rilacinite to raise the pH of that into a range that's appropriate.  Somewhere between 6-4 to 7 is a good pH range for your seed starter mix.",
+        "number": 2
+      },
+      {
+        "title": " ",
+        "start_time": 255.78,
+        "end_time": 385.18,
+        "text": " And you're gonna have to experiment a little bit with that to hit the range that you want depending on the ratios of  those other inputs. If you're using just coccocore, so your soil is already going to be relatively neutral,  then you're gonna forgo any agricultural lime, oyster shell, or rilacinite and just use gypsum. And  with the gypsum, I would personally in a  cubic foot of soil, I would go as high as a cup of gypsum, which is a fairly aggressive rate,  but because of the solubility of gypsum, you can get away with that. And  that would just ensure that you're gonna have adequate calcium for your plant during its initial life stage.  If I was using a combination of peat moss and  my pH was low and I raised it up using eggs,  agricultural lime, oyster shell, things like that, then I might drop that rate down to say a third of a cup to half a cup of gypsum per cubic foot.  As far as other ingredients to add,  people use a wide variety of things ranging from kelp meal, alfalfa meal, even just a  starter fertilizer or organic fertilizer. If it's below, let's say 4-4-4 in terms of NPK value,  you could cut the application rates in half and probably half to a quarter and probably safely add it to your seed starter mix.  Otherwise, what you're doing is once the plant gets established like this, when you go to transplant,  so this one I started in a cell and transplant into a larger pot, I went into our higher fertility soil with that transplant,  that's when you can add more nutrients after the plant's established. So you don't really need a lot  for these initial stages.  The only other consideration that I wanted to show you is  be aware if you're using peat moss, that  seed starter mix, and our seed starter mix would be guilty of this as well,  it can be hydrophobic.  So what happens with that is it doesn't want to accept water and you'll have to use a surfactant  or maybe a saponin as a way of making the water wetter essentially.",
+        "number": 3
+      },
+      {
+        "title": " ",
+        "start_time": 385.7,
+        "end_time": 464.54,
+        "text": " Even just a drop of dish soap will help with that. Now if you don't choose to use that,  which I don't always have something on hand or choose to add something,  what I'll do is I'll just water more slowly or use sub irrigated watering as a technique to make sure the pots getting wet.  Now what can happen is you go to water and this looks wet and in this case it really is wet,  but what can happen is you can dig under here a little bit and you'll see that it's actually  bone dry. That water that you think is getting soaked up in there is  literally just rushing through to the bottom and that's where sub irrigated watering really comes in handy because you can have a tray,  a tray like this where it's two trays and one tray will have  holes in it and the other tray will not and by filling up the water in the tray or by when you water  and you over water that water will sit in the tray. You don't want the water like super high,  but if it's just a little bit in the bottom there that will wick up slowly over time and make sure that the  soil actually gets wet.  So those are just some pointers in regards to seed starting mixes and  formulations. In this case, you can see this one cell dried out,  so I'll be watering just this one today because everything else in here is really wet.  But I hope I hope that answers questions about seed starter formulations.",
+        "number": 4
+      }
+    ],
+    "transcription_time": 0.0
+  }
+}

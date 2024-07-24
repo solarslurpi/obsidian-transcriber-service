@@ -1,0 +1,32 @@
+{
+  "https://www.youtube.com/shorts/0rvxUNga68g_tiny": {
+    "key": "https://www.youtube.com/shorts/0rvxUNga68g_tiny",
+    "basename": "Bottom-up approach to note-taking with Obsidian",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/Bottom-up approach to note-taking with Obsidian.mp3",
+    "hf_model": "tiny.en",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "youtube_url": "https://www.youtube.com/shorts/0rvxUNga68g",
+      "title": "Bottom-up approach to note-taking with Obsidian",
+      "audio_quality": "tiny",
+      "tags": "",
+      "description": "Check out my course for beginners, Obsidian for Everyone: https://courses.nicolevanderhoeven.com/o4e",
+      "duration": "0:00:58",
+      "channel": "Nicole van der Hoeven",
+      "upload_date": "20231010",
+      "uploader_id": "@nicolevdh",
+      "download_time": 6,
+      "transcription_time": null
+    },
+    "chapters": [
+      {
+        "title": "Bottom-up approach to note-taking with Obsidian",
+        "start_time": 0.0,
+        "end_time": 0.0,
+        "text": null,
+        "number": null
+      }
+    ],
+    "transcription_time": 0.0
+  }
+}
