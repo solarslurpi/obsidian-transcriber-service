@@ -51,6 +51,6 @@ def build_metadata_instance(info_dict: Dict) -> Metadata:
         total_seconds = int(seconds)
         mins, secs = divmod(total_seconds, 60)
         hours, mins = divmod(mins, 60)
-        return f"{hours:d}:{mins:02d}:{secs:02d}"
+        return f"{hours:02d}:{mins:02d}:{secs:02d}"
     info_dict['duration'] = _format_time(info_dict.get('duration', 0))
     return Metadata(**info_dict)
