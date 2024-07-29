@@ -25,7 +25,7 @@ Key features include:
 ## Installation
 To set up the Obsidian Transcriber Service on your local machine, follow these steps. This guide will walk you through cloning the repository, setting up a virtual environment, installing dependencies, and starting the service.
 
-### Local Installation
+### Through GitHub
 To set up the Obsidian Transcriber Service on your local machine, follow these steps.
 #### Clone the Repository
 To get started, clone the repository to your local machine using the following command:
@@ -55,7 +55,15 @@ INFO:     Started server process [25]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 ```
-
+## Through Docker
+The dockerfile for Windows is provided in the repository.
+#### Download the Docker Image
+Go to the Docker Hub repository and download the image:
+```sh
+To build the Docker image, navigate to the root directory of the repository and run the following command:
+```sh
+docker build -t obsidian-transcriber-service .
+```
 ## Get Started
 Once the service is running, try connecting via FastAPI's Swagger UI. Open a browser and navigate to `http://127.0.0.1:8080/docs`. You should see the Swagger UI, which provides an interactive interface for testing the service's endpoints.
 

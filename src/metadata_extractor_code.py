@@ -42,7 +42,7 @@ class MetadataExtractor:
     def get_handler(self, audio_input):
         if audio_input.youtube_url:
             return YouTubeHandler(audio_input)
-        elif audio_input.audio_file:
+        elif audio_input.audio_filepath:
             return AudioHandler(audio_input)
         else:
             raise AttributeError("audio_input does not have a supported attribute")

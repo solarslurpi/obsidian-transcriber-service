@@ -35,8 +35,8 @@ class AudioHandler():
         self.audio_input = audio_input
 
     async def extract(self) -> Tuple[Dict, List, str]:
-        audio_info_dict, chapter_dicts = self._build_audio_info_dict_and_chapter_dicts(self.audio_input.audio_file)
-        return audio_info_dict, chapter_dicts, self.audio_input.audio_file
+        audio_info_dict, chapter_dicts = self._build_audio_info_dict_and_chapter_dicts(self.audio_input.audio_filepath)
+        return audio_info_dict, chapter_dicts, self.audio_input.audio_filepath
 
     def _build_audio_info_dict_and_chapter_dicts(self, audio_filepath: str) -> Tuple[Dict, List]:
         # Using the TinyTag library to extract metadata from the audio file.

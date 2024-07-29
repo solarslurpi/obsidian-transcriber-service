@@ -24,9 +24,9 @@ import re
 from dotenv import load_dotenv
 load_dotenv()
 
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
 from pathvalidate import validate_filename, validate_filepath, ValidationError
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator, field_serializer
 import torch
 from typing import Optional
 
@@ -56,10 +56,23 @@ COMPUTE_TYPE_MAP = {
 
 class AudioProcessRequest(BaseModel):
     youtube_url: Optional[str] = Field(None, description="YouTube URL to download audio from. Input requires either a YouTube URL or mp3 file.")
-    audio_file: Optional[str] = Field(None, description="The stored local audio file.")
+    audio_filepath: Optional[str] = Field(None, description="The stored local audio file.")
     audio_quality: str = Field(default="default", description="Audio quality setting for processing.")
 
-    @field_validator('audio_file')
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_audio_source(cls, values):
+        youtube_url = values.get('youtube_url')
+        audio_filepath = values.get('audio_filepath')
+        match (youtube_url is not None, audio_filepath is not None):
+            case (True, True):
+                raise HTTPException(status_code=400, detail="Both youtube_url and file cannot have values.")
+            case (False, False):
+                raise HTTPException(status_code=400, detail="Need either a YouTube URL or mp3 file.")
+        return values
+
+    @field_validator('audio_filepath')
     def is_valid_audio_file_path(cls, v):
         # Note: Audio file can be None if a YouTube URL is provided.
         if v is None:
@@ -68,11 +81,7 @@ class AudioProcessRequest(BaseModel):
             validate_filepath(file_path=v, platform='auto')
         except ValidationError as e:
             raise ValueError(f"{v} is not a valid file path. {e}")
-        try:
-            filename = os.path.basename(v)
-            validate_filename(filename, platform='auto')
-        except ValidationError as e:
-            raise ValueError(f"{v} is not a valid file path.")
+
         file_extension = os.path.splitext(v)[1].lower()
         if file_extension not in SUPPORTED_AUDIO_FORMATS:
             raise ValueError(f"{v} has an unsupported audio format. Supported formats are: {', '.join(SUPPORTED_AUDIO_FORMATS)}")
@@ -89,9 +98,9 @@ class AudioProcessRequest(BaseModel):
         # Remove and new lines or blanks at beginning and end of the string
         v = v.strip(" \n")
         # Verify that the audio quality is one of the keys in the AUDIO_QUALITY_MAP
-        if v not in AUDIO_QUALITY_MAP.keys():
-            logger.warning(f"{v} is not a valid audio quality. Defaulting to 'default' audio quality.")
-            return "default"
+        if v not in AUDIO_QUALITY_MAP.keys() :
+            logger.debug(f"{v} will be converted to the default value.")
+            v = "default"
         return v
 
     @staticmethod
@@ -102,16 +111,22 @@ class AudioProcessRequest(BaseModel):
         return youtube_regex.match(url) is not None
 
 def save_local_audio_file(upload_file: UploadFile):
-    # Ensure the local directory exists
-    if not os.path.exists(LOCAL_DIRECTORY):
-        os.makedirs(LOCAL_DIRECTORY)
+    try:
+        # Ensure the local directory exists
+        if not os.path.exists(LOCAL_DIRECTORY):
+            os.makedirs(LOCAL_DIRECTORY)
 
-    file_location = os.path.join(LOCAL_DIRECTORY, upload_file.filename)
-    if not os.path.exists(file_location):
-        with open(file_location, "wb+") as file_object:
-            file_object.write(upload_file.file.read())
-            file_object.close()
-        logger.debug(f"File saved to {file_location}")
-    else:
-        logger.debug(f"File {file_location} already exists.")
-    return file_location
+        file_location = os.path.join(LOCAL_DIRECTORY, upload_file.filename)
+        if not os.path.exists(file_location):
+            with open(file_location, "wb+") as file_object:
+                file_object.write(upload_file.file.read())
+            logger.debug(f"File saved to {file_location}")
+        else:
+            logger.debug(f"File {file_location} already exists.")
+        return file_location
+    except OSError as e:
+        logger.error(f"Failed to save file {upload_file.filename} due to OS error: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"An unexpected error occurred while saving file {upload_file.filename}: {e}")
+        raise

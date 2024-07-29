@@ -90,6 +90,8 @@ class YouTubeHandler():
                 if 'tags' in info_dict: # tags are a list.
                     tags_list = [re.sub(r'\s+', '_', tag) for tag in info_dict['tags']]
                     info_dict['tags'] = ', '.join(tags_list)
+                # Add in the YouTube url
+                info_dict['youtube_url'] = url
                 potential_problems_filepath = info_dict['requested_downloads'][0]['filepath']
                 logger.debug(f"The file: {potential_problems_filepath} exists: {os.path.exists(potential_problems_filepath)}")
                 sanitized_filename = re.sub(r'[:]', '-', info_dict['title'])  # Replace colon with hyphen

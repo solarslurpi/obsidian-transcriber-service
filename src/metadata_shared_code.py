@@ -20,15 +20,14 @@
 ###########################################################################################
 import os
 from typing import Dict, Optional
-from audio_processing_model import AUDIO_QUALITY_MAP
-from pydantic import BaseModel, Field, field_validator
+from audio_processing_model import AUDIO_QUALITY_MAP, AudioProcessRequest
+from pydantic import BaseModel, Field, field_serializer
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 
 class Metadata(BaseModel):
-    youtube_url: Optional[str] = Field(default=None, alias="original_url", description="URL of the YouTube video.")
+    audio_input: Optional[AudioProcessRequest] = Field(default=None, description="YouTube URL or audio filepath as well as audio_quality.")
     title: Optional[str] = Field(default=None, description="Title field as it is in index_dict. It will be the YouTube title or the basefilename of the mp3 file.")
-    audio_quality: Optional[str] = Field(default=None, description="Audio quality of the audio file.")
     tags: Optional[str] = Field(default=None, description="Tags associated with the metadata. The CustomStr annotation is used to convert the list of tags provided by YouTube to a string.")
     description: Optional[str] = Field(default=None, description="Description associated with the metadata.")
     duration: Optional[str] = Field(default=None, description="Duration of the audio in hh:mm:ss.")
@@ -38,11 +37,14 @@ class Metadata(BaseModel):
     download_time: Optional[int] = Field(default=None, description="Number of seconds it took to download the YouTube Video.")
     transcription_time: Optional[int] = Field(default=None, description="Number of seconds it took to transcribe a 'chapter' of an audio file.")
 
-    @field_validator('audio_quality')
-    def validate_audio_quality(cls, v):
-        if v not in AUDIO_QUALITY_MAP.keys():
-            raise ValueError('audio_quality must be a key in AUDIO_QUALITY_MAP.')
-        return v
+    # @field_serializer('audio_input')
+    # def serialize_audio_input(self, value: Optional[AudioProcessRequest]) -> dict:
+    #     if value:
+    #         return {
+    #             "audio_source": value.youtube_url or os.path.basename(value.audio_filepath)  if value.audio_filepath else None,
+    #             "audio_quality": value.audio_quality
+    #         }
+    #     return {}
 
 def build_metadata_instance(info_dict: Dict) -> Metadata:
     def _format_time(seconds: float) -> str:

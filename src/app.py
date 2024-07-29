@@ -69,29 +69,30 @@ app.add_middleware(
 
 @app.post("/api/v1/process_audio")
 async def init_process_audio(youtube_url: Optional[str] = Form(None),
-                             file: UploadFile = File(None),
+                             upload_file: UploadFile = File(None),
                              audio_quality: str = Form("default")):
-    # Sort out the upload file audio input.
-    match(youtube_url is not None, file is not None):
-        case (True, True):
-            raise HTTPException(status_code=400, detail="Both youtube_url and file cannot have values.")
-        case (False, False):
-            raise HTTPException(status_code=400, detail="Need either a YouTube URL or mp3 file.")
-        case (False, True):
-            audio_file = save_local_audio_file(file)
-        case (True, False):
-            audio_file =None
     try:
+        # Instantiante and trigger Pydantic class validation.
         audio_input = AudioProcessRequest(
             youtube_url=youtube_url,
-            audio_file=audio_file,
+            audio_filepath=upload_file.filename if upload_file else None,
             audio_quality=audio_quality
         )
     except ValueError as e:
         await send_sse_message("server-error", str(e))
-        return {"status": f"Error processing audio. Error: {e}"}
-    # Tasks run as an independent coroutine, and should handle its errors.
-
+        return {"status": f"Error reading in the audio input. Error: {e}"}
+    if upload_file:
+        # Save the audio file locally to use for transcription processing.
+        try:
+            audio_input.audio_filepath = save_local_audio_file(upload_file)
+        except OSError as e:
+            error_message = f"OS error occurred while saving uploaded audio file: {e}"
+            await send_sse_message("server-error", error_message)
+            return {"status": error_message}
+        except Exception as e:
+            error_message = f"Unexpected error occurred while saving uploaded audio file: {e}"
+            await send_sse_message("server-error", error_message)
+            return {"status": error_message}
     asyncio.create_task(process_check(audio_input))
     return {"status": "Transcription process has started."}
 

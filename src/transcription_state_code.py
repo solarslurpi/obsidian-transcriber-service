@@ -230,8 +230,8 @@ class TranscriptionStates:
     def make_key(self, audio_input: AudioProcessRequest) -> str:
         if audio_input.youtube_url:
             name_part = audio_input.youtube_url
-        elif audio_input.audio_file:
-            name_part = os.path.splitext(os.path.basename(audio_input.audio_file))[0]
+        elif audio_input.audio_filepath:
+            name_part = os.path.splitext(os.path.basename(audio_input.audio_filepath))[0]
         else: # Given both the youtube URL are None and the audio_file is None, the code doesn't have an audio file to transcribe.
             raise KeyException("No youtube url or audio file to transcribe.")
         quality_part = audio_input.audio_quality
@@ -306,14 +306,16 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
             raise e
         except Exception as e:
             raise
-    # Set mp3_filepath to audio_input.mp3_file if not None, else mp3_filepath
-    audio_filepath = audio_input.audio_file if audio_input.audio_file else audio_filepath
+
     hf_model = AUDIO_QUALITY_MAP[audio_input.audio_quality]
+    # The compute type is hard coded to whatever the default is.
     hf_compute_type = COMPUTE_TYPE_MAP['default']
     # At this point, we have everything except the transcript_text of the chapters.
     try:
         metadata = build_metadata_instance(info_dict)
         metadata.download_time = int(end_time - start_time)
+        metadata.audio_input = AudioProcessRequest(youtube_url=audio_input.youtube_url, audio_filepath=audio_input.audio_filepath, audio_quality=audio_input.audio_quality)
+
         chapters = build_chapters(chapter_dicts)
         # Write code that gets the basename of mp3_filepath
         filename_no_extension = os.path.splitext(os.path.basename(audio_filepath))[0]

@@ -26,6 +26,7 @@ from pydub import AudioSegment
 import psutil
 import torch
 
+
 from exceptions_code import TranscriberException
 from logger_code import LoggerBase
 from transcription_state_code import TranscriptionState, Chapter
@@ -41,10 +42,10 @@ if not os.path.exists(LOCAL_DIRECTORY):
     os.makedirs(LOCAL_DIRECTORY)
 
 class TranscribeAudio:
-    def __init__(self, audio_quality:str):
+    def __init__(self, hf_model:str):
         try:
-            self.model = whisper.load_model(audio_quality)
-            logger.debug(f"Model loaded. Size: {audio_quality}")
+            self.model = whisper.load_model(hf_model)
+            logger.debug(f"Model loaded. Size: {hf_model}")
         except Exception as e:
             logger.error(f"Error loading model. {e}")
             send_sse_message("server-error", f"Error loading model. {e}")

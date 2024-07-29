@@ -25,6 +25,7 @@ import time
 from dotenv import load_dotenv
 load_dotenv()
 
+from audio_processing_model import AUDIO_QUALITY_MAP
 from pydantic import BaseModel, field_validator, ValidationError
 from transcription_code import TranscribeAudio
 from transcription_state_code import TranscriptionState, TranscriptionStatesSingleton
@@ -78,8 +79,8 @@ async def process_check(audio_input):
         if state:
             state = None
         return
-
-    transcribe_audio_instance = TranscribeAudio(audio_input.audio_quality)
+    hf_model = AUDIO_QUALITY_MAP[audio_input.audio_quality]
+    transcribe_audio_instance = TranscribeAudio(hf_model)
 
     "Each chapter is represented as a coroutine, allowing for concurrent processing. The code waits for all these coroutines to complete execution."
     try:
