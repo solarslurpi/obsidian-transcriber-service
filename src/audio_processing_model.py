@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from fastapi import UploadFile, HTTPException
-from pathvalidate import validate_filename, validate_filepath, ValidationError
+from pathvalidate import validate_filepath, ValidationError
 from pydantic import BaseModel, Field, field_validator, model_validator, field_serializer
 import torch
 from typing import Optional
@@ -98,9 +98,10 @@ class AudioProcessRequest(BaseModel):
         # Remove and new lines or blanks at beginning and end of the string
         v = v.strip(" \n")
         # Verify that the audio quality is one of the keys in the AUDIO_QUALITY_MAP
-        if v not in AUDIO_QUALITY_MAP.keys() :
-            logger.debug(f"{v} will be converted to the default value.")
-            v = "default"
+        if v not in AUDIO_QUALITY_MAP.keys() or v == "default":
+            audio_quality = AUDIO_QUALITY_MAP["default"]
+            logger.debug(f"{v} will be converted to {audio_quality}.")
+            return audio_quality
         return v
 
     @staticmethod

@@ -1,110 +1,109 @@
 {
-  "test_default": {
-    "key": "test_default",
-    "basename": "test",
-    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local\\test.mp3",
-    "hf_model": "tiny.en",
+  "https://www.youtube.com/shorts/aTBpPnEoSkA_tiny.en": {
+    "key": "https://www.youtube.com/shorts/aTBpPnEoSkA_tiny.en",
+    "basename": "hand cranked solder dispenser learn.adafruit.comcranky-adabot-solder-dispenser #adafruit #3dprint",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/hand cranked solder dispenser learn.adafruit.comcranky-adabot-solder-dispenser #adafruit #3dprint.mp3",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "audio_input": {
+        "youtube_url": "https://www.youtube.com/shorts/aTBpPnEoSkA",
+        "audio_filepath": null,
+        "audio_quality": "tiny.en"
+      },
+      "title": "hand cranked solder dispenser learn.adafruit.com/cranky-adabot-solder-dispenser #adafruit #3dprint",
+      "tags": "",
+      "description": "",
+      "duration": "00:01:00",
+      "channel": "Adafruit Industries",
+      "upload_date": "20240731",
+      "uploader_id": "@adafruit",
+      "download_time": "00:00:03",
+      "transcription_time": "00:00:02"
+    },
+    "chapters": [
+      {
+        "title": " ",
+        "start_time": 0.0,
+        "end_time": 59.68,
+        "text": " Hey what's up folks, this week we're 3D printing a solder dispenser this time with a crank.  We think this is a fun way to store your solder and actually really fun. I mean who doesn't like to use a crank?  We designed this kit as a free download, links are in the description.  The head was dual extruded for printing the eyes and mouth in a different color,  but we also have a single color version, you'll just need to print the pieces separately.  The crank is a single part that features a print and place hinge with the free spinning handle.  It's actually the same part from our USB HID project. The cover snap fits on top and can easily  come off. It uses the gyroid infill so it has this neat pattern that makes it a bit stretchy.  This lets you see through the top so you can check on the solder. The solder wire is  press fitted onto this holder and it rotates freely so you can give it a nice spin.",
+        "number": 1
+      }
+    ]
+  },
+  "Bluelab_Pulse_Meter_Review_mp3_tiny": {
+    "key": "Bluelab_Pulse_Meter_Review_mp3_tiny",
+    "basename": "Bluelab_Pulse_Meter_Review_mp3",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local\\Bluelab_Pulse_Meter_Review_mp3.mp3",
     "hf_compute_type": "float16",
     "metadata": {
       "audio_input": {
         "youtube_url": null,
-        "audio_filepath": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local\\test.mp3",
-        "audio_quality": "default"
+        "audio_filepath": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local\\Bluelab_Pulse_Meter_Review_mp3.mp3",
+        "audio_quality": "tiny"
       },
-      "title": "test.mp3",
+      "title": "Bluelab Pulse Meter Review mp3.mp3",
       "tags": null,
       "description": null,
       "duration": "00:05:17",
       "channel": null,
-      "upload_date": "2024-07-29",
+      "upload_date": "2024-07-30",
       "uploader_id": null,
-      "download_time": 0,
-      "transcription_time": 27
+      "download_time": "00:00:00",
+      "transcription_time": "00:00:13"
     },
     "chapters": [
       {
         "title": " ",
         "start_time": 0.0,
-        "end_time": 118.14,
-        "text": " This is the Blue Lab Pulse Meter.  I'm very excited to be able to add it to our lineup of products at Kiss Organics and we  have the best price online.  This meter is not for everyone, but here's what it does.  It measures moisture, conductivity, or EC, and temperature directly in the root zone with  one click.  It connects to the Blue Lab Pulse app to view, analyze, and store all your measurement data,  that's available in English, Spanish, Dutch, German, and Korean.  And it has a built-in depth gauge to get consistent measurements with every reading.  It works in soil, cocoa, core, nutrient solution, and living soils.  So how and why would you want something like this for your garden?  Well, first off, it will quickly measure moisture levels.  It is waterproof, unlike the Blue Matt moisture meter, and I love that I can get a reading  immediately, instead of having to wait for a while between readings.  This means I can use one meter and check multiple pots or beds in a matter of seconds to see  how evenly I'm watering, or if I have any dry spots or if any containers got missed when  watering.  Secondly, it tells me EC.  EC is a measurement of electrical conductivity in your soil, which is a good way of seeing  what level of fertility you have in your media.  Cations like calcium, magnesium, potassium, sodium, and ammonium, as well as anions like  sulfur, chloride, nitrates, and bicarbonates are all salts that when dissolved in solution  in soils will carry electrical charges and current.  Now to high of an EC, we'll potentially put osmotic pressure on your roots, and that can  be bad.  So it's about getting it into the proper range, and we really want a soil test so we can  determine what is making up the salt concentration in our soil.  But it will give us a rough idea of fertility in our soil mix if we know all our inputs,  and staying within certain EC ranges, typically 0.7 to 2.8, will allow for good microbial  activity and important soil processes like respiration and decomposition.",
+        "end_time": 118.1,
+        "text": " This is the Blue Lab Postmeter.  I'm very excited to be able to add it to our lineup of products at Kiss Organics and we have  the Best Price Online.  This meter is not for everyone, but here's what it does.  It measures moisture, conductivity, or EC, and temperature directly in the root zone with  one click.  It connects to the Blue Lab Post app to view, analyze, and store all your measurement data,  the app's available in English, Spanish, Dutch, German, and Korean, and it has a built-in  depth gauge to get consistent measurements with every reading.  It works in soil, cocoa core, nutrient solution, and living soils.  So how and why would you want something like this for your garden?  Well first off, it will quickly measure moisture levels.  It is waterproof, unlike the Blue Matt moisture meter, and I loved it I can get a reading  immediately, instead of having to wait for a while between readings.  This means I can use one meter and check multiple pots or beds in a matter of seconds to  see how evenly I'm watering, or if I have any dry spots or if any containers got missed  when watering.  Secondly, it tells me EC.  EC is a measurement of electrical conductivity in your soil, which is a good way of seeing  what level of fertility you have in your media.  Cat ions like calcium, magnesium, potassium, sodium, and ammonium, as well as an ions  like sulfur, chloride, nitrates, and bicarbonates are all salts that when dissolved in  solution in soils will carry electrical charges and current.  Now to high of an EC will potentially put osmotic pressure on your roots, and that can  be bad.  So it's about getting it into the proper range and we really want to soil test so we can  determine what is making up the salt concentration in our soil.  But it will give us a rough idea of fertility in our soil mix if we know all our inputs.  Instead with in certain EC ranges, typically 0.7 to 2.8 will allow for good microbial  activity and important soil processes like respiration and decomposition.",
         "number": 1
       },
       {
         "title": " ",
-        "start_time": 118.14,
-        "end_time": 237.98000000000002,
-        "text": " Keep in mind that several factors can affect soil EC such as moisture content, soil  structure, and the presence of dissolved salts.  As the soil moisture increases, so will your EC.  And lastly, I get an idea of temperature.  Cold roots-owned temperatures can inhibit plant growth and uptake of many essential nutrients  like phosphorus, and two high of soil temps can make it easier for plant pathogens to grow.  I'm currently calibrating it with my blue matte moisture meter, and we'll be comparing  it with an arometer here soon.  Okay, so this is the iPhone app that comes along with it.  You can use it on Android as well, though.  The app is called Pulse, again it's available in multiple languages, and essentially I just  push the button on the Pulse meter itself to connect it.  It connects quickly via Bluetooth, and then at that point I don't have to keep reconnecting  with every calibration or every photo I want to take.  I just click the Measure button, and then I can go in as I'm doing here, and I can add  a photo to that measurement, as well as any notes that I may want.  So here's a good place I can add, say, the VPD in the room at the time.  I need pest pressures I'm dealing with when I water, and keep track of all of that right  here in the app.  So it's a nice little journal in some ways.  Now this could get complicated in a facility where you have multiple plants and things like  that, but you do have the ability to export the data.  So if you had a facility, for example, you could just measure one room, export that data,  and then keep the files somewhere else associated with it.  But since I just haven't been using it in this room, I can go back through historically  and look at my notes.  And in time you see an orange dot there next to the recording, that tells me that I took  a picture or added extra notes.  So that's a really handy feature to quickly go back through and look at what was going on  in the room at that time for tracking things.  So again, not for everyone, but if you're into data, this is a really cool tool that",
+        "start_time": 118.1,
+        "end_time": 232.57999999999998,
+        "text": " Keep in mind that several factors can affect soil EC such as moisture content, soil structure,  and the presence of dissolved salts.  As the soil moisture increases, so will your EC.  And lastly, I get an idea of temperature.  Cold brood zone temperatures can inhibit plant growth and the uptake of many essential  nutrients like phosphorus and to high of soil temps can make it easier for plant pathogens  to grow.  I'm currently calibrating it with my blue matte moisture meter and will be comparing  it with an aromiter here soon.  So this is the iPhone app that comes along with it.  You can use it on Android as well though.  The app is called pulse, again it's available in multiple languages, and essentially  I just push the button on the pulse meter itself to connect it.  It connects quickly via Bluetooth.  And then at that point I don't have to keep reconnecting with every calibration or every  photo I want to take.  I just click the measure button and then I can go in as I'm doing here and I can add a photo  to that measurement as well as any note so that I may want.  So here's a good place I can add, say the VPD in the room at the time, any pest pressures  I may dealing with when I watered and keep track of all of that right here in the app.  So it's a nice little journal in some ways.  Now this could get complicated in a facility where you have multiple plants and things  like that.  But you do have the ability to export the data.  So if you had a facility for example you could just measure one room, export that data, and  then keep the files somewhere else associated with it.  But since I just have using it in this room I can go back through historically and look  at my notes and in time you see an orange dot there next to their according, that tells  me that I took a picture or added extra notes.  So that's a really handy feature to quickly go back through and look at what was going  on in the room at that time for tracking things.",
         "number": 2
       },
       {
         "title": " ",
-        "start_time": 237.98000000000002,
-        "end_time": 316.62,
-        "text": " could potentially help you in your grow.  So you can see what I was doing here was I was comparing the 35% moisture in this case correlated  approximately with my blue matte moisture meter.  At that point it said I was at about 75 m bar.  Now I've been playing around with this for a little while and getting a bunch of measurements  to kind of get an idea of EC and moisture level and how those things relate to say something  like the blue matte moisture meter.  And I find I probably want to be around 35 to 45% is a moisture range.  And that probably correlates to about 80, let's say 70 to 90 in terms of m bar ratings.  But one other cool feature here, I can now export this data, I can send it to someone  or I can save it to a file or email it to myself.  And I think that's another really great feature associated with this.  You can configure it based on the type of media you're using in this case, I just  configured it to a mix media for living soil.  Well that's it, that's the blue lab pulse meter.  I hope I covered the pros and cons as well as why someone might want to use this tool  in their garden.  Thanks for checking out my review and you can go to KISOrganics.com to learn more or order  one for yourself.  Thanks.",
+        "start_time": 232.57999999999998,
+        "end_time": 316.53999999999996,
+        "text": " So again not for everyone but if you're in the data this is a really cool tool that could  potentially help you in your grow.  And so you can see what I was doing here was I was comparing the 35% moisture in this  case correlated approximately with my blue mat moisture meter.  At that point it said I was at about 75 m bar.  Now I've been playing around with this for a little while and getting a bunch of measurements  to kind of get an idea of EC and moisture level and how those things relate to say something  like the blue mat moisture meter.  And I find I probably want to be around 35 to 45% is a moisture range and that probably  correlates to about 80 let's say 70 to 90 in terms of m bar ratings.  But one other cool feature here I can now export this data I can send it to someone or  I can save it to a file or email it to myself and I think that's another really great  feature associated with this you can configure it based on the type of media using in this  case I just configured it to a mixed media for living soil.  Well that's it that's the blue lab pulse meter.  I hope I covered the pros and cons as well as why someone might want to use this tool in  their garden.  Thanks for checking out my review and you can go to kisorganics.com to learn more or order one  for yourself.  Thanks.",
         "number": 3
       }
-    ],
-    "transcription_time": 0.0
+    ]
   },
-  "https://www.youtube.com/watch?v=KbZDsrs5roI_default": {
-    "key": "https://www.youtube.com/watch?v=KbZDsrs5roI_default",
-    "basename": "Bluelab Pulse Meter Review",
-    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/Bluelab Pulse Meter Review.mp3",
-    "hf_model": "tiny.en",
+  "https://www.youtube.com/shorts/aTBpPnEoSkA_medium": {
+    "key": "https://www.youtube.com/shorts/aTBpPnEoSkA_medium",
+    "basename": "hand cranked solder dispenser learn.adafruit.comcranky-adabot-solder-dispenser #adafruit #3dprint",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/hand cranked solder dispenser learn.adafruit.comcranky-adabot-solder-dispenser #adafruit #3dprint.mp3",
     "hf_compute_type": "float16",
     "metadata": {
       "audio_input": {
-        "youtube_url": "https://www.youtube.com/watch?v=KbZDsrs5roI",
+        "youtube_url": "https://www.youtube.com/shorts/aTBpPnEoSkA",
         "audio_filepath": null,
-        "audio_quality": "default"
+        "audio_quality": "medium"
       },
-      "title": "Bluelab Pulse Meter Review",
+      "title": "hand cranked solder dispenser learn.adafruit.com/cranky-adabot-solder-dispenser #adafruit #3dprint",
       "tags": "",
-      "description": "I am really enjoying using the Bluelab Pulse Meter in my grow room! I go over how it works as well as some potential uses for living soil growers.\n\nWe currently have it available on our website for the best price online if anyone wants to try it. https://www.kisorganics.com/products/bluelab-pulse-multimedia-ec-mc-meter?_pos=1&_sid=cfeeacdab&_ss=r\n\nShop: www.KISorganics.com\nInstagram: @KISorganics\nTwitter: @KISorganics\nFacebook: www.Facebook.com/KISorganics",
-      "duration": "00:05:18",
-      "channel": "KIS Organics",
-      "upload_date": "20240426",
-      "uploader_id": "@kisorganics",
-      "download_time": 7,
-      "transcription_time": 17
+      "description": "",
+      "duration": "00:01:00",
+      "channel": "Adafruit Industries",
+      "upload_date": "20240731",
+      "uploader_id": "@adafruit",
+      "download_time": "00:00:03",
+      "transcription_time": "00:00:09"
     },
     "chapters": [
       {
-        "title": "Intro",
+        "title": " ",
         "start_time": 0.0,
-        "end_time": 15.0,
-        "text": " This is the Blue Lab Pulse Meter. I'm very excited to be able to add it to our lineup of products at Kiss Organics and we have the best price online. This meter is not for everyone, but here's what it does. It measures moisture.",
+        "end_time": 59.6,
+        "text": " Hey what's up folks, this week we're 3D printing a solder dispenser, this time with a crank.  We think this is a fun way to store your solder and actually really fun,  I mean who doesn't like to use a crank?  We designed this kit as a free download, links are in the description.  The head was dual extruded for printing the eyes and mouth in a different color,  but we also have a single color version, you'll just need to print the pieces separately.  The crank is a single part that features a print and place hinge with a free spinning handle.  It's actually the same part from our USB HID project.  The cover snap fits on top and can easily come off.  It uses the gyroid infill so it has this neat pattern that makes it a bit stretchy.  This lets you see through the top so you can check on the solder.  The solder wire is press fitted onto this holder and it rotates freely so you can give it a nice spin.",
         "number": 1
-      },
-      {
-        "title": "Features",
-        "start_time": 15.0,
-        "end_time": 66.0,
-        "text": " conductivity or EC and temperature directly in the root zone with one click. It connects to the Blue Lab Pulse app to view, analyze, and store all your measurement data. The app's available in English, Spanish, Dutch, German, and Korean. And it has a built-in depth gauge to get consistent measurements with every reading. It works in soil, cocoa, core, nutrient solution, and living soils. So how and why would you want something like this for your garden? Well, first off, it will quickly measure moisture levels. It is waterproof, unlike the Blue Matt moisture meter, and I love that I can get a reading immediately, instead of having to wait for a while between readings. This means I can use one meter and check multiple pots or beds in a matter of seconds to see how evenly I'm watering, or if I have any dry spots, or if any containers got missed when watered.",
-        "number": 2
-      },
-      {
-        "title": "Soil EC",
-        "start_time": 66.0,
-        "end_time": 148.0,
-        "text": " Secondly, it tells me EC. EC is a measurement of electrical conductivity in your soil, which is a good way of seeing what level of fertility you have in your media. Cadd ions like calcium, magnesium, potassium, sodium, and ammonium, as well as anions like sulfur, chloride, nitrates, and bicarbonates are all salts that when dissolved in solution in soils will carry electrical charges and current. Now to hive in EC will potentially put osmotic pressure on your roots, and that can be bad. What's about getting it into the proper range, and we really want a soil test so we can determine what is making up the salt concentration in our soil. But it will give us a rough idea of fertility in our soil mix if we know all our inputs, and staying within certain EC ranges, typically 0.7 to 2.8, will allow for good microbial activity and important soil processes like respiration and decomposition. Keep in mind that several factors can affect soil EC such as moisture content, soil structure, and the presence of dissolved salts. As the soil moisture increases, so will your EC. And lastly, I get an idea of temperature. Cold root zone temperatures can inhibit plant growth and uptake of many essential nutrients like phosphorus, and two hive soil temps can make it easier for plant pathogens to grow. I'm currently calibrating it with my blue matte moisture meter, and will be comparing it with an arometer here soon.",
-        "number": 3
-      },
-      {
-        "title": "Pulse App",
-        "start_time": 148.0,
-        "end_time": 301.0,
-        "text": " Okay, so this is the iPhone app that comes along with it. You can use it on Android as well though. The app is called Pulse. Again, it's available on multiple languages. And essentially, I just push the button on the Pulse meter itself to connect it. It connects quickly via Bluetooth. And then at that point, I don't have to keep reconnecting with every calibration or every photo I want to take. I just click the Measure button. And then I can go in as I'm doing here. And I can add a photo to that measurement as well as any notes that I may want. So here's a good place I can add, say, the VPD in the room at the time. Any pest pressures I'm dealing with when I watered. And keep track of all of that right here in the app. So it's a nice little kind of like journal in some ways. Now this could get complicated in a facility where you have multiple plants and things like that. But you do have the ability to export the data. So if you had a facility, for example, you could just measure one room, export that data and then keep the files somewhere else associated with it. But since I just have me using it in this room, I can go back through historically and look at my notes. And in time you see an orange dot there next to the recording, that tells me that I took a picture or added extra notes. So that's a really handy feature to quickly go back through and look at what was going on in the room at that time for tracking things. So again, not for everyone, but if you're into data, this is a really cool tool that could potentially help you in your grow. And so you can see what I was doing here was I was comparing the 35% moisture in this case correlated approximately with my blue matte moisture meter. At that point it said I was at about 75 m bar. Now I've been playing around with this for a little while and getting a bunch of measurements to kind of get an idea of EC and moisture level and how those things relate to say something like the blue matte moisture meter. And I find I probably want to be around 35 to 45% is a moisture range. And that probably correlates to about 80, let's say 70 to 90 in terms of m bar ratings. But one other cool feature here, I can now export this data. I can send it to someone or I can save it to a file or email it to myself. And I think that's another really great feature associated with this. You can configure it based on the type of media you're using. In this case, I just configured it to a mix media for living soil.",
-        "number": 4
-      },
-      {
-        "title": "Conclusion",
-        "start_time": 301.0,
-        "end_time": 318.0,
-        "text": " Well, that's it. That's the Blue Lab Pulse Meter. I hope I covered the pros and cons as well as why someone might want to use this tool in their garden. Thanks for checking out my review and you can go to KISOrganics.com to learn more or order one for yourself. Thanks.",
-        "number": 5
       }
-    ],
-    "transcription_time": 0.0
+    ]
   }
 }

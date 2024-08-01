@@ -33,7 +33,7 @@ from logger_code import LoggerBase
 from metadata_extractor_code import MetadataExtractor
 from metadata_shared_code import Metadata, build_metadata_instance
 from audio_processing_model import AudioProcessRequest, AUDIO_QUALITY_MAP, COMPUTE_TYPE_MAP
-from utils import send_sse_message
+from utils import send_sse_message, format_time
 
 
 # Create a logger named after the module
@@ -79,11 +79,9 @@ class TranscriptionState(BaseModel):
     key: str = Field(..., description="A unique key that allows the client to request the same content again by querying the state with this key.")
     basename: str = Field(..., description="Basename of the transcript note to be used by the client when creating the note.")
     local_audio_path: str = Field(..., description="Local storage of the audio file. ")
-    hf_model: str = Field(default=None, description="Set when initializing state from user's audio_input.audio_quality.")
     hf_compute_type: Union[str,torch.dtype] = Field(default=None, description="Used by transcriber. Either float32 or float16")
-    metadata: Metadata = Field(default=None, description="Turned into YAML frontmatter for a (Obsidian) note. YouTube metadata is very rich.  mp3 file is not so rich in metadata..")
+    metadata: Metadata = Field(default=None, description="Turned into YAML frontmatter for a (Obsidian) note. YouTube metadata is very rich.  audio files not so much...")
     chapters: List[Chapter] = Field(default_factory=list, description="Each entry provides the metadata as well as the transcript text of a chapter of audio content.")
-    transcription_time: float = Field(default=0.0,description="Number of seconds it took to transcribe the audio file.")
 
     @field_validator('chapters')
     def check_chapters(cls, v):
@@ -130,8 +128,8 @@ class TranscriptionState(BaseModel):
         self.chapters = []
 
     def is_complete(self) -> bool:
-        # Check if all required fields (excluding transcription_time) are set
-        required_fields = ['key', 'basename', 'local_audio_path', 'hf_model', 'hf_compute_type', 'metadata', 'chapters']
+        # Check if all required fields are set.
+        required_fields = ['key', 'basename', 'local_audio_path', 'hf_compute_type', 'metadata', 'chapters']
         for field in required_fields:
             try:
                 if getattr(self, field) is None: # field exists and is None
@@ -158,10 +156,8 @@ class TranscriptionState(BaseModel):
         # Nullify other fields
         self.local_audio_path = None
         self.key = None
-        self.hf_model = None
         self.hf_compute_type = None
         self.metadata = None
-        self.transcription_time = 0
         self.transcript_done = False
 
 
@@ -307,19 +303,18 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
         except Exception as e:
             raise
 
-    hf_model = AUDIO_QUALITY_MAP[audio_input.audio_quality]
     # The compute type is hard coded to whatever the default is.
     hf_compute_type = COMPUTE_TYPE_MAP['default']
     # At this point, we have everything except the transcript_text of the chapters.
     try:
         metadata = build_metadata_instance(info_dict)
-        metadata.download_time = int(end_time - start_time)
+        metadata.download_time = format_time(float(end_time - start_time))
         metadata.audio_input = AudioProcessRequest(youtube_url=audio_input.youtube_url, audio_filepath=audio_input.audio_filepath, audio_quality=audio_input.audio_quality)
 
         chapters = build_chapters(chapter_dicts)
         # Write code that gets the basename of mp3_filepath
         filename_no_extension = os.path.splitext(os.path.basename(audio_filepath))[0]
-        state = TranscriptionState(key=key, basename=filename_no_extension, local_audio_path=audio_filepath, hf_model=hf_model, hf_compute_type=hf_compute_type,  metadata=metadata, chapters=chapters)
+        state = TranscriptionState(key=key, basename=filename_no_extension, local_audio_path=audio_filepath, hf_model=audio_input.audio_quality, hf_compute_type=hf_compute_type,  metadata=metadata, chapters=chapters)
         # Since we are here, add the first process of audio prep prior to transcription to the cache
         states.add_state(state, logger)
         await send_sse_message(event="status", data="Content has been prepped. All systems go for transcription.")

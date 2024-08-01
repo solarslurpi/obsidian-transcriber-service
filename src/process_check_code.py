@@ -32,7 +32,7 @@ from transcription_state_code import TranscriptionState, TranscriptionStatesSing
 from exceptions_code import   LocalFileException, MetadataExtractionException, TranscriptionException, SendSSEDataException
 from logger_code import LoggerBase
 from transcription_state_code import initialize_transcription_state
-from utils import send_sse_message
+from utils import send_sse_message, format_time
 
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
@@ -79,8 +79,7 @@ async def process_check(audio_input):
         if state:
             state = None
         return
-    hf_model = AUDIO_QUALITY_MAP[audio_input.audio_quality]
-    transcribe_audio_instance = TranscribeAudio(hf_model)
+    transcribe_audio_instance = TranscribeAudio(audio_input.audio_quality)
 
     "Each chapter is represented as a coroutine, allowing for concurrent processing. The code waits for all these coroutines to complete execution."
     try:
@@ -88,7 +87,7 @@ async def process_check(audio_input):
         # The data chapters are sent in transcribe_chapters.
         state = await transcribe_audio_instance.transcribe_chapters(state)
         end_time = time.time()
-        state.metadata.transcription_time = int(end_time - start_time)
+        state.metadata.transcription_time = format_time(float(end_time - start_time))
         # Finally we have all the metadata info.")
         await send_sse_message("status", "Have the content.  Need a few moments to process.  Please hang on.")
         # Ordered the num_chapters early on because keeping track of the number of chapters. This way the client can better keep track of incoming chapters.
@@ -146,14 +145,18 @@ async def send_sse_data_messages(state:TranscriptionState, content_texts: list):
             elif content_text_property == "chapters":
                 for chapter in state.chapters:
                     await send_sse_message("data", {'chapter': chapter.to_dict_with_start_end_strings()})
-                    await asyncio.sleep(0.1)
+                    # Add a delay to allow the service to process the data as well as allow the client to have time to process the data.
+                    # I used 2 seconds.  This is a bit arbitrary.  It could be adjusted.
+                    await asyncio.sleep(2)
             elif content_text_property == "num_chapters":
                 value = len(state.chapters)
                 await send_sse_message("data", {content_text_property:value})
             else:
                 value = getattr(state, content_text_property)
                 await send_sse_message("data", {content_text_property:value})
-            await asyncio.sleep(0.1)
+            # Add a delay to allow the service to process the data as well as allow the client to have time to process the data.
+            # I used 2 seconds.  This is a bit arbitrary.  It could be adjusted.
+            await asyncio.sleep(2)
         except SendSSEDataException as e:
             logger.error(f"process_check_code.send_sse_data_messages: Error {e}.")
             raise e

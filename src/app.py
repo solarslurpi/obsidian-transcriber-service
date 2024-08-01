@@ -71,7 +71,14 @@ app.add_middleware(
 async def init_process_audio(youtube_url: Optional[str] = Form(None),
                              upload_file: UploadFile = File(None),
                              audio_quality: str = Form("default")):
+    async def clear_queue(queue):
+        while True:
+            try:
+                queue.get_nowait()  # remove an item
+            except asyncio.QueueEmpty:
+                break
     try:
+        await clear_queue(global_message_queue)
         # Instantiante and trigger Pydantic class validation.
         audio_input = AudioProcessRequest(
             youtube_url=youtube_url,
@@ -143,8 +150,9 @@ async def event_generator(request: Request):
                 event = message['event']
                 data = message['data']
                 if event == "server-error" or (event == "data" and data == 'done'):
+                    logger.debug(f"--> SERVER ERROR. EXITING EVENT GENERATOR. Event: {event}, Data: {data}")
                     break
-                logger.debug(f"app.event_generator: Message received from the queue. Event: {event}, Data: {data}")
+                logger.debug(f"--> SENDING MESSAGE. Event: {event}, Data: {data}")
                 # Just in case the message is an empty string or None.
                 if message:
                     message_id_counter += 1

@@ -21,7 +21,9 @@
 import os
 from typing import Dict, Optional
 from audio_processing_model import AUDIO_QUALITY_MAP, AudioProcessRequest
-from pydantic import BaseModel, Field, field_serializer
+from pydantic import BaseModel, Field
+
+from utils import format_time
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 
@@ -34,25 +36,11 @@ class Metadata(BaseModel):
     channel: Optional[str] = Field(default=None, description="channel name")
     upload_date: Optional[str] = Field(default=None, description="upload date")
     uploader_id: Optional[str] = Field(default=None, description="uploader id")
-    download_time: Optional[int] = Field(default=None, description="Number of seconds it took to download the YouTube Video.")
-    transcription_time: Optional[int] = Field(default=None, description="Number of seconds it took to transcribe a 'chapter' of an audio file.")
+    download_time: Optional[str] = Field(default=None, description="Number of seconds it took to download the YouTube Video.")
+    transcription_time: Optional[str] = Field(default=None, description="Number of seconds it took to process the transcription.")
 
-    # @field_serializer('audio_input')
-    # def serialize_audio_input(self, value: Optional[AudioProcessRequest]) -> dict:
-    #     if value:
-    #         return {
-    #             "audio_source": value.youtube_url or os.path.basename(value.audio_filepath)  if value.audio_filepath else None,
-    #             "audio_quality": value.audio_quality
-    #         }
-    #     return {}
 
 def build_metadata_instance(info_dict: Dict) -> Metadata:
-    def _format_time(seconds: float) -> str:
-        if not isinstance(seconds, (int, float)):
-            return "0:00:00"
-        total_seconds = int(seconds)
-        mins, secs = divmod(total_seconds, 60)
-        hours, mins = divmod(mins, 60)
-        return f"{hours:02d}:{mins:02d}:{secs:02d}"
-    info_dict['duration'] = _format_time(info_dict.get('duration', 0))
+
+    info_dict['duration'] = format_time(info_dict.get('duration', 0))
     return Metadata(**info_dict)

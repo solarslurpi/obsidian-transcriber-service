@@ -19,6 +19,13 @@ logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 
 
+def format_time(seconds: float) -> str:
+    if not isinstance(seconds, (int, float)):
+        return "0:00:00"
+    total_seconds = int(seconds)
+    mins, secs = divmod(total_seconds, 60)
+    hours, mins = divmod(mins, 60)
+    return f"{hours:02d}:{mins:02d}:{secs:02d}"
 
 def format_sse(event: str, data: object) -> Dict:
     """

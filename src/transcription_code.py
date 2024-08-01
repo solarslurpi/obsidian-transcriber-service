@@ -42,10 +42,10 @@ if not os.path.exists(LOCAL_DIRECTORY):
     os.makedirs(LOCAL_DIRECTORY)
 
 class TranscribeAudio:
-    def __init__(self, hf_model:str):
+    def __init__(self, audio_quality:str):
         try:
-            self.model = whisper.load_model(hf_model)
-            logger.debug(f"Model loaded. Size: {hf_model}")
+            self.model = whisper.load_model(audio_quality)
+            logger.debug(f"Model loaded. Size: {audio_quality}")
         except Exception as e:
             logger.error(f"Error loading model. {e}")
             send_sse_message("server-error", f"Error loading model. {e}")
@@ -75,12 +75,9 @@ class TranscribeAudio:
         for index, audio_slice in enumerate(audio_slices, start=1):
             try:
                 # I started thinking breaking up the audio into chapters (when available in the metadata) would be a way to speed up the transcription process.  However, I found out the whisper model is not thread safe.
-                # transcribe_tasks = [asyncio.create_task(self.transcribe_audio(audio = audio_slice, audio_quality=state.hf_model) ) for audio_slice in audio_slices]
-                # results_list = await asyncio.gather(*transcribe_tasks)
                 await send_sse_message("status",f"Transcribing chapter {index}/{length_audio_slices}")
                 logger.debug(f"Transcribing chapter {index}/{length_audio_slices}")
-                result = await self.transcribe_audio(audio = audio_slice, audio_quality=state.hf_model)
-
+                result = await self.transcribe_audio(audio = audio_slice, audio_quality=state.metadata.audio_input.audio_quality)
                 results_list.append(result)
             except TranscriberException as e:
                 raise e
