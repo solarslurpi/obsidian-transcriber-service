@@ -25,12 +25,13 @@ import time
 from dotenv import load_dotenv
 load_dotenv()
 
+import logging_config
 from audio_processing_model import AUDIO_QUALITY_MAP
 from pydantic import BaseModel, field_validator, ValidationError
 from transcription_code import TranscribeAudio
 from transcription_state_code import TranscriptionState, TranscriptionStatesSingleton
 from exceptions_code import   LocalFileException, MetadataExtractionException, TranscriptionException, SendSSEDataException
-from logger_code import LoggerBase
+
 from transcription_state_code import initialize_transcription_state
 from utils import send_sse_message, format_time
 
@@ -40,25 +41,23 @@ LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 if not os.path.exists(LOCAL_DIRECTORY):
     os.makedirs(LOCAL_DIRECTORY)
 
-# Create a logger named after the module
-logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
+# Create a logger instance for this module
+logger = logging.getLogger(__name__)
 
 async def process_check(audio_input):
     # State data client requires:
     # filename, num_chapters, frontmatter, chapters (sent a chapter at a time, includes the transcript)/
     # Status messages sent "liberally" to let the client know what's going on.
     await send_sse_message("status", "We're on it! Checking inventory...")
-    logger.debug(f"process_check_code.process_check: audio_input: {audio_input}")
     # Fill up as much of the state as possible.
     state = None # Once instantiated, it is a TranscriptionState instance.
     try:
 
         state = await initialize_transcription_state(audio_input)
-        logger.debug("process_check_code.process_check: state initialized.")
 
         # If all the properties of the state are cached, we can send the all fields the client needs.
         if state.is_complete(): # This means the transcript text is already in the state instance.
-            logger.debug("State is complete. No reason to process further. Sending content to the client.")
+            logger.debug("State is complete. Sending content to the client.")
             await send_sse_data_messages(state, ["key","basename","num_chapters","metadata","chapters"])
             return
 
@@ -92,7 +91,7 @@ async def process_check(audio_input):
         await send_sse_message("status", "Have the content.  Need a few moments to process.  Please hang on.")
         # Ordered the num_chapters early on because keeping track of the number of chapters. This way the client can better keep track of incoming chapters.
         states = TranscriptionStatesSingleton().get_states()
-        states.save_state(state, logger)
+        states.save_state(state)
         await send_sse_data_messages(state,["key","num_chapters","basename","metadata","chapters"])
 
     except TranscriptionException as e:
@@ -138,11 +137,17 @@ async def send_sse_data_messages(state:TranscriptionState, content_texts: list):
 
         await send_sse_message("status", f"Invalid values: {invalid_values}")
         return
+    # Hold off to let the status messages go through.
+    await asyncio.sleep(2)
+    # Reset the state
+    await send_sse_message("reset-state", "Clear out the previous content.")
+    await asyncio.sleep(2)
     for content_text_property in content_texts:
         try:
             if content_text_property == "metadata":
                 await send_sse_message("data", {'metadata': state.metadata.model_dump(mode='json')})
             elif content_text_property == "chapters":
+
                 for chapter in state.chapters:
                     await send_sse_message("data", {'chapter': chapter.to_dict_with_start_end_strings()})
                     # Add a delay to allow the service to process the data as well as allow the client to have time to process the data.

@@ -3,9 +3,9 @@
 The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
 
 # Obsidian Transcriber Service
-The Obsidian Transcriber Service is a FastAPI-based application designed to transcribe YouTube videos or audio files into text. It assumes Obidian will be the front end through the Obsidian Transcriber plugin.  The service leverages OpenAI's whisper model to process audio files and generate metadata and text from the audio files into an Obsidian note with the metadata as front matter.
+The Obsidian Transcriber Service is a FastAPI-based application designed to transcribe YouTube videos or audio files into Obsidian notes. It assumes Obidian will be the front end through the Obsidian Transcriber plugin.  The service leverages OpenAI's whisper model to process audio files and generate metadata and text from the audio files into an Obsidian note with the metadata as front matter.
 
-## Key Features
+# Key Features
 Key features include:
 - Transcription of YouTube videos.
 - Transcription of '.mp3', '.m4a', '.wav', '.flac', '.aac', '.ogg', '.opus' audio files.
@@ -17,20 +17,17 @@ Key features include:
     - "large": "large-v3"
 > Note: The quality mappings map a user friendly name to the actual quality setting used by Whisper.
 - Extraction of metadata from YouTube videos or audio files to populate the front matter of the Obsidian note.
-- Organizing content into chapters by either utilizing chapter information embedded within a YouTube video or dividing the audio file into manageable time slices. By breaking the transcription into chapters, it becomes more structured and client-friendly, facilitating easier review, editing, and analysis.
-- Return of SSE messages to the client providing both status messages as well as data messages containing the transcription text and metadata.
-- Logging and debugging support to track the transcription process.
+- Content is organized into chapters by either utilizing chapter information embedded within a YouTube video or dividing the audio file into manageable time slices.
+- Returns status, data, and error messages to the client using Server-Sent Events (SSE).
 
 
-## Installation
-To set up the Obsidian Transcriber Service on your local machine, follow these steps. This guide will walk you through cloning the repository, setting up a virtual environment, installing dependencies, and starting the service.
 
-### Through GitHub
-To set up the Obsidian Transcriber Service on your local machine, follow these steps.
-#### Clone the Repository
+# Installation Through GitHub
+
+## Clone the Repository
 To get started, clone the repository to your local machine using the following command:
 ```sh
-git clone https://github.com/your-username/obsidian-transcriber-service.git
+git clone https://github.com/solarslurpi/obsidian-transcriber-service.git
 cd obsidian-transcriber-service
 ```
 #### Create a Virtual Environment
@@ -55,6 +52,22 @@ INFO:     Started server process [25]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 ```
+
+#### Test the Service
+Navigate to the Swagger UI at `http://<ip address to the machine hosting the service>:8081/docs` to test the service. The Swagger UI provides an interactive interface for testing the service's endpoints.  The server exposes the following endpoints:
+- `/api/v1/health` - Health check endpoint to verify the service is running.
+- `/api/v1/process_audio` - Start the transcription process of either a YouTube video or audio file.
+- `/api/v1/sse` - Server-Sent Events endpoint to send status, data, and error messages to the client.
+- `/api/v1/missing_content` - Request from the client to retrieve content that should have been sent but the client did not receive.
+
+Open the heath check endpoint and click the "Try it out" then "Execute" buttons   to test the service. The response should be:
+```json
+{
+  "status": "ok"
+}
+```
+
+
 ## Through Docker
 The dockerfile for Windows is provided in the repository.
 #### Download the Docker Image

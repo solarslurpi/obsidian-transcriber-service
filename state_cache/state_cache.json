@@ -1,37 +1,37 @@
 {
-  "https://www.youtube.com/shorts/aTBpPnEoSkA_tiny.en": {
-    "key": "https://www.youtube.com/shorts/aTBpPnEoSkA_tiny.en",
-    "basename": "hand cranked solder dispenser learn.adafruit.comcranky-adabot-solder-dispenser #adafruit #3dprint",
-    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/hand cranked solder dispenser learn.adafruit.comcranky-adabot-solder-dispenser #adafruit #3dprint.mp3",
+  "https://www.youtube.com/shorts/E2Ms9IjRtIk_medium": {
+    "key": "https://www.youtube.com/shorts/E2Ms9IjRtIk_medium",
+    "basename": "Why I don't use Logseq (but it's cool if you do)",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/Why I don't use Logseq (but it's cool if you do).mp3",
     "hf_compute_type": "float16",
     "metadata": {
       "audio_input": {
-        "youtube_url": "https://www.youtube.com/shorts/aTBpPnEoSkA",
+        "youtube_url": "https://www.youtube.com/shorts/E2Ms9IjRtIk",
         "audio_filepath": null,
-        "audio_quality": "tiny.en"
+        "audio_quality": "medium"
       },
-      "title": "hand cranked solder dispenser learn.adafruit.com/cranky-adabot-solder-dispenser #adafruit #3dprint",
+      "title": "Why I don't use Logseq (but it's cool if you do)",
       "tags": "",
-      "description": "",
+      "description": "I've gotten some questions on why I use Obsidian and why I don't use Logseq. I think Logseq is an amazing tool, but it's just not for me. If it's the tool for you, good for you! I think the choice of tool is a personal one, and everyone should use the tool that makes the most sense for their own workflows.\n\nCheck out my course for beginners, Obsidian for Everyone: https://courses.nicolevanderhoeven.com/o4e",
       "duration": "00:01:00",
-      "channel": "Adafruit Industries",
-      "upload_date": "20240731",
-      "uploader_id": "@adafruit",
-      "download_time": "00:00:03",
-      "transcription_time": "00:00:02"
+      "channel": "Nicole van der Hoeven",
+      "upload_date": "20230715",
+      "uploader_id": "@nicolevdh",
+      "download_time": "00:00:02",
+      "transcription_time": "00:00:12"
     },
     "chapters": [
       {
         "title": " ",
         "start_time": 0.0,
-        "end_time": 59.68,
-        "text": " Hey what's up folks, this week we're 3D printing a solder dispenser this time with a crank.  We think this is a fun way to store your solder and actually really fun. I mean who doesn't like to use a crank?  We designed this kit as a free download, links are in the description.  The head was dual extruded for printing the eyes and mouth in a different color,  but we also have a single color version, you'll just need to print the pieces separately.  The crank is a single part that features a print and place hinge with the free spinning handle.  It's actually the same part from our USB HID project. The cover snap fits on top and can easily  come off. It uses the gyroid infill so it has this neat pattern that makes it a bit stretchy.  This lets you see through the top so you can check on the solder. The solder wire is  press fitted onto this holder and it rotates freely so you can give it a nice spin.",
+        "end_time": 59.0,
+        "text": " So there are a lot of things about Logseek that I really really love. First it's open source, which is amazing.  And I really wanted to love it based on that point alone. The developers and the community are also pretty awesome people.  And I love how it seamlessly integrates with GitHub in particular. However, it is still an outliner.  So just like Roam Research or Tana, everything you write is going to be like in bullet form.  I personally don't like that. I want to be able to publish things and everything on the internet, like articles and even books, are in prose format, in paragraph format.  So that's what I am looking for. Also, we're at the point where the development on Obsidian has just far outstripped everything else.  On Core Obsidian, I don't know how they do it, but the Core Obsidian team just comes out with banger features every release.  And the third party ecosystem of Obsidian is just too good to leave behind.",
         "number": 1
       }
     ]
   },
-  "Bluelab_Pulse_Meter_Review_mp3_tiny": {
-    "key": "Bluelab_Pulse_Meter_Review_mp3_tiny",
+  "Bluelab_Pulse_Meter_Review_mp3_medium": {
+    "key": "Bluelab_Pulse_Meter_Review_mp3_medium",
     "basename": "Bluelab_Pulse_Meter_Review_mp3",
     "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local\\Bluelab_Pulse_Meter_Review_mp3.mp3",
     "hf_compute_type": "float16",
@@ -39,7 +39,7 @@
       "audio_input": {
         "youtube_url": null,
         "audio_filepath": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local\\Bluelab_Pulse_Meter_Review_mp3.mp3",
-        "audio_quality": "tiny"
+        "audio_quality": "medium"
       },
       "title": "Bluelab Pulse Meter Review mp3.mp3",
       "tags": null,
@@ -49,60 +49,450 @@
       "upload_date": "2024-07-30",
       "uploader_id": null,
       "download_time": "00:00:00",
-      "transcription_time": "00:00:13"
+      "transcription_time": "00:01:02"
     },
     "chapters": [
       {
         "title": " ",
         "start_time": 0.0,
-        "end_time": 118.1,
-        "text": " This is the Blue Lab Postmeter.  I'm very excited to be able to add it to our lineup of products at Kiss Organics and we have  the Best Price Online.  This meter is not for everyone, but here's what it does.  It measures moisture, conductivity, or EC, and temperature directly in the root zone with  one click.  It connects to the Blue Lab Post app to view, analyze, and store all your measurement data,  the app's available in English, Spanish, Dutch, German, and Korean, and it has a built-in  depth gauge to get consistent measurements with every reading.  It works in soil, cocoa core, nutrient solution, and living soils.  So how and why would you want something like this for your garden?  Well first off, it will quickly measure moisture levels.  It is waterproof, unlike the Blue Matt moisture meter, and I loved it I can get a reading  immediately, instead of having to wait for a while between readings.  This means I can use one meter and check multiple pots or beds in a matter of seconds to  see how evenly I'm watering, or if I have any dry spots or if any containers got missed  when watering.  Secondly, it tells me EC.  EC is a measurement of electrical conductivity in your soil, which is a good way of seeing  what level of fertility you have in your media.  Cat ions like calcium, magnesium, potassium, sodium, and ammonium, as well as an ions  like sulfur, chloride, nitrates, and bicarbonates are all salts that when dissolved in  solution in soils will carry electrical charges and current.  Now to high of an EC will potentially put osmotic pressure on your roots, and that can  be bad.  So it's about getting it into the proper range and we really want to soil test so we can  determine what is making up the salt concentration in our soil.  But it will give us a rough idea of fertility in our soil mix if we know all our inputs.  Instead with in certain EC ranges, typically 0.7 to 2.8 will allow for good microbial  activity and important soil processes like respiration and decomposition.",
+        "end_time": 118.08,
+        "text": " This is the Bluelab Pulse Meter.  I'm very excited to be able to add it to our lineup of products at Kiss Organics, and we  have the best price online.  This meter is not for everyone, but here's what it does.  It measures moisture, conductivity, or EC, and temperature directly in the root zone  with one click.  It connects to the Bluelab Pulse app to view, analyze, and store all your measurement data.  The app's available in English, Spanish, Dutch, German, and Korean, and it has a built-in  depth gauge to get consistent measurements with every reading.  It works in soil, coco core, nutrient solution, and living soils.  So how and why would you want something like this for your garden?  Well first off, it will quickly measure moisture levels.  It is waterproof, unlike the Blu-Map Moisture Meter, and I love that I can get a reading  instead of having to wait for a while between readings.  This means I can use one meter and check multiple pots or beds in a matter of seconds to see  how evenly I'm watering, or if I have any dry spots, or if any containers got missed  when watering.  Secondly, it tells me EC.  EC is a measurement of electrical conductivity in your soil, which is a good way of seeing  what level of fertility you have in your media.  Cations like calcium, magnesium, potassium, sodium, and ammonium, as well as anions like  sulfur, chloride, nitrates, and bicarbonates, are all salts that when dissolved in solution  in soils will carry electrical charges and current.  Now too high of an EC will potentially put osmotic pressure on your roots, and that can  be bad.  So it's about getting it into the proper range, and we really want a soil test so we can determine  what is making up the salt concentration in our soil.  But it will give us a rough idea of fertility in our soil mix if we know all our inputs.  And staying within certain EC ranges, typically .7 to 2.8, will allow for good microbial activity  and important soil processes like respiration and decomposition.",
         "number": 1
       },
       {
         "title": " ",
-        "start_time": 118.1,
-        "end_time": 232.57999999999998,
-        "text": " Keep in mind that several factors can affect soil EC such as moisture content, soil structure,  and the presence of dissolved salts.  As the soil moisture increases, so will your EC.  And lastly, I get an idea of temperature.  Cold brood zone temperatures can inhibit plant growth and the uptake of many essential  nutrients like phosphorus and to high of soil temps can make it easier for plant pathogens  to grow.  I'm currently calibrating it with my blue matte moisture meter and will be comparing  it with an aromiter here soon.  So this is the iPhone app that comes along with it.  You can use it on Android as well though.  The app is called pulse, again it's available in multiple languages, and essentially  I just push the button on the pulse meter itself to connect it.  It connects quickly via Bluetooth.  And then at that point I don't have to keep reconnecting with every calibration or every  photo I want to take.  I just click the measure button and then I can go in as I'm doing here and I can add a photo  to that measurement as well as any note so that I may want.  So here's a good place I can add, say the VPD in the room at the time, any pest pressures  I may dealing with when I watered and keep track of all of that right here in the app.  So it's a nice little journal in some ways.  Now this could get complicated in a facility where you have multiple plants and things  like that.  But you do have the ability to export the data.  So if you had a facility for example you could just measure one room, export that data, and  then keep the files somewhere else associated with it.  But since I just have using it in this room I can go back through historically and look  at my notes and in time you see an orange dot there next to their according, that tells  me that I took a picture or added extra notes.  So that's a really handy feature to quickly go back through and look at what was going  on in the room at that time for tracking things.",
+        "start_time": 118.08,
+        "end_time": 237.94,
+        "text": " Keep in mind that several factors can affect soil EC, such as moisture content, soil structure,  and the presence of dissolved salts.  As the soil moisture increases, so will your EC.  And lastly, I get an idea of temperature.  Cold root zone temperatures can inhibit plant growth and the uptake of many essential nutrients  like phosphorus, and too high of soil temps can make it easier for plant pathogens to  grow.  I'm currently calibrating it with my Blue-Map Moisture Meter, and will be comparing it with  an aerometer here soon.  Okay, so this is the iPhone app that comes along with it.  You can use it on Android as well though.  The app is called Pulse.  Again, it's available in multiple languages, and essentially I just push the button on  the Pulse Meter itself to connect it.  It connects quickly via Bluetooth, and then at that point I don't have to keep reconnecting  with every calibration or every photo I want to take.  I just click the Measure button, and then I can go in as I'm doing here, and I can add  a photo to that measurement, as well as any notes that I may want.  So here's a good place I can add, say, the VPD in the room at the time, any pest pressures  I may be dealing with, when I watered, and keep track of all of that right here in the  app.  So it's a nice little kind of like journal in some ways.  Now this could get complicated in a facility where you have multiple plants and things  like that, but you do have the ability to export the data.  So if you had a facility, for example, you could just measure one room, export that data,  and then keep the files somewhere else associated with it.  But since I just have them using it in this room, I can go back through historically and  look at my notes, and any time you see an orange dot there next to the recording, that  tells me that I took a picture or added extra notes.  So that's a really handy feature to quickly go back through and look at what was going  on in the room at that time for tracking things.  So again, not for everyone, but if you're into data, this is a really cool tool that",
         "number": 2
       },
       {
         "title": " ",
-        "start_time": 232.57999999999998,
-        "end_time": 316.53999999999996,
-        "text": " So again not for everyone but if you're in the data this is a really cool tool that could  potentially help you in your grow.  And so you can see what I was doing here was I was comparing the 35% moisture in this  case correlated approximately with my blue mat moisture meter.  At that point it said I was at about 75 m bar.  Now I've been playing around with this for a little while and getting a bunch of measurements  to kind of get an idea of EC and moisture level and how those things relate to say something  like the blue mat moisture meter.  And I find I probably want to be around 35 to 45% is a moisture range and that probably  correlates to about 80 let's say 70 to 90 in terms of m bar ratings.  But one other cool feature here I can now export this data I can send it to someone or  I can save it to a file or email it to myself and I think that's another really great  feature associated with this you can configure it based on the type of media using in this  case I just configured it to a mixed media for living soil.  Well that's it that's the blue lab pulse meter.  I hope I covered the pros and cons as well as why someone might want to use this tool in  their garden.  Thanks for checking out my review and you can go to kisorganics.com to learn more or order one  for yourself.  Thanks.",
+        "start_time": 237.94,
+        "end_time": 316.64000000000004,
+        "text": " could potentially help you in your grow.  And so you can see what I was doing here was I was comparing the 35% moisture, in this  case correlated approximately with my blue matte moisture meter.  At that point, it said I was at about 75 mbar.  Now I've been playing around with this for a little while and getting a bunch of measurements  to kind of get an idea of EC and moisture level and how those things relate to say something  like the blue matte moisture meter.  And I find I probably want to be around 35 to 45% is a moisture range.  And that probably correlates to about 80, let's say 70 to 90 in terms of mbar ratings.  One other cool feature here, I can now export this data, I can send it to someone or I can  save it to a file or email it to myself.  And I think that's another really great feature associated with this.  You can configure it based on the type of media you're using.  In this case, I just configured it to a mixed media for living soil.  Well that's it.  That's the Bluelab Pulse Meter.  I hope I covered the pros and cons as well as why someone might want to use this tool  in their garden.  Thanks for checking out my review and you can go to KISOrganics.com to learn more or  order one for yourself.  Thanks.",
         "number": 3
       }
     ]
   },
-  "https://www.youtube.com/shorts/aTBpPnEoSkA_medium": {
-    "key": "https://www.youtube.com/shorts/aTBpPnEoSkA_medium",
-    "basename": "hand cranked solder dispenser learn.adafruit.comcranky-adabot-solder-dispenser #adafruit #3dprint",
-    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/hand cranked solder dispenser learn.adafruit.comcranky-adabot-solder-dispenser #adafruit #3dprint.mp3",
+  "https://www.youtube.com/shorts/w6QfCkjvQjM_medium": {
+    "key": "https://www.youtube.com/shorts/w6QfCkjvQjM_medium",
+    "basename": "Notion vs Obsidian - file ownership and privacy",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/Notion vs Obsidian - file ownership and privacy.mp3",
     "hf_compute_type": "float16",
     "metadata": {
       "audio_input": {
-        "youtube_url": "https://www.youtube.com/shorts/aTBpPnEoSkA",
+        "youtube_url": "https://www.youtube.com/shorts/w6QfCkjvQjM",
         "audio_filepath": null,
         "audio_quality": "medium"
       },
-      "title": "hand cranked solder dispenser learn.adafruit.com/cranky-adabot-solder-dispenser #adafruit #3dprint",
+      "title": "Notion vs Obsidian - file ownership and privacy",
       "tags": "",
-      "description": "",
-      "duration": "00:01:00",
-      "channel": "Adafruit Industries",
-      "upload_date": "20240731",
-      "uploader_id": "@adafruit",
+      "description": "This is a snippet from a longer conversation with the Obsidian CEO, Stephan Ango. Watch the full livestream here: https://youtube.com/live/TkNTuFF2t-c\n\n---\n// ABOUT ME\nSite: https://nicolevanderhoeven.com\nMastodon: https://pkm.social/@nicole\nMy work at Grafana Labs: https://www.youtube.com/playlist?list=PL-1Nqb2waX4WfNnD52U1Spo2z47yrIjwo\n\n// APPS I USE\n- Obsidian: https://obsidian.md\n- Readwise: https://readwise.io/nicole\n- Shortform: https://shortform.com/nicole\n- Reclaim: https://go.reclaim.ai/eg0tgbamp7cb\n- Snipd: https://link.snipd.com/Cx7S/nicole\nNapkin: https://napkin.one/?via=nicole  \n\n// GEAR\nhttps://nicolevanderhoeven.com/gear/\n\n// WANT TO SUPPORT ME?\n\u2764\ufe0f Join my Patreon and get my sample vault with templates: https://patreon.com/nicolevdh\n\u2615 Buy me a coffee: https://ko-fi.com/nicolevdh\n\u2b50 Buy Obsidian for Everyone, my beginner course on Obsidian: https://courses.nicolevanderhoeven.com/o4e\n\nNote: Some of the links above are affiliate links, which means I may get a small percentage when you sign up using those links. To see how I decide what to promote in this way, check out my Ethics Statement: https://nicolevanderhoeven.com/ethics/",
+      "duration": "00:00:58",
+      "channel": "Nicole van der Hoeven",
+      "upload_date": "20230607",
+      "uploader_id": "@nicolevdh",
       "download_time": "00:00:03",
-      "transcription_time": "00:00:09"
+      "transcription_time": "00:00:12"
     },
     "chapters": [
       {
         "title": " ",
         "start_time": 0.0,
-        "end_time": 59.6,
-        "text": " Hey what's up folks, this week we're 3D printing a solder dispenser, this time with a crank.  We think this is a fun way to store your solder and actually really fun,  I mean who doesn't like to use a crank?  We designed this kit as a free download, links are in the description.  The head was dual extruded for printing the eyes and mouth in a different color,  but we also have a single color version, you'll just need to print the pieces separately.  The crank is a single part that features a print and place hinge with a free spinning handle.  It's actually the same part from our USB HID project.  The cover snap fits on top and can easily come off.  It uses the gyroid infill so it has this neat pattern that makes it a bit stretchy.  This lets you see through the top so you can check on the solder.  The solder wire is press fitted onto this holder and it rotates freely so you can give it a nice spin.",
+        "end_time": 57.9,
+        "text": " And quite a lot of them use Notion.  And I can completely see why they use Notion, right?  Because it's just, you know, zero learning curve for them  until such time as they want to take those stuff with them.  And then they'll find out.  And I think some of that stuff's a bit like doing backups.  You find out the hard way, right?  But I kind of feel like that is a,  it's been a smart trade-off to make  with Obsidian with the plugins.  And I was just wondering-  But it has its downsides.  I mean, I think the point on privacy,  the way we think about that is that  it is having ownership over your files.  They're not in somebody else's database.  They're on your computer, on your device.  If you choose to use the first party sync,  everything's then tend to encrypted.  And so we have this kind of strong pillar around privacy,  but it has the trade-off  that it makes certain things harder for us.",
         "number": 1
+      }
+    ]
+  },
+  "https://www.youtube.com/shorts/MBDJZyPPupM_medium": {
+    "key": "https://www.youtube.com/shorts/MBDJZyPPupM_medium",
+    "basename": "Tomato plants are mobile",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/Tomato plants are mobile.mp3",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "audio_input": {
+        "youtube_url": "https://www.youtube.com/shorts/MBDJZyPPupM",
+        "audio_filepath": null,
+        "audio_quality": "medium"
+      },
+      "title": "Tomato plants are mobile",
+      "tags": "",
+      "description": "Dropping stems of tomato plants to keep them manageable.\nThis oxheart type has a lot of stem between each truss. Makes it long!\n\nFilmed 30th July by Jude Martin, at Homeacres no dig garden in Somerset UK.\n\n#tomatoes #greenhouse #nodig #gardentipsandtricks #growyourownfood",
+      "duration": "00:01:00",
+      "channel": "Charles Dowding",
+      "upload_date": "20240801",
+      "uploader_id": "@CharlesDowding1nodig",
+      "download_time": "00:00:02",
+      "transcription_time": "00:00:16"
+    },
+    "chapters": [
+      {
+        "title": " ",
+        "start_time": 0.64,
+        "end_time": 58.64,
+        "text": " So I'm just taking my tomato plant for a walk.  I feel if I start last night  and I was talking about dropping the plant,  when the stems get so long  and you've cut the lower leaves off it,  you might still have some fruit.  That's what the cardboard's doing there.  That is still ripening, but I'm dropping the main stem.  You can see it goes horizontal.  Tomato plants don't mind this at all.  They kind of grow horizontally in nature apparently.  And the bit I want to be vertical  and tied up is the working part of the plant,  which is not a huge amount really.  It's the top 1.2 meters, four feet.  That's all here now.  And I'm just doing a very simple slip knot.  I could even drop it a bit more.  You've got options and you can do this again  and again and again.  The question is sometimes where do you put all this stem?  And I'm lucky here because this was melons  and they finished, so I've got space.  And in case you're wondering,  that is watermelon down there, it's a very pretty leaf.  So I hope you've enjoyed this little tutorial  looking after tomatoes. ooth",
+        "number": 1
+      }
+    ]
+  },
+  "https://www.youtube.com/live/TkNTuFF2t-c_medium": {
+    "key": "https://www.youtube.com/live/TkNTuFF2t-c_medium",
+    "basename": "The Future of Obsidian with CEO Stephan Ango and Andy Polaine",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/The Future of Obsidian with CEO Stephan Ango and Andy Polaine.mp3",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "audio_input": {
+        "youtube_url": "https://www.youtube.com/live/TkNTuFF2t-c",
+        "audio_filepath": null,
+        "audio_quality": "medium"
+      },
+      "title": "The Future of Obsidian with CEO Stephan Ango and Andy Polaine",
+      "tags": "",
+      "description": "What is the future of Obsidian? The new Obsidian CEO, Stephan Ango (@kepano), talks about why he joined the Obsidian team and what he wants to do next. I'm Nicole van der Hoeven, and today I'm joined by my friend, Andy Polaine, to find out what's on the horizon for our favourite note-taking app.\r\n\r\n// TIMESTAMPS\n\n00:00 Introducing Stephan Ango\n01:38 Introducing Andy Polaine\n02:54 Other tools used before Obsidian\n09:20 Notational Velocity and futureproofness\n12:00 Dealing with Obsidian clones\n15:00 What's Obsidian bad at?\n17:09 How plugins transform an app\n22:15 Joining the Obsidian team\n29:00 Stephan's background in building tools\n31:50 Obsidian roadmap, metadata\n36:22 Growing on Obsidian team\n39:27 Enshittification due to venture capital\n41:11 Sharing, Sync, Publish\n47:02 Task management and prioritization\n50:08 AI in Obsidian\n56:40 Accessibility in Obsidian\n58:25 Tags vs links?\n01:04:15 Message to the community\n\n---\r\n\r\n// ABOUT STEPHAN\r\nSite: https://stephanango.com/\r\nMastodon: https://mastodon.social/@kepano\r\nObsidian site: https://obsidian.md\r\n\r\n// ABOUT ANDY\r\nSite: https://polaine.com\r\nMastodon: https://pkm.social/@apolaine\r\nYouTube: https://www.youtube.com/@andypolaine61\r\n\r\n// ABOUT NICOLE\r\nSite: https://nicolevanderhoeven.com\r\nMastodon: https://pkm.social/@nicole\r\nMy travel YouTube channel: https://youtube.com/c/luckydippers\r\nk6 YouTube channel: https://www.youtube.com/c/k6test\r\n\r\n// APPS I USE\r\n- Obsidian: https://obsidian.md\r\n- Readwise: https://readwise.io/nicole\r\n- Shortform: https://shortform.com/nicole\r\n- Reclaim: https://go.reclaim.ai/eg0tgbamp7cb\n- Snipd: https://link.snipd.com/Cx7S/nicole\nNapkin: https://napkin.one/?via=nicole  \r\n\r\n// GEAR\r\nhttps://nicolevanderhoeven.com/gear/\r\n\r\n// WANT TO SUPPORT ME?\r\n\u2764\ufe0f Join my Patreon and get my sample vault with templates: https://patreon.com/nicolevdh\r\n\u2615 Buy me a coffee: https://ko-fi.com/nicolevdh\n\u2b50 Buy Obsidian for Everyone, my beginner course on Obsidian: https://courses.nicolevanderhoeven.com/o4e\r\n\r\nNote: Some of the links above are affiliate links, which means I may get a small percentage when you sign up using those links. To see how I decide what to promote in this way, check out my Ethics Statement: https://nicolevanderhoeven.com/ethics/",
+      "duration": "01:07:22",
+      "channel": "Nicole van der Hoeven",
+      "upload_date": "20230311",
+      "uploader_id": "@nicolevdh",
+      "download_time": "00:00:39",
+      "transcription_time": null
+    },
+    "chapters": [
+      {
+        "title": "Introducing Stephan Ango",
+        "start_time": 0.0,
+        "end_time": 98.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Introducing Andy Polaine",
+        "start_time": 98.0,
+        "end_time": 174.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Other tools used before Obsidian",
+        "start_time": 174.0,
+        "end_time": 560.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Notational Velocity and futureproofness",
+        "start_time": 560.0,
+        "end_time": 720.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Dealing with Obsidian clones",
+        "start_time": 720.0,
+        "end_time": 900.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "What's Obsidian bad at?",
+        "start_time": 900.0,
+        "end_time": 1029.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "How plugins transform an app",
+        "start_time": 1029.0,
+        "end_time": 1335.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Joining the Obsidian team",
+        "start_time": 1335.0,
+        "end_time": 1740.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Stephan's background in building tools",
+        "start_time": 1740.0,
+        "end_time": 1910.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Obsidian roadmap, metadata",
+        "start_time": 1910.0,
+        "end_time": 2182.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Growing on Obsidian team",
+        "start_time": 2182.0,
+        "end_time": 2367.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Enshittification due to venture capital",
+        "start_time": 2367.0,
+        "end_time": 2471.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Sharing, Sync, Publish",
+        "start_time": 2471.0,
+        "end_time": 2822.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Task management and prioritization",
+        "start_time": 2822.0,
+        "end_time": 3008.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "AI in Obsidian",
+        "start_time": 3008.0,
+        "end_time": 3400.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Accessibility in Obsidian",
+        "start_time": 3400.0,
+        "end_time": 3505.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Tags vs links?",
+        "start_time": 3505.0,
+        "end_time": 3855.0,
+        "text": null,
+        "number": null
+      },
+      {
+        "title": "Message to the community",
+        "start_time": 3855.0,
+        "end_time": 4042.0,
+        "text": null,
+        "number": null
+      }
+    ]
+  },
+  "https://www.youtube.com/live/TkNTuFF2t-c_tiny": {
+    "key": "https://www.youtube.com/live/TkNTuFF2t-c_tiny",
+    "basename": "The Future of Obsidian with CEO Stephan Ango and Andy Polaine",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/The Future of Obsidian with CEO Stephan Ango and Andy Polaine.mp3",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "audio_input": {
+        "youtube_url": "https://www.youtube.com/live/TkNTuFF2t-c",
+        "audio_filepath": null,
+        "audio_quality": "tiny"
+      },
+      "title": "The Future of Obsidian with CEO Stephan Ango and Andy Polaine",
+      "tags": "",
+      "description": "What is the future of Obsidian? The new Obsidian CEO, Stephan Ango (@kepano), talks about why he joined the Obsidian team and what he wants to do next. I'm Nicole van der Hoeven, and today I'm joined by my friend, Andy Polaine, to find out what's on the horizon for our favourite note-taking app.\r\n\r\n// TIMESTAMPS\n\n00:00 Introducing Stephan Ango\n01:38 Introducing Andy Polaine\n02:54 Other tools used before Obsidian\n09:20 Notational Velocity and futureproofness\n12:00 Dealing with Obsidian clones\n15:00 What's Obsidian bad at?\n17:09 How plugins transform an app\n22:15 Joining the Obsidian team\n29:00 Stephan's background in building tools\n31:50 Obsidian roadmap, metadata\n36:22 Growing on Obsidian team\n39:27 Enshittification due to venture capital\n41:11 Sharing, Sync, Publish\n47:02 Task management and prioritization\n50:08 AI in Obsidian\n56:40 Accessibility in Obsidian\n58:25 Tags vs links?\n01:04:15 Message to the community\n\n---\r\n\r\n// ABOUT STEPHAN\r\nSite: https://stephanango.com/\r\nMastodon: https://mastodon.social/@kepano\r\nObsidian site: https://obsidian.md\r\n\r\n// ABOUT ANDY\r\nSite: https://polaine.com\r\nMastodon: https://pkm.social/@apolaine\r\nYouTube: https://www.youtube.com/@andypolaine61\r\n\r\n// ABOUT NICOLE\r\nSite: https://nicolevanderhoeven.com\r\nMastodon: https://pkm.social/@nicole\r\nMy travel YouTube channel: https://youtube.com/c/luckydippers\r\nk6 YouTube channel: https://www.youtube.com/c/k6test\r\n\r\n// APPS I USE\r\n- Obsidian: https://obsidian.md\r\n- Readwise: https://readwise.io/nicole\r\n- Shortform: https://shortform.com/nicole\r\n- Reclaim: https://go.reclaim.ai/eg0tgbamp7cb\n- Snipd: https://link.snipd.com/Cx7S/nicole\nNapkin: https://napkin.one/?via=nicole  \r\n\r\n// GEAR\r\nhttps://nicolevanderhoeven.com/gear/\r\n\r\n// WANT TO SUPPORT ME?\r\n\u2764\ufe0f Join my Patreon and get my sample vault with templates: https://patreon.com/nicolevdh\r\n\u2615 Buy me a coffee: https://ko-fi.com/nicolevdh\n\u2b50 Buy Obsidian for Everyone, my beginner course on Obsidian: https://courses.nicolevanderhoeven.com/o4e\r\n\r\nNote: Some of the links above are affiliate links, which means I may get a small percentage when you sign up using those links. To see how I decide what to promote in this way, check out my Ethics Statement: https://nicolevanderhoeven.com/ethics/",
+      "duration": "01:07:22",
+      "channel": "Nicole van der Hoeven",
+      "upload_date": "20230311",
+      "uploader_id": "@nicolevdh",
+      "download_time": "00:00:36",
+      "transcription_time": "00:03:06"
+    },
+    "chapters": [
+      {
+        "title": "Introducing Stephan Ango",
+        "start_time": 0.0,
+        "end_time": 98.0,
+        "text": " Hello everyone, I'm Nicole von der Huden and today I'm joined by two special guests and I'd like to introduce first I guess Stefan Ango or you might know him better as Kupano. Hey Nicole, thank you for having me. You're welcome. You could call me Kupano. I'm fine with that. So Stefan is a designer and an engineer and most recently he was he was a announced to be the CEO of Obsidian. So that's going to be interesting. I actually know you more for the stuff that you've made for Obsidian like minimal and also hider and web clipper. But it looks like you've been in the industry for a while making, I'd say similar tools. Yeah, well, I mean up until now it wasn't really in the consumer space. That was building startups in more in the B2B area. But I've been using a lot of these tools for a long time. So as a user, I'm older than I look I guess. I've been like building, I think the first thing that I really got into and as a teenager was WinApp skins. And so like this is like 90s early 2000s making my first websites and things around that time. So that's how that was my first I guess experience like building things in the software world. Also, and also here to help me introduce myself.",
+        "number": 1
+      },
+      {
+        "title": "Introducing Andy Polaine",
+        "start_time": 98.0,
+        "end_time": 174.0,
+        "text": " review you basically is Andy Plane who is a lot of things. Designer, educator, writer, design leadership coach. He's also co-authored a book called Service Design from Insight to Implementation and he has a podcast called Power of Ten, but really the most important thing is he's my dungeon master. We play D&D every week and also a good friend we actually met because of Obsidian so welcome to the channel. Thanks, thanks for having me on I'm excited to be a co-host. Co-interview. Yeah it's really weird for me to not take cues from you and roll dice when you tell me too but you know we'll see how that goes. I've got the dice here just in case we need to. Okay well I've got mine too so anytime you need me to roll a save I'm ready. I was just roll for initiative to see who interviews first. Yeah okay let's do that. Rollies what are you going to roll? Just the D20 I rolled the two so. I've got an adeven. You go first. Okay alright I will so",
+        "number": 2
+      },
+      {
+        "title": "Other tools used before Obsidian",
+        "start_time": 174.0,
+        "end_time": 560.0,
+        "text": " The first question for you is it's kind of under a sort of bat to question to it about why I'm sitting in, but how did you get started with Obsidian? First, can you give me any like buffs or stats or anything? Yeah, I have a nightmare. Well, I think you get sort of a plus one in design and coding, right? What class do you think Stefan would be, Andy? Wizard, I reckon. Or an archery, sort of. Yeah, I was thinking of a sorcerer. Yeah, or a, or a, you know, someone who kind of makes stuff as well. Artificer? Artificer, yeah, that's why I reckon he is. Back in the last days, I played a lot of the pallid in class. Okay, okay. Okay. I've read the class, but I think that I also in like Lord of the Rings really love, you know, gained off in those types of guy. I'm glad I guess, you know, I'm definitely into those types of characters. Someone can produce something out of nothing. So, for example, yes, I would have to do South the, half the audience drive. So, you know, you were a customer, right? Well, you, you used it before you, uh, began to see you. And pretty quickly, I seem to remember seeing your, certainly your theme, I think, probably a couple of other things seeing you on there in the Obsidian Discord. So, you know, what was your hook into Obsidian in the first place? We're getting some comments that your mic is very crackly. And we are hearing this. Yeah, it's a sweet idea. Yeah, it's a cool. Some people are hearing it. I don't know. So, to answer your question, I had been using the, over the past like 15 or so years. I've used a lot of different tools to kind of try to solve what for me was both the journaling question. So, I wanted to be able to just write kind of my own diary notes in a tool. So, I've told that over time I discovered that the wiki type of format was what I really loved. I kind of fell in love with the wiki link kind of idea. And that idea has been around. I'm not sure exactly who invented the notation. I think it was the wiki PDF people in the media wiki, the kind of like double bracket concept. But once I discovered that, I felt that I only wanted to use like journaling with that. So, the one that I used for a long time was to leave wiki. And to leave wiki has that same kind of bracket notation. But I found that my personal sensibilities as a user I really wanted something that felt like very simple and minimalistic. Like, you'd, as you may notice from the kind of like type of themes and things that I've made for obsidian. And when obsidian came out, I found out about it almost right away. Like, in, I guess April, 2020, you know, as right as the pandemic was kicking off. Like, I think a lot of people, I don't know around that time we're staying at home, we're exploring different things. And I found out about it. And I had spent probably a year trying to kind of customize the wiki to be a little bit more user friendly and obsidian, even in like V1 or whatever, not V1. It was like V0.001 was already better than what Tilly wiki was doing for me. In terms of, it had the quick switcher. It had the prompts. It had the file now, the way that I wanted. It didn't quite look like what I wanted. But it had a lot of the kind of nice user interface patterns that I was looking for. And so I pretty much started making, I was looking back at my notes, kind of preparing for this conversation. And I pretty much went all in on obsidian after using it just for a couple of days. I imported everything and started making the minimal theme like immediately. But I was just making it for myself. I first, I wasn't intending to publish it. I just kind of made it to solve my own UI preferences. So I actually used Tilly wiki quite a bit. The reason that I used it was a lot of, because I was a consultant at the time. And a lot of the tools that were out there required, like, they were basically on the cloud. So it was a SaaS platform that I'd have to log into and not, and those sites weren't always allowed by whatever company I happen to be working for. So that's what I loved about Tilly wiki that it could just sit on a flash drive and it would work. And that's part of the reason that I started using obsidian too is because it's local. Yeah. Yeah. And that was something being able to use it on your computer when you're offline. Just having that control I was using it on flights. And so that local first idea to me is, I don't know, I just find it much more natural. And it allows you to do things so much faster. And because I have experience, I wouldn't say that like being an engineer is a person foremost, what I do. But I do battle in a lot of different things on the code side. And using I use sublime text as my main code editor. But having being used to using a code editor, you just expect everything to be there for you right away, super fast. Like even a small delay feels like it gets in the way of my productivity in some cases. So being in the cloud, it always feels a little slow. And I've used a lot of those tools in my previous, especially for work purposes, like the conference or Google Docs or those things in the slow mission, I feel like really gets in the way of being able to make progress on whatever you're trying to do. Yeah. And for me, it was the portability thing. I switched to Markdown for everything I think from my blog, like really, really soon after a group of, kind of released it. I used to use an attachment with a lot of",
+        "number": 3
+      },
+      {
+        "title": "Notational Velocity and futureproofness",
+        "start_time": 560.0,
+        "end_time": 720.0,
+        "text": " which I think was probably one of the first ones I know of this idea of a database that just sits on top of a bunch of mark down for us. And then Brett Turpster was putting together Envy Alt, and Envy Altra, which is, he's still working on. And you know, I've been pretty disloyal, though I've used lots and lots of like every, probably most people, every mark down out there. And a lot of them are starting to do the kind of wiki thing too. And there's so many of them. Yeah, yeah. And I think that is such a great thing that now that the ecosystem of a mark down editing tools is so deep and broad, that I often think that Obsidian, to me, what's exciting about this whole kind of area is like, I'm very curious about how we can make digital information, process, over long, long period of time. Like, how will the ideas that we have right now continue to persist for hundreds of years in the future? We've had books for thousands of years, but we've only had digital files for, you know, seven year, 80 years. And I like the idea that something like plain text could still be around for the next few hundred years. And so using something like Markdown is like the file in a way is way more important than the apps. Like Obsidian will eventually become obsolete because technology changes so much. But hopefully the plain text will continue to be delivered forever. Yeah. I mean, a bit like you, I'm going to ask you about computer shows, it's a later, but a bit like you've been around for quite a long time. And I've been in digital stuff for like 30, something like years. And I've got fed up with one of the things I've been reasoned as I moved to doing everything I do all I, still doing my invoicing, you know, with Markdown and stuff. Because I had so many times with the apps gone out of production or I've got so much of my work still on like CD ROMs. I keep an old laptop, the still got CD ROM drive, just in order to do that. I actually really, still run as come to that. Oh, I say, no, yeah, but some of the, some of the like director, Markdown, Markdown mind, as was Markdown Media Director stuff. That the only thing you can play on so you have to keep the machine for it to. And I've transferred a lot of other stuff. I had the same thing in I started using even though I was in the last few months and then trying to get stuff out, it was horrendous. I had the same thing with notions of exporting out of notion. I kind of dump saw this other crap in there. And so, you know, yeah, for I agree, I think the, the file format is the kind of winner. I'm interested that I'll see you. That you've got, you know, there are a whole lot of,",
+        "number": 4
+      },
+      {
+        "title": "Dealing with Obsidian clones",
+        "start_time": 720.0,
+        "end_time": 900.0,
+        "text": " Now, perhaps it will be a bit rudely say obsidian clones, popping up. It feels like in the last, even in the last years, there's been a lot of stuff coming up. So, whether you perceive those, is that challenge for obsidian, as obsidian, just take its own path, but each of them have their own flavors. Is that a good thing? Well, I see it as a good thing because I am still kind of like a plain text maximalist. So, I think that you have to have a diversity of clients in order for that to kind of last forever. Like, I still think the file is more important than the app. I do think that where it gets dangerous is if there's too many apps specific syntaxes that start to emerge, I think that is kind of dangerous because it reduces interoperability. I think that mark down for all its flaws and I think a lot of people have frustrations with mark down. It has kind of stood the test of time at least for the past, to have her many 12, 15 years. It's been around, I'm not exactly sure, but maybe more at this point, I'm getting old. And so, I think that that is one of the biggest challenges that we have with obsidian is sometimes we want to do something new, like recently, we launched the Canvas feature. And there isn't a off-the-shelf kind of canvas type of file format. So, we created a new one that is open and the type specification for it is out there. But there's no other client for that file format yet. I hopefully there will be, but I think that the diversity of clients is good because there's a lot of people who have lots of different ideas about how thinking should work. And obsidian is not particularly dogmatic, like a big part of one of the main values that we always think about is extensibility. So, how do we make it easy for individual users to customize obsidian? And also, how do we enable developers to build on top of it? But there's a, I think it's very viable to create a very opinionated markdown or tool editing tool that takes a different approach than obsidian. And I've seen many people who enjoy using more than one, different, one for different parts of their workflow. So, yeah, I think it's good. I think we're living through a little bit of like this, Cambrian explosion moment because for some reason, right now in the past couple of years, like people have realized this is a really exciting problem to work on. And I think we all learn a lot from each other. So, I see it as a good thing.",
+        "number": 5
+      },
+      {
+        "title": "What's Obsidian bad at?",
+        "start_time": 900.0,
+        "end_time": 1029.0,
+        "text": " One of the things that you said, because I trolled through your blog while I was thinking of questions for this, you had a post about how great tools choose to be bad at some things. So what do you think Obsidian has chosen to be bad at? Well, I think that design principles are only real design principles. If you can take both sides of it and create something compelling. For example, we talked about extensibility. That's one of our, I would say there's like three major pillars to what Obsidian is trying to be. One of them is around privacy, one of them is around longevity of your notes, and one of them is around extensibility. So those three things are the things that we want to continue being really good at. But you can take the extensibility example as kind of one of our design principles. We want to make Obsidian super extensible, but I can see why some people would prefer an app that's not at all extensible, that is completely designed by one small group of people, who are trying to make a very cohesive experience. I think one of the big challenges with Obsidian is we're always asking ourselves what should be a community plugin versus a corporate plugin, we're always asking ourselves, how can we make community plugins feel more native to the app and more cohesive and intuitive to people, do they mix, makes sense with the rest of the app, because any developer can basically build anything inside of Obsidian. And so I think it is a common point of frustration for some new Obsidian users that they have to download a lot of plugins and some of them feel a little janky. So Obsidian has chosen to be bad at that. With the tradeoff that it allows a lot of freedom for people to customize the app. And you can take the same example with the privacy and longevity. Those have their own tradeoffs as well. And you do want to say something.",
+        "number": 6
+      },
+      {
+        "title": "How plugins transform an app",
+        "start_time": 1029.0,
+        "end_time": 1335.0,
+        "text": " I was thinking, you know, it reminded me of what you just said, it was just as you talked about the plug-in thing. One of the tricks that Apple did with the iPhone was to make the phone bit an app. It sounds like sort of really banal thing, but up until the phone's smartphones were kind of phones with to about bits in them and every really janky. And I think one of the things also obviously not having a keyboard having a touch screen means that that thing where you get whatever app you're in is completely the app. So, you know, I'm in FaceTime, it's completely FaceTime. I'm in Appcidion and it's completely upsetting the whole phone turns into whatever app you're in. And I feel like, you know, in a way that's what the plug-in mechanism can do for Appcidion, it's based, it's a text that it's browsing a viewer on a set of markdown files. But, you know, as soon as you start putting particularly some of the more powerful plug-ins in it, it becomes something completely else. And I think I find it really kind of powerful that you can switch that stuff on and off. I can see that the, you know, I was sharing my students the other day because that they're talking about design research and how you can use Obsidian. And I quite a lot of them use notion, and I can completely see why they use notion, because it's just, you know, zero learning curve for them. Until such time as they want to take those stuff with them, and then they'll find out. And I think some of that stuff's a bit like doing backups you find out the hard way, right? But I, I can feel like that is a, it's been a smart trade-off to make with Obsidian with the plug-ins. And I was just wondering. But it's, it has its downsides. I mean, the point, you know, on privacy the way we think about that is that it is having ownership over your phone. And that ownership over your files, they're not in some of the else's database. They're on your computer, on your device. You know, if you choose to use the first party sync, everything's intended, cryptid. And so we have this kind of strong pillar around privacy. But if it has the trade-off that it makes certain things harder for us, for example, people ask us, do you, would we ever see a web client for Obsidian, a like online, you know, cloud-based Obsidian? And that's a lot harder for us to do because we don't have access to your files. We would have to compromise on that value of encrypting your data and kind of being able to see that information on our side in order to be able to present it back to you. And that makes things really tough unless there's some, we thought about this question a lot. But it really is a very hard problem to solve. But for someone who, you know, for whatever scenario they might be in either can't access a local app because they, you know, there were computer restricts, you know, I apps and they can't download Obsidian or they're on a school computer and they have to access it from from the school computer. It does, it does present the limitation. But I think strong principles force those kinds of tradeoffs where you, you could take either side and make a compelling and legitimate app. We just, you know, have chosen our own particularly set of tradeoff and that's what that, that blog post was about. So there's, there's other things that Obsidian is bad as well like relating to longevity and like the choice of using Markdown, for example, it's not the most intuitive for some people. I can, I can come up with a long list of things that Obsidian is bad at bad at in favor of something that it wants to be really good at. And I think that's a, making tradeoffs is our job. One of the things that I hear a lot is that Obsidian is to develop or focused or some people think it's not approachable. And I think it comes back to what we've been talking about. You do have to make a decision. You do sacrifice a little bit of usability in exchange for flexibility and modularity. I, my background is in performance engineering. So I care a lot about performance and I, I love this idea of making the most streamlined possible app. And then just leaving room for extensions so that other people can make their own decisions. I would rather have that than have an app that has everything baked in and I have really no choices to what to turn on or off because I, my use case is going to be different from everybody else's. That's Microsoft word right. Yeah, we just have that. They're sort of below 10, they get those screenshots sometimes with every palette open and there's about this much space that actually edits and tech. By the way, do you like my shirt? Oh, yes, classic. Where's yours? How does it point even? I'm such an apprentice. I haven't gotten my Obsidian merch yet, but yeah, you're looking good over there.",
+        "number": 7
+      },
+      {
+        "title": "Joining the Obsidian team",
+        "start_time": 1335.0,
+        "end_time": 1740.0,
+        "text": " So you know, you've been contributing to Obsidian, pretty much from the get-go. And then you started working with them. What was it with them? It's the, like, and silver-based. It's the first, the first, the. So you know, how did that add an how much you were, you can reveal, how did that come about? And then what was the transition when was there this kind of moment of how about becoming CEO? Yeah, well, I was a very organic process because I, you know, was running a different company at the time when Obsidian first came out. And so I had, you know, started building minimal theme a bunch of different small plug-ins here and there, the web clipper. And I was a very vocal in the discord and forum about some of the things that I thought would be, you know, improvements or bug fixes. And at the time the Obsidian community was way smaller than it is today. And so I was often interacting with, um, leak-at and silver, the founders of Obsidian through the discord and just kind of just talking very organically about here are some things that could be improved. Here are some, you know, bug-bugs I found. Can you help me with this feature of minimal that I am trying to, you know, build into my plug-in? Can you give me some feedback on how to do this properly? And so we, we started interacting, you know, talking about Obsidian for a couple of years. And I'm not exactly sure at what point it started. Maybe it was around the time that, I'm trying to, like, actually remember, but I think there was like a gems of the year contest where minimal one, like the best theme category. And I think I started DMing more with, with silver and leak-at around that time and just kind of getting to know them just over over chat in discord. And they found out that I had been, you know, running some startups and asked me for some advice on a couple of small things here and there. And so we just kind of kept that conversation going. And at some point last year, there was this kind of idea that Obsidian wanted to kind of reach the 1.0 release. And the 1.0 release, I mean, I think, you know, it's funny that it, it was really a milestone moment because we, as it, that's when I started becoming involved in the project. And they asked me to basically create the new default theme. And so I was working with them part-time, kind of taking a lot of my experience on minimal and green that into the core app. But also, they were asking me about some of the things that I felt were on my top priority list of small details that we felt were still kind of embarrassing or like wanted to really get nailed down before we could really feel like we could call it a 1.0. And that's when I started working much more closely with them as well as Liam, who is now a full-time part of the theme. You might know Liam from the calendar plugin. He's amazing. We have basically five people full-time. Joe Thai, you might have seen around the community who helps a lot with plugin reviews and the developer ecosystem. And then a few other folks who've been helping us part-time like NGMIR who you might know from the Kanban plugin. And style setting is working on, has been working on Canvas and kind of like led the Canvas effort. And so the more conversations kept going on with this project, I just realized it was so much fun and I love Obsidian so much. Like I just, I really wanted to continue to be an important tool in my life in a very selfish way, but also I think that Shida and Erica, Lake and Flike and Silver are such a mature entrepreneurs. They're quite a bit younger than me. They make me feel old all the time. But it's a great exchange of knowledge and, yeah, so we started discussing this idea. And they were on board. I think it's a very, we have very complimentary skills. I'm really excited about like, we can't it's one of the most incredible engineers that I've ever worked with. I've worked with a lot of like amazing engineers throughout my life. And I have like so much respect for him. He's just super, super impressive and continues to be, they're both going to continue to be involved for the foreseeable future. And Erica has just an incredible mind for product and how to how to think about what users really care about. And so and it's been, I think, the person who's in a way influenced why Obsidian has such an amazing community more than anybody else. Kind of from the beginning, making that an important part of Obsidian, I think is a lot of credit to Erica. So seeing, getting to know them just made me realize, like there's nothing that I would rather do than help that community continue to grow, help make sure that Obsidian has the kind of like, structure that it can last for a long time, kind of going back to that principle of longevity that matters. At the app level, how do we actually make that viable at the company level, so that the kind of product and the company can be aligned? I just wanted to call out. Very organic. There's some people who are asking where we get the merch. By the way, I bought this and it is here. Just so everybody can see because there's some awesome things on there. I wanted to ask you. Yeah, it is. So I wanted to also ask you earlier.",
+        "number": 8
+      },
+      {
+        "title": "Stephan's background in building tools",
+        "start_time": 1740.0,
+        "end_time": 1910.0,
+        "text": " When I was introducing you, I said that you have worked in similar spaces, which I realized now is a bit odd because the companies that you had worked on before are not not taking apps, but what I meant by that is actually I'm seeing a theme and what you've worked on. And it's all about creating things that are minimal, intentional, well-made. And I think like in your previous company, Lumi, you were talking about packaging and making that a little bit more transparent and intentional as well. I know you're also an industrial designer or you claim not to be one anymore, but that's also something that permeates your work there as well, doesn't it? Yeah, I'm a generalist. I like to dabble in a lot of different things. And so it has taken me in a lot of different directions, but I think the common theme is that I've always been interested in making tools. So everything, basically, in my professional career here, has been a tool of some kind. So in the case of Lumi, it was a tool. It was actually two different tools. One was for factories to help manufacturers kind of bring their capabilities online and the tool that helped businesses who need to collaborate with manufacturers, find the right manufacturers and work with them. And so I like building tools that kind of empower individuals to do something that they couldn't do before. And so I'm sitting in definitely fits into that because I feel like, I mean, in my own personal life, it's been so rewarding and exciting to use obsidian. I feel like my thought process is clear and more reliable when I'm using obsidian. And I feel like that's such an exciting superpower that I have that I want to help more people get that feeling too. So yeah, like throughout my life, basically, that that theme just keeps coming back of making tools that help other people do, whatever they're trying to do. And it's also helping other people make other things, right? Because you've also worked on things like that kind of paradigm, what is out there because there's an information overload that's out there. I know you've made like tidy, which kind of streamlines what we even see on the page. What do you think is there anything in obsidian? As we've talked about things that it's bad at, are there any big features?",
+        "number": 9
+      },
+      {
+        "title": "Obsidian roadmap, metadata",
+        "start_time": 1910.0,
+        "end_time": 2182.0,
+        "text": " that you'd like to introduce to it that don't detract from, that don't make it like this bloated bit of software, but still still are along the same lines of being intentional and helping people. Definitely, I think that the area we want to keep working on is the primitives. Like, what are the basic things that you can use that you can build on top of? So, we have a public roadmap, but it's not always the most up-to-date, but one of the big things we're working on right now is around metadata. So, a lot of, I'm a huge fan in my personal use of Data View is one of my favorite plugins for Obsidian and I use it for everything. And kind of asking ourselves, like, what can we do that would enable the user and developer ecosystem of Obsidian to leverage metadata even more? So, you know, you can, there's a couple different ways that you can add metadata to your notes with Obsidian, one of them is through Yammel in the front matter. And one of them is through Data View has these custom fields. So, that's an area that we want to, like the author of Data View, had to create this new notation with the double colon. You know, you put a key in of value and separate them with a double colon. And that notation was essentially invented by the author of Data View because it's so painful to write Gammel. And so, what can we do to clean that up a little bit and make metadata feel more like a first-class set of them from the user's perspective, but also enable more developers to build on top of that. Yeah, API docs and developer portal. I'm looking, I can't even remember where we have on here. Tasks, there's a few other things that we have of our sleeve at the moment that I'll be excited to share it in a little bit. What questions do you have? Yeah, go ahead. You mentioned Data View. I know that he's working on Data Core, right? Is that going to be something that's going to be built in a certain way? Is it still going to be a community plugin? Honestly, I would never use Obsidian without Data View. You know, I haven't really, I'm not exactly sure what the goals of Data Core are. I'm not super informed about what he's trying to do with that. I think that our job is always to find the right balance between what feels like a core plugin, what feels like it should be and so I think that long term we do want to have good ways for people to add metadata to their notes and perhaps view kind of an output of that in some way. I think that's a kind of a long term project, but in the short term, the metadata improvements is really about making it a lot easier to add metadata to your notes and then hopefully that makes things like Data View easier to use. But maybe a long term will consider some more ways that people can look and go ahead and view their data or the metadata from their notes. I do find that Data View won't challenge whether it is pretty nerdy. It does require it has a syntax that's a little bit, like SQL and I think that that's not the most user-friendly. So we've seen quite a few plugins pop up. DB folder is one that's kind of interesting that makes it a little bit more wiziwegg. And that's one of the big benefits that we have as a community is that people can build plugins that optimize for different types of users, people who are who love writing SQL. They're going to love using Data View, but people who prefer something more wiziwegg are going to prefer a different type of UI. And we can be patient in our approach to what we actually want to build into the core because we could just kind of watch what people like, what people make, and decide later down the road, what we want to build ourselves.",
+        "number": 10
+      },
+      {
+        "title": "Growing on Obsidian team",
+        "start_time": 2182.0,
+        "end_time": 2367.0,
+        "text": " Do you think there are, I know, are there any plans to then grow the team or is partly what makes it special the fact that you are very small team? I think that for now we want to stay really small. We want to be as small as we can be because one of the other things that's really important that made me want to join a city and is that from an early stage, she didn't have a work that decided that they didn't want to bring on investors like venture capital investors. And I have throughout my career worked and built companies that have used every single funding model under the Sun. Like my first company was one of the very first Kickstarter campaigns ever back in 2009. I've gone down the venture capital route. I've done bootstrapping. Like I've tried it all and I think when it comes to the goals of Obsidian that we've been talking about like longevity in particular comes to mind but also privacy and extensibility I find that is not very compatible with the VC route. And you know, if you just kind of survey the ecosystem you'll find that actually almost all of the kind of big PKM apps if you want to call them that have raised a lot of money like millions of dollars from or hundreds of millions of dollars even. And the problem with that is that I think it's misaligning the incentives in the long term for you know, the user and how they want to kind of store their notes like basically incentivize the certain behaviors that are kind of against our principles. And so for that reason we're trying to build very intentionally and also work through the extensibility part of our like principle to enable the community to customize things more. Like we don't feel like it's necessarily our job to make this like huge app that has every single feature we like seeing how the community kind of extends obsidian in their own ways. So I would say that growing the team it will be more by necessity than by a desire to try to do everything ourselves. We're getting to a point now where I would guess we don't actually even know how many obsidian users there are because we're so focused on privacy we don't have analytics we just like don't know. But we can guess based on a few different like things like how many people downloaded the app bundle that there's probably close to a million users of obsidian and only basically five core members of the team and eventually from a support standpoint or things things might start to break and we might need to hire people to help on that front. But we're trying to stay small like we can.",
+        "number": 11
+      },
+      {
+        "title": "Enshittification due to venture capital",
+        "start_time": 2367.0,
+        "end_time": 2471.0,
+        "text": " You've been very diplomatic about the VC thing. I mean, in general, it's, you know, you've got, in my coaching practice, in our coach a lot of design leaders who are kind of suffering in startups or scale-ups, because of this constant pressure to scale, because this constant pressure for just more, and I want a 10X or my investors want 10X return on the investment in some stupid amount of time, things like that. And it definitely leads to that, you know, what Corey Dr. Ralpo's, this of insuitification, that this thing, whether then there's a choke point, and we have everyone's data on our serve, and they have to use our app, and then you just start, it becomes an asset process of trying to extract value. And I, well, to touch nothing, I've gone, to defend VC, I will say, there's some businesses where it's, it kind of is necessary, because especially if we're in a privileged position, building software, because software has no cost to us. But there's some companies that have to produce a physical product in the world, and they have to buy the materials and put in orders, and so they need to raise money somehow, and VC is one of those paths. I, you can get loans like there's different ways. So I think it, I'm not like, I just have a kind of a more than a point of view on that, where like I understand why a lot of companies go that direction, and it, it makes sense. I think in the case of what we're trying to build specifically, it's a bad fit. But it's not necessarily a bad fit for everything. You mentioned I think just now, which is, oh, sorry, Nicole, couldn't, were you gonna say? I was gonna say I'd like to go back to, just a, just quickly to what,",
+        "number": 12
+      },
+      {
+        "title": "Sharing, Sync, Publish",
+        "start_time": 2471.0,
+        "end_time": 2822.0,
+        "text": " Obsidian is bad at and you know, Stephon, I love Obsidian. It is I am I'm all for it. I am Possibly the biggest fan. I think one thing that that Obsidian is bad at that I really would love to to see improved is Sharing Because I think that is the thing that stops most people from from using it because You know, using it on your own in an isolated way is one thing it excels at that But anytime that you have other people that you want to do that with as an example And you and I play D&D. Okay, this is not a work thing, right? But it is a recreational use and honestly it takes up a lot of my my usage of Obsidian is role-playing games And in that group there are there are four of us Three and a half who use Obsidian we can't share our notes. We can't have like one one repository for all of us to collaborate on so we have like Individual notes and Yes, we could use something like dropbox to share those notes, but then Andy for example can't or wouldn't want to share all of his notes with us Maybe some of them he would so I would love love to see like a little bit More permissions around sharing yeah, I think Sharing is a big like it's a challenge because there's a three or four different use cases nested under sharing that are quite different from from one another so We have published so we're doing a lot of work right now actually on making some publisher movements There's a big batch of publishing improvements that just went live like a week or two ago And that's more about sharing to the external world and an entire vault and we want to keep improving that then there is a Sync which is like has this concept called shared vaults I don't know if you've tried that out but sync shared vaults is actually what we use internally on the Obsidian team So everyone who's like You know between the five of us are working on projects we keep our notes in one shared vault Then there's also the idea of hey I'm writing this note I just want to send a link to someone so that they can view it. They don't have Obsidian or they don't know You know, I don't want to like put them through the process of having to You know learn everything about Obsidian just to read this one note and that note might be You know semi private like it's like something where It's not like a publish use case where you want the world to see it you just want this one person to see it And then there's the collaboration use case where like Google docs or notion makes it really easy for a few people to be like collaboratively editing something even if They don't or have Obsidian for example So like those are all kind of different problems to solve in different ways and I do think that we want to find ways to Saw those problems figuring out with the right order that's another challenge about being a small team is like what do we work on now versus later But I think all of them are problems that we would like to solve You know over the kind of medium to long term for sure We're very aware of that First of all, there's a bit of a thread here though as well when you've talked about you know because obviously the sharing bit Bring up the privacy issue that you talked about before And it also links to the Is there a browser based version of the Obsidian you know because one of the ways of obviously Easily sharing and collaborating on a document would be to have kind of browser based editor even if it was just for that one document And it's almost like you need a kind of instead of a separate ward a sort of an enclave In your existing ward that you can say this is the shareable bit and all the rest of it You know remains encrypted that says that's a rather than the encryption thing is an issue, but you know at some point Once you share you have to not do that And that may be the beginning of the of the browser based version I Think my problem is that I am able to do those use cases, but I use separate tools for each of them I would really love to streamline in this area like you were talking about being able to share a link I use ether pad with that, but it's it's not the best it works though And then when you talk about using sync I also subscribe to sync, but that also requires other people to have sync So for those people who don't use obsidian enough to warrant sync, I use dropbox and then at work Because we have all of our internal docs on get hub repos. I use get hub to to bring my obsidian notes and and share them And that has that brings a lot of things, but also brings like comments and being able to roll back changes and You handle merge conflicts and That's not something that sync does as well for now I totally agree Yeah, I think that those are things that we have to eventually Solve and I do Going back to what feels like it should be a core thing and what feels like it should be a community thing I think that sharing is something that Belongs and core at least core needs to have good sharing mechanisms for all of the different use cases publishing Collaboration single note sharing is just a matter of How do we do that in what order do we build those features and can we build them in a way that is consistent with our principle?",
+        "number": 13
+      },
+      {
+        "title": "Task management and prioritization",
+        "start_time": 2822.0,
+        "end_time": 3008.0,
+        "text": " Can we talk about task management? Because that was something that was on the road map. So is there anything you can share with us on that front? Our goal around that one is fairly conservative. I would say it's not going to be a major, complete revamp to everything. It's more about how do we make tasks queryable in a better way? Like, and also adding better date support. So we've been thinking a lot about how do do dates work with tasks. So right now there's ways that you can do that with community plugins. But we want to figure out should there be a core way of dealing with do dates. Again, thinking about the API first and how that might enable developers to come up with some new experiences on top of that. But I would say that that project's been a little bit on the back burner for us because we had some other ideas that we wanted to prioritize first. Like, can this end in some of the things that we're working on right now like metadata and publish improvements, for example? It does occur to me that a lot of these things like task management could be helped if you sure a lot something like data core or data view. Because the functionality is there. You just need to make it look pretty, but you're good at that. Yeah, I mean, the challenge there is just again, like, two, three people building things. We only have so much bandwidth and kind of finding that happy medium between. We want to make sure that we're releasing features at a good pace. But every time we add new capabilities, we also add to the surface area of potential bugs of potential issues that might come up or edge cases with certain plugins, we increase the number feature requests. When we add something like Canvas, then we get a whole bunch of new feature requests from people who are like, oh, Canvas is great, but it doesn't do XYZ. So that I don't know that anyone has ever solved that problem. It's just kind of a problem of building software in the world, but that is probably the biggest challenge that we deal with as a team is how to find the right balance of what's a build now, how comprehensive do we want this feature to be versus starting small and kind of building on top of it. But trail locking a plugin, we've done it a couple times and when we do, we tend to rewrite it from scratch pretty much and so that's a pretty big effort, like, rewriting something like Data View or Data, I haven't looked at the code for Data Quarters, is not a small task, it tends to be a pretty big thing.",
+        "number": 14
+      },
+      {
+        "title": "AI in Obsidian",
+        "start_time": 3008.0,
+        "end_time": 3400.0,
+        "text": " Another question here by a imagination scene and another one by another user called Remi. What about AI? We're integrating something like chat GPT. Is that something that's on your radar? I've been thinking a lot about this. I think that right now, so this is kind of like goes back to the benefit of the accessibility of Obsidian. I'm pretty sure that Obsidian was the first app that had chat GPT or GPT 3 integrated into it because someone in the community built a plugin for that called Text Generator. Now I think there's three or four plugins out there that connect to the OpenAI API. The cool thing for Obsidian is that because it's so easy to build plugins, people tend to go really like we both have the ability to be very fast and very slow. The community can go and build a plugin that's all that use case. I think the they're quite good actually. I've used Text Generator a bunch. But we can also be patient about what's the right way of building it for Obsidian. I think that there's a lot of companies right now rushing into adding GPT to everything. My personal preference when it comes to this is I would like for it to all be local first completely private. I don't want to send data that I don't get. I want to have complete control over any data that is being sent. There's this concept of training and inference. We're getting right into the weeds of how AI works. But I would like someday to be able to have maybe a plugin, whether it's a core plugin or a community plugin that can do some training on your vault and kind of learn from your vault and be able to do the inference locally on your computer so that it completely aligns with the principles of privacy and local first that Obsidian is known for. The challenge with that right now is that that's quite intensive on the graphics card and it's quite complicated to set up locally for users and we're still kind of waiting to see whether a company like stability that they made stable diffusion and is an open source platform for like image generation. There's been talks about them releasing a language model that would be open source. So we're kind of waiting for all of those things to come together before we make a decision. We would, I think, we would prefer to build something that kind of is aligned with our principles. But in a meantime, there's a bunch of plugins that you can use that saw that use case and I think they do quite a good job with them actually. Stefan, have you heard of napkin? No, I don't know napkin. Tell me more. It's, yeah, it's an awesome service that I recently have been using and it uses AI in a really interesting way because I think there's a lot of focus on using AI for like generating blocks of tags or outlines or images. But what napkin does is it looks at your vault. Well, it's not a vault because it doesn't do it for obsidian. It looks at your readwise highlights and it uses AI to tag them intelligently. So it has this interface where you can determine you can click on like a thought or a highlight and it shows you intelligently linked other highlights that you already have that you may not have put together. And sometimes they're like they're not even using the same keyword or they're not tagged the same way. But somehow it still figures it out. That kind of thing would be invaluable for obsidian because there's a lot to be said for manually linking things but getting some help would be nice. I think that sounds awesome. I'm seeing a lot of comments here in the chat of like people who are suggesting some different ideas and some plugins that I'm not even aware of that are already doing some more local AI stuff. I think that's a I think what's amazing about the obsidian community is we have people kind of at every level of the spectrum of nerdiness. Like we have like people who are some of the most advanced engineers that I've ever talked to are developing their own custom plugins. And then we have people who are complete beginners and novices, not engineers, people who are just learning about not taking we have a lot of young students in the community. And so I like that we have the ability to have those people who are like all the way at the deepest end of like understanding all of those principles able to start working on you know potential plugins and extensions that could do something like that. And that can be kind of a breeding ground where we can learn what the people actually want out of that type of tool. But I do think that if we want to continue to stay true to these kind of principles of being local and private, there's there's going to be some constraints that we have to deal with that are actual like performance constraints and technical constraints that may mean Obsidian will be a little slower to get to those features than apps that are completely cloud based where they can upload that to a server and do that you know somewhere else. So I think it's it is a very tricky challenge for us to try to solve that right away. I think we're going to tend to watch what plugin developers do and then start to think about that in a year or two because right now there's I mean literally every month there's something new going on with with AI and the open source packages that are going on. So we're maybe a little less cutting edge than the plugin ecosystem can be if that makes sense on the course. If it was like you can get dependent on something very quickly there as well and it was kind of get really kind of bogged down and then you know a lot of a couple of people said keep that as a plugin as much better that way.",
+        "number": 15
+      },
+      {
+        "title": "Accessibility in Obsidian",
+        "start_time": 3400.0,
+        "end_time": 3505.0,
+        "text": " There was a question, it was some Daniel got them further up and I don't, you don't use a screen read-in, but I think something that would need to be much more core fundamental as obviously accessibility. I don't know, maybe Daniel can say, I don't know how accessible obsidian is to use with screen read-in. We've done a lot of work in that area with, yeah, I would be curious to hear a little bit more detail from Daniel about what they're looking for, but yeah, sitting is already compatible with screen readers. We have done a lot of work on that side, but if there's things that are missing in that respect, I would say let us know in the community on the forum or on Discord. We're definitely, I agree that building that into core is, is a must. I think that's super important. We've added a lot of new customization features over the past year, so I'm actually curious to see if there are themes that get developed that are focused on different use cases. It's much easier today to design themes than it was a year ago. One of my, that was one of my biggest contributions over the past year from a code standpoint was rewriting the way that themes can be built. So that means that you can very easily now create high-contrast themes, themes with different font sizes, different fonts that might help people who need help on the vision side. But then there's other things like, are you labels and other web technologies that we're able to incorporate that make it easier with screen readers for sure?",
+        "number": 16
+      },
+      {
+        "title": "Tags vs links?",
+        "start_time": 3505.0,
+        "end_time": 3855.0,
+        "text": " Okay, we have a question that is a little bit controversial. It's from Germ Germain, who I actually by chance met a few weeks ago in person. He says, what is his opinion? Well, I'm going to ask both of you about tags versus links. In my personal use or how do you want to clarify that? Yeah, and your personal use, which one do you use more? So I tend to use links more than tags personally. So I do have quite a few tags, but I tend to use links because I like to see everything in the, but all the relationships in my back links, I guess, is how I, how I would say it. And I like that links, for example, like I'll have a top level categories for books that I've read. And so I just have a category called books and I linked to it. In my template, I still use tags. I don't actually really know why I just feel like I should have it there for future. So I mean, yeah, for future proofing, like if I, if I ever create a note about a book, it has both a tag for book and a link to the category books. So that redundancy helps sometimes when I'm, if I'm creating like a data view list or something, I have access to both of those different ways of filtering down. But I tend to prefer links. I think links have a lot are more powerful and cross over more different things. I think tags where I use them the most is for kind of very narrow meta segmentation of a very specific thing where. There's only a, like, a very narrow subset of notes that needs to be grouped in a way that a link wouldn't make sense or I don't really want to have a page for that concept. Am I making sense? I'm still here. But also it's not old as, you know. No, really. Yeah, but way hard to pay with. Yeah, I'm very, what are you even doing here? No, I'm joking. This is why this is why I, I, I feel like I've said in being not dogmatic about this is great because people think in different ways. Like that's, I, I, I love that people can use folders or tags or links or all of them do whatever works for you if it works for you with that's great. I think partly goes back to what you were saying, right, the beginning, which is, you know, in where the file format is the thing, right, and so I use several other things on that group of files that I have there and. And whilst it, you know, it's great if you can search the tags or you can do whatever you want with their tags or links in a CDM when you're trying to pull find a file kind of pull into something I use marked bread tips for the touch is marked quite a lot for the help but. It's a massive pain in the ass. Well, I'm going to use search of that anyway, and they're fine, but you know, I much prefer to have some organization that works across other things that aren't going to handle tags. So that's well, to be fair, in our, in our team vault, we do use folders for for our, like, internal grouping, but I think that that just cases very different than my personal notes. Yeah, we have an answer from Daniel actually. He says yes issues both for windows and iOS screen reader support. I love the potential that a city has for me as a blind person who's already using notes in a text based format. Jump into and discord. Let's talk about it. He's I don't know how accessible this could is. By the way, that's a great question. Of course we're more than jumping to something that's really terrible for you to use on this course. You know, all the form, I guess in the form is this is runs on discourse, doesn't it the form we can imagine. Yeah, it's kind of more accessible. If you go to a city and dot md slash community, you'll see the links there and. Send us your feedback or if you want to just email support at obsidian dot md will take a look, but the best is definitely through the community. And we'll definitely take a look. Yeah. And let's who does that email go to. I'll have the three of you. Well, right. It's like a kind of a shared thing. We kind of look in there, but I think that most people who use the support inbox are for kind of like our enterprise users. We prefer to use the community as the main place because there's more transparency around that and like other people can jump in and add their own kind of experience is what whatever the feature request or bug might be. So in general, that's why we kind of direct people towards the community if they want to provide some feature requests or bug fix requests. I was kind of hoping it triggered like a kind of a bat signal that projected us an obsidian sort of into the sky. The obsidian crystal into the sky and it will kind of come running. Yeah, unfortunately, it's it's just it's just one of those other things that as we scale up, we have to find. Good ways of parsing what what the community is looking for and how we can fit it into our red map. Well, I don't I will.",
+        "number": 17
+      },
+      {
+        "title": "Message to the community",
+        "start_time": 3855.0,
+        "end_time": 4042.0,
+        "text": " would love to have you stay both of you stay on for longer. You're both welcome back, but I also want to be mindful of your time. So thank you for coming on to talk about the future of Obsidian, and for helping me interview Amanda. Stepan, is there anything that you'd like to say to the community before we end? Wow. Thank you. And I just, I'm so thankful. I think that the thing that I love about Obsidian is so many smart people and kind in like kind of people are part of the community. I love, you know, watching your videos in the call, you do such a great job of kind of making Obsidian feel more accessible. And I think that, in a way, like beyond what we're working on in terms of features and so on, like the fact that we have such a friendly and collaborative and helpful community is one of my favorite things. And so I'm extremely thankful for that. You know, continue to be continuing an amazing job being nice and helpful. I think we're still at the very beginning of people adopting these tools. Like anyone who's watching this is probably in the like top 0.01% of people who knows anything about these, whatever you want to call tools for thought, how you, like some people have been calling it integrated thinking environment. Like we're creating a new generation of tools that help people unlock the way that they think and anyone who's watching this right now is kind of pretty much on the cutting edge of that concept. And I'm really curious what happens if that idea becomes more pervasive in society. I'm very hopeful that it can help us solve a lot of big problems. And so if you're one of the, you know, nerds, I, I've say that lovingly geeks, dorks better part of this conversation, I consider myself one of those. Introducing people to obsidian and being part of, you know, helping them learn how to kind of make their thought process more reliable. It's just an amazing gift. Like I just think that's like, and you're doing that every day with your videos. Nicole, and so I want to, I want to thank you for that. So that, it's on it. It's not a specific ask, but that's just kind of the way that I feel and I hope we can continue that for a really long time. Awesome. Thank you. I'll talk to you both in a second, but we'll say goodbye to everybody else. Thank you for joining us on this weekend and see you next week. Thanks, bye. Thank you.",
+        "number": 18
+      }
+    ]
+  },
+  "https://www.youtube.com/watch?v=pLPJoFvq4_M_tiny": {
+    "key": "https://www.youtube.com/watch?v=pLPJoFvq4_M_tiny",
+    "basename": "LangGraph Studio- The first agent IDE",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/LangGraph Studio- The first agent IDE.mp3",
+    "hf_compute_type": "float16",
+    "metadata": {
+      "audio_input": {
+        "youtube_url": "https://www.youtube.com/watch?v=pLPJoFvq4_M",
+        "audio_filepath": null,
+        "audio_quality": "tiny"
+      },
+      "title": "LangGraph Studio: The first agent IDE",
+      "tags": "",
+      "description": "LLMs have paved the way for the development of new types of agentic applications \u2014 and as LLM applications evolve, so must the tooling needed to efficiently develop them. Today, we're announcing LangGraph Studio - the first IDE designed specifically for agent development - in open beta.\n\nLangGraph Studio offers a new way to develop LLM applications, providing a specialized agent IDE for visualizing, interacting with, and debugging complex agentic applications. In this blog, we'll give a brief overview of LangGraph and then explore how LangGraph Studio streamlines the development of agentic applications.\n\nDownload LangGraph Studio: https://github.com/langchain-ai/langgraph-studio\nSign up for LangSmith: https://smith.langchain.com/\nRead the blog: blog.langchain.dev/langgraph-studio-the-first-agent-ide/",
+      "duration": "00:08:43",
+      "channel": "LangChain",
+      "upload_date": "20240801",
+      "uploader_id": "@LangChain",
+      "download_time": "00:00:23",
+      "transcription_time": "00:01:43"
+    },
+    "chapters": [
+      {
+        "title": " ",
+        "start_time": 0.0,
+        "end_time": 118.64,
+        "text": " Today I'm really excited to announce and show off  Langegraph Studio, which is the first agent ID.  So we've built this to work on top of Langegraph.  Langegraph is a framework that we released a few months ago  and have been working on for over a year  that is ing at building complex agente applications.  It is extremely low level, it's extremely controllable,  it comes with a built-in persistence layer,  and we've seen it really accelerate the pace  at which teams can build and productionize  these agente types of applications.  Building these applications is often very code-heavy,  but there's new elements to it that aren't present  in traditional software engineering.  You're interacting with LLMs, it's a much more iterative process,  you're building these agents,  which are these complex systems,  it's nice to be able to visualize that.  And so we've been working on something we think  that complements the code development experience  and we're calling it Langegraph Studio.  And it's really an IDE for building these types  of a gigantic applications.  So I want to show it off and show how you can use it.  So after you download it,  you can open it up, it's a desktop app that runs locally.  So I can open it up and I need to log into Lange Smith.  So right now, everyone, even with free accounts,  gets access to Langegraph Studio.  So let me open it back up.  And I can now see that I can basically open up different folders.  So what's in these folders?  You'll need a Langegraph Graph Definition  and that will need to be available in a Python file,  currently this only works with Python.  And then there'll be a few other configuration things  you need to set up.  You can either set this up as part of the UI experience  or you can put this as a JSON file that you then load.  So let's go to Langegraph Example.  Langegraph Example is based off of repo.  You can find it online, it's a GitHub repo.  And if we look at what it contains, if we go there,",
+        "number": 1
+      },
+      {
+        "title": " ",
+        "start_time": 118.64,
+        "end_time": 238.72,
+        "text": " we can see that we have this agent.py file.  So this is where our agent is defined.  And we can see that down at the bottom,  we have this graph, which is a compile agent.  So we've got this agent.py file with the agent in it.  And then we also have this Langegraph.json file.  And this is what we can either configure in the UI  or we can just put in JSON.  And so we have three things in here.  We have the dependencies.  So this points the dependencies, and basically says  install everything in this folder.  There's a requirements.txt in this folder.  So we see that and we smartly pull that in  and build the agent environment with their requirements  in this requirement.txt.  So some Langeine imports and then to Villet,  which we'll use for search.  We have this graph thing, which points to agent.py  and then the graph variable.  This basically tells Langegraph Studio  where to find the agent.  You can deploy multiple agents here, if you want as well.  And then we have this environment file.  So this points to environment variables  that we're going to need to load to run this agent.  And so if we look at the example environment file,  we can see that we need three keys.  We need an anthropic API key.  We need an open AI API key.  And then we need a tovillet API key.  And so these two, and anthropic, an open AI  are for the Lange models that we're going to use  and tovillet is for the search engine.  So if we go back to Langegraph Studio,  we can see that we've now loaded up the agent.  And let me move this up here.  And so the first thing that we see is this nice visualization  of the agent.  We can see the nodes that are defined.  We can see where it starts.  We can see where it ends.  We can see the different branches that come out of each node.  And this is a great way to visualize  any type of complex agent that you're building.  We can then start to interact with this agent.  So what's sending the message was say,  hi, what's the weather in SF?  So the agent starts running.  And it realizes that needs to call tovillet.",
+        "number": 2
+      },
+      {
+        "title": " ",
+        "start_time": 238.72,
+        "end_time": 359.12,
+        "text": " So it calls tovillet with a search term of weather in San Francisco.  It gets back a response.  And then it gets out and then it generates a final answer.  So this is a run of an agent.  Already this is helpful because I can see  as the agent is progressing, what exactly is happening?  I can see the streaming of tokens back.  I can then see when it's finished.  I can see the tool call.  So you can see exactly what the tool call is.  It's the nice and exploreable way.  So I can click in.  I can see the results of the tool call.  I can see the tool parameters represented nicely.  This is already helpful for just understanding  what's happening in live as the agent is running.  But what's really cool is I can then start to interact with this.  So one thing I can do is I can modify the state  of the agent directly.  So if I wanted to do some simulation where  I said something like, OK, let me edit this.  And let's say what would have happened if the agent  instead generated weather in San Francisco  acquey weather or something like this.  Then I can modify directly there.  And I can then click this fork button.  That'll then start up a separate parallel thread  where it continues from this spot in time  as if it had searched for this term.  So this is a simple example.  There's only three steps.  But as your agents get longer and longer,  you can imagine how nice it is to be able to do this  halfway through an agent run.  You can also run this graph in a sort of debug mode.  So let's see what that means.  So I can click here.  I can create a new thread.  Let me create the same input.  So what's the weather in that stuff?  And I can then go up here to interrupts.  I think click interrupt at all.  And this will basically mean before every node, it stops.  So let's click submit.  We can see that after the first node,  it's already asked me to continue.  So I click continue and it now generates the agent node.  It then stops.  And so if I wanted to modify it here,  I could, I could edit it.  And then I can click continue.  Runs the action node.  This is going to make the call.  And then after that, I need to click continue again.  And it keeps on continuing.",
+        "number": 3
+      },
+      {
+        "title": " ",
+        "start_time": 359.12,
+        "end_time": 477.91999999999996,
+        "text": " So this is useful for being able to walk through the agent  step by step.  There's another really cool part that we can do.  And this is where we modify the underlying code.  So let's say that I wanted to do some prompt engineering.  And let's say I wanted the final response to always be in Spanish.  So I could, without this, I would modify the prompt.  And I would then rerun the agent from scratch, which is fine.  But again, for long running agents, that's not the fastest iteration cycle.  You want to really drill on what would have happened with this node exactly  if I rerun with a different prompt.  So let's see how we can do that.  I'll open up my code editor.  And I have a nice little system prompt right here.  And this says just right now, be a helpful system.  Let me add some new instructions.  When you are responding to the user respond in Spanish.  So I modify the prompt.  I can now go back to Lengraff Studio.  I can see that it's reloading.  It's now finished reloading.  I can go back here and I can click this fork and retry button.  So this will rerun this node with the updated code.  So I don't have to simulate the first two calls anymore.  I can say, hey, let's keep these nodes consistent.  Exactly what happened there.  I wanted to exactly happen, but I just want to rerun this node.  And so I rerun it.  If I want to change it again, let's now change this to old English.  So I can change that.  I can go back here, reloads very quickly.  I can click this fork and retry button in it response.  And now it's talking in old English in the olden tongue.  So this shows off really cool human in the loop interaction patterns  that I think are really, really helpful when developing  a genetic applications.  LLMs represent a new component of applications",
+        "number": 4
+      },
+      {
+        "title": " ",
+        "start_time": 477.91999999999996,
+        "end_time": 521.76,
+        "text": " that were all building.  And so we deserve frameworks to help build those types of applications.  And that's what we've built with LLM graph.  But we also deserve tooling and editors  to help interact and develop these as we're going along.  And that's what we've built with LLM graph studio.  I've been using this for the past week.  I think it's incredibly helpful for speeding up  the development speed of these more complex types of applications.  I think there are a lot of other features that we can add in here.  And I'm really excited to see what everyone builds with it,  how they use it and the feature requests that they have.  So please try it out and let us know any feedback,  any feature requests.  This is one of the coolest things that we've launched.  And I'm really excited for everyone to try it out.  Thanks.",
+        "number": 5
       }
     ]
   }

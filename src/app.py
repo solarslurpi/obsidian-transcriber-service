@@ -21,13 +21,15 @@
 import asyncio
 from dotenv import load_dotenv
 load_dotenv()
+import json
 import logging
+import logging_config
 import os
 from typing import Optional, List
 
 
 
-from fastapi import FastAPI, Request, File, Form, UploadFile, HTTPException
+from fastapi import FastAPI, Request, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sse_starlette import EventSourceResponse
@@ -35,7 +37,6 @@ from sse_starlette import EventSourceResponse
 
 from exceptions_code import MissingContentException
 from global_stuff import global_message_queue
-from logger_code import LoggerBase
 from process_check_code import process_check, send_sse_data_messages
 from audio_processing_model import AudioProcessRequest, save_local_audio_file
 from transcription_state_code import TranscriptionStatesSingleton
@@ -49,7 +50,8 @@ LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 
 RETRY_TIMEOUT = 3000 # For sending SSE messages
 
-logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
+# Create a logger instance for this module
+logger = logging.getLogger(__name__)
 
 class MissingContent(BaseModel):
     key: str
@@ -106,7 +108,7 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
 @app.post("/api/v1/missing_content")
 # Body(...) tells fastapi that the input is json. It will then validate the input again the MissingContentRequest model.  If the input does not match the model, an error will be returned.
 async def missing_content(missing_content: MissingContent):
-    logger.debug(f"app.missing_content: Missing content list received: {missing_content}")
+    logger.debug(f"Received missing content list: {missing_content}")
     try:
         states = TranscriptionStatesSingleton.get_states()
         state = states.get_state(missing_content.key)
@@ -140,7 +142,6 @@ async def sse_endpoint(request: Request):
 
 async def event_generator(request: Request):
     message_id_counter = 0
-    logger.debug("app.event_generator: Starting SSE event generator.")
     try:
         while True:
             if await request.is_disconnected():
@@ -149,12 +150,24 @@ async def event_generator(request: Request):
             try:
                 event = message['event']
                 data = message['data']
+
                 if event == "server-error" or (event == "data" and data == 'done'):
-                    logger.debug(f"--> SERVER ERROR. EXITING EVENT GENERATOR. Event: {event}, Data: {data}")
+                    logger.debug(f"--> EXITING EVENT GENERATOR. Event: {event}, Data: {data}")
                     break
-                logger.debug(f"--> SENDING MESSAGE. Event: {event}, Data: {data}")
+
                 # Just in case the message is an empty string or None.
                 if message:
+                    info = data
+                    if event == "data":
+                    # FOR DEBUGGING START
+                        dict_data = json.loads(data)
+                        key = list(dict_data.keys())[0]
+                        if key not in ['num_chapters', 'basename', 'key']:
+                            info = key
+                        if key in ['chapter']:
+                            info ="chapter" + json.dumps(dict_data["chapter"]["number"]) + json.dumps(dict_data["chapter"]["text"][:200] )
+                    logger.debug(f"--> SENDING MESSAGE. Event: {event}, Info: {info}")
+                    # FOR DEBUGGING STOP
                     message_id_counter += 1
                     yield {
                         "event": event,
@@ -163,9 +176,9 @@ async def event_generator(request: Request):
                         "data": data
                     }
             except Exception as e:
-                logger.error(f"app.event_generator: Error sending message: {message}")
+                logger.error(f"Error sending message: {message}", exc_info=e)
     except KeyboardInterrupt:
-        logger.info("app.event_generator: KeyboardInterrupt received. ")
+        logger.info("KeyboardInterrupt received. ")
 
 @app.get("/api/v1/health")
 async def health_check():

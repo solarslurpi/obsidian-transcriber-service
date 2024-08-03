@@ -25,9 +25,10 @@ import os
 import re
 import yt_dlp
 from typing import List, Tuple
+
+import logging_config
 from exceptions_code import ProgressHookException, YouTubeDownloadException, YouTubePostProcessingException
 from global_stuff import global_message_queue
-from logger_code import LoggerBase
 from metadata_shared_code import Metadata
 
 from utils import format_sse
@@ -37,7 +38,8 @@ from dotenv import load_dotenv
 load_dotenv()
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 YOUTUBE_CACHE_FILEPATH = os.path.join(os.getenv("YOUTUBE_CACHE_DIRECTORY", "youtube_cache"), "youtube_cache.json")
-logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
+# Create a logger instance for this module
+logger = logging.getLogger(__name__)
 
 def progress_hook(info_dict, queue, loop):
     if info_dict['status'] in ['finished', 'downloading']:

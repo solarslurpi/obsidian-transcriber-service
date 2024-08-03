@@ -18,17 +18,20 @@
 # Author: Margaret Johnson
 # Copyright (c) 2024 Margaret Johnson
 ###########################################################################################
+import logging
 import os
 from datetime import datetime
 from typing import List, Tuple, Dict
 from tinytag import TinyTag
 
+import logging_config
 from audio_processing_model import AudioProcessRequest
 from logger_code import LoggerBase
 from metadata_shared_code import Metadata
 
 
-logger = LoggerBase.setup_logger(__name__)
+# Create a logger instance for this module
+logger = logging.getLogger(__name__)
 
 class AudioHandler():
     def __init__(self, audio_input: AudioProcessRequest):

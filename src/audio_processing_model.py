@@ -30,9 +30,8 @@ from pydantic import BaseModel, Field, field_validator, model_validator, field_s
 import torch
 from typing import Optional
 
-from logger_code import LoggerBase
-
-logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
+# Create a logger instance for this module
+logger = logging.getLogger(__name__)
 
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")

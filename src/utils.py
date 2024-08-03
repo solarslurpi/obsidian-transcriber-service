@@ -7,14 +7,14 @@ import sys
 import time
 from typing import Dict
 
-
+import logging_config
 from dotenv import load_dotenv
 load_dotenv()
 
 from global_stuff import global_message_queue
-from logger_code import LoggerBase
 
-logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
+# Create a logger instance for this module
+logger = logging.getLogger(__name__)
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 
@@ -51,7 +51,7 @@ def format_sse(event: str, data: object) -> Dict:
 
 async def put_message_in_queue(message):
     await global_message_queue.put(message)
-    logger.debug(f"Message put in global queue: {message}")
+    logger.debug(f"--> MESSAGE IN QUEUE: {message}")
 
 async def send_sse_message(event: str, data: dict):
     message = format_sse(event, data)
@@ -101,9 +101,7 @@ def add_src_to_sys_path():
     if src_path not in sys.path:
         sys.path.append(src_path)
 
-    from logger_code import LoggerBase
-    logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
-    logger.debug(f"Added {src_path} to sys.path")
+
 
 def cleaned_name(uncleaned_name:str) -> str:
 

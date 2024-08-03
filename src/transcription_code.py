@@ -26,14 +26,15 @@ from pydub import AudioSegment
 import psutil
 import torch
 
-
+import logging_config
 from exceptions_code import TranscriberException
 from logger_code import LoggerBase
 from transcription_state_code import TranscriptionState, Chapter
 from utils import send_sse_message
 import whisper
 
-logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
+# Create a logger instance for this module
+logger = logging.getLogger(__name__)
 
 # This is for storing the temporary audio slice when the audio is divided into chapters.
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
