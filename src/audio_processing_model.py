@@ -39,12 +39,19 @@ LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 # Audio formats that can be processed by the whisper model.
 SUPPORTED_AUDIO_FORMATS = {'.mp3', '.m4a', '.wav', '.flac', '.aac', '.ogg', '.opus'}
 
+# AUDIO_QUALITY_MAP = {
+#     "default":  "tiny.en",
+#     "tiny": "tiny.en",
+#     "small": "small.en",
+#     "medium": "medium.en",
+#     "large": "large-v3"
+# }
 AUDIO_QUALITY_MAP = {
-    "default":  "tiny.en",
-    "tiny": "tiny.en",
-    "small": "small.en",
-    "medium": "medium.en",
-    "large": "large-v3"
+    "default":  "Systran/faster-whisper-tiny.en",
+    "tiny": "Systran/faster-whisper-tiny.en",
+    "small": "Systran/faster-distil-whisper-small.en",
+    "medium": "Systran/faster-distil-whisper-medium.en",
+    "large": "Systran/faster-distil-whisper-large-v3"
 }
 
 COMPUTE_TYPE_MAP = {

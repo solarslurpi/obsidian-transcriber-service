@@ -99,10 +99,8 @@ class YouTubeHandler():
                 sanitized_filename = re.sub(r'[:]', '-', info_dict['title'])  # Replace colon with hyphen
                 sanitized_filename = re.sub(r'[\<\>\"/|?*]', '', sanitized_filename)  # Remove other problematic
                 mp3_filepath = LOCAL_DIRECTORY + '/' + sanitized_filename + '.mp3'
-                try:
+                if not os.path.exists(mp3_filepath):
                     os.rename(potential_problems_filepath, mp3_filepath)
-                except FileExistsError:
-                    logger.warning(f"Warning: The file '{mp3_filepath}' already exists.")
                 # add in the audio quality.
                 info_dict['audio_quality'] = self.audio_input.audio_quality
                 chapter_dicts = info_dict.get('chapters', [])

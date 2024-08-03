@@ -298,18 +298,19 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
     hf_compute_type = COMPUTE_TYPE_MAP['default']
     # At this point, we have everything except the transcript_text of the chapters.
     try:
+        # Build the state
         metadata = build_metadata_instance(info_dict)
         metadata.download_time = format_time(float(end_time - start_time))
-        metadata.audio_input = AudioProcessRequest(youtube_url=audio_input.youtube_url, audio_filepath=audio_input.audio_filepath, audio_quality=audio_input.audio_quality)
+        metadata.audio_input = audio_input
 
         chapters = build_chapters(chapter_dicts)
-        # Write code that gets the basename of mp3_filepath
         filename_no_extension = os.path.splitext(os.path.basename(audio_filepath))[0]
         state = TranscriptionState(key=key, basename=filename_no_extension, local_audio_path=audio_filepath, hf_model=audio_input.audio_quality, hf_compute_type=hf_compute_type,  metadata=metadata, chapters=chapters)
         # Since we are here, add the first process of audio prep prior to transcription to the cache
         states.add_state(state)
         await send_sse_message(event="status", data="Content has been prepped. All systems go for transcription.")
     except Exception as e:
+        logger.error(f"Error building state",exc_info=e)
         raise e
     state.key = key
     return state
