@@ -69,26 +69,19 @@ Open the heath check endpoint and click the "Try it out" then "Execute" buttons 
 
 
 ## Through Docker
-The dockerfile for Windows is provided in the repository.
-#### Download the Docker Image
-Go to the Docker Hub repository and download the image:
-```sh
-To build the Docker image, navigate to the root directory of the repository and run the following command:
-```sh
-docker build -t obsidian-transcriber-service .
-```
-## Get Started
-Once the service is running, try connecting via FastAPI's Swagger UI. Open a browser and navigate to `http://127.0.0.1:8080/docs`. You should see the Swagger UI, which provides an interactive interface for testing the service's endpoints.
+TODO
 
-### Troubleshooting
-#### Check Port Settings
+
+
+# Troubleshooting
+## Check Port Settings
 If you are unable to connect to the service, check the port settings. The default IP and port setting used is `0.0.0.0:8081`,  `0.0.0.0` Means the server will listen on all available network interfaces, allowing you to access it from localhost or any other IP address associated with the machine.
-##### app.py
+### app.py
 Check these settings in `app.py`:
 ```python
 uvicorn.run("app:app", host="0.0.0.0", port=8081, reload=True)
 ```
-##### Docker
+### Docker
 If you are using the Docker container, check the following:
 ```sh
 $ docker ps -a
@@ -98,10 +91,21 @@ e07feece369c   solarslurpie/obsidian-transcriber-service:latest   "python src/ap
 As the example shows what this command helps with:
 - Since the -a flag is used, it shows all containers.  It is easy to tell if the container is running or not. Or exists at all.
 - The PORTS column shows the port mapping.
+## Log files
+Each module has its own logger.  For example, in app.py:
+```python
+import logging
+import logging_config
 
+logger = logging.getLogger(__name__)
+```
+The output format, destination, and level of logging is set within the `logging_config.py` file.  The majority of the logging is set to DEBUG level.  To narrow which area of the app that is causing the issue, change the log level to focus the debug statements on that area.  For example, to focus on the `app.py` file, change the log level to DEBUG in `logging_config.py`:
+```python
+logging.getLogger('utils').setLevel(logging.WARNING)
+logging.getLogger('youtube_handler_code').setLevel(logging.WARNING)
+logging.getLogger('transcripton_code').setLevel(logging.WARNING)
+logging.getLogger('app').setLevel(logging.DEBUG)
+```
+while keeping the other loggers at a level high than `DEBUG`. This way, log statements are restricted to this area of interest.
 
-
-
-## Usage
-The Obsidian Transcriber Service is designed to be used in conjunction with the Obsidian Transcriber plugin. The plugin sends a request to the service to transcribe a YouTube video or audio file. The service processes the request and returns the transcription text and metadata to the plugin, which then creates an Obsidian note with the transcription text and metadata as front matter.
-### FastAPI Endpoints
+Log message currently go to `sysout`.  Since standard Python logging is used, handlers can be added to have the output go to a file or other destination.

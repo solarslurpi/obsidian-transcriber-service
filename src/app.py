@@ -19,8 +19,7 @@
 # Copyright (c) 2024 Margaret Johnson
 ###########################################################################################
 import asyncio
-from dotenv import load_dotenv
-load_dotenv()
+
 import json
 import logging
 import logging_config
@@ -42,7 +41,8 @@ from audio_processing_model import AudioProcessRequest, save_local_audio_file
 from transcription_state_code import TranscriptionStatesSingleton
 from utils import send_sse_message
 
-# from mock_event_generator import mock_event_generator
+# Create a logger instance for this module
+logger = logging.getLogger(__name__)
 
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
@@ -50,8 +50,7 @@ LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 
 RETRY_TIMEOUT = 3000 # For sending SSE messages
 
-# Create a logger instance for this module
-logger = logging.getLogger(__name__)
+
 
 class MissingContent(BaseModel):
     key: str
@@ -153,6 +152,7 @@ async def event_generator(request: Request):
 
                 if event == "server-error" or (event == "data" and data == 'done'):
                     logger.debug(f"--> EXITING EVENT GENERATOR. Event: {event}, Data: {data}")
+                    asyncio.sleep(0.1)
                     break
 
                 # Just in case the message is an empty string or None.

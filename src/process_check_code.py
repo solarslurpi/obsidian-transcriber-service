@@ -83,7 +83,7 @@ async def process_check(audio_input):
     try:
         start_time = time.time()
         # The chapters currently have th start/stop metadata but not chapter num and not chapter text.
-        state.chapters = transcribe_audio_instance.transcribe(state.local_audio_path,state.chapters)
+        state.chapters = await transcribe_audio_instance.transcribe(state.local_audio_path,state.chapters)
         end_time = time.time()
         state.metadata.transcription_time = format_time(float(end_time - start_time))
         # Finally we have all the metadata info.")

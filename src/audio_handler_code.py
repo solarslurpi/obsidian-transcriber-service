@@ -26,8 +26,6 @@ from tinytag import TinyTag
 
 import logging_config
 from audio_processing_model import AudioProcessRequest
-from logger_code import LoggerBase
-from metadata_shared_code import Metadata
 
 
 # Create a logger instance for this module

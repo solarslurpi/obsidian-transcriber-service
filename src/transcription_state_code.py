@@ -18,6 +18,7 @@
 # Author: Margaret Johnson
 # Copyright (c) 2024 Margaret Johnson
 ###########################################################################################
+import asyncio
 import json
 import logging
 import os
@@ -49,16 +50,12 @@ class Chapter(BaseModel):
     text: Optional[str] = Field(default=None, description="Transcription of the chapter.")
     number: Optional[int] = Field(default=None, description="Chapter number.")
 
-    def format_time(self, time: float) -> str:
-        minutes, seconds = divmod(int(time), 60)
-        return f"{minutes}:{seconds:02}"
-
     def to_dict_with_start_end_strings(self) -> dict:
         '''Used to return a dictionary with straing formated start and end times.'''
         return {
             "title": self.title,
-            "start_time": self.format_time(self.start_time),
-            "end_time": self.format_time(self.end_time),
+            "start_time": format_time(self.start_time),
+            "end_time": format_time(self.end_time),
             "text": self.text,
             "number": self.number
         }
@@ -180,6 +177,7 @@ class TranscriptionStates:
                 states_dict = json.load(file)
         except (FileNotFoundError, json.JSONDecodeError):
             states_dict = {}
+
         except Exception as e:
             return
         # The state has been validated.
@@ -245,21 +243,6 @@ class TranscriptionStatesSingleton:
 
 async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tuple[TranscriptionState, Metadata]:
     logger.debug(f"audio_input: {audio_input}")
-    ## JUST TESTING
-    # with open('tests/state.json') as file:
-    #     state_dict = json.load(file)
-    # with open('tests/metadata_mp3.json') as file:
-    #     metadata_dict = json.load(file)
-    # state_dict['metadata'] = Metadata(**metadata_dict)
-    # state = TranscriptionState(**state_dict)
-    # state.hf_compute_type = torch.float32
-    # state.key = "test_default"
-    # key = state.key
-    # states = TranscriptionStatesSingleton().get_states()
-    # states.add_state(key, state, logger)
-    # END JUST TESTING
-    # The client comes in with an audio_input property. The key is based on this.
-    # BEGIN COMMENTING OUT FOR TESTS.
     try:
         states = TranscriptionStatesSingleton().get_states()
         key = states.make_key(audio_input)
@@ -309,8 +292,11 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
         # Since we are here, add the first process of audio prep prior to transcription to the cache
         states.add_state(state)
         await send_sse_message(event="status", data="Content has been prepped. All systems go for transcription.")
+        await asyncio.sleep(0.1)
     except Exception as e:
         logger.error(f"Error building state",exc_info=e)
+        await send_sse_message(event="server-error", data=f"Error building state: {e}")
+        asyncio.sleep(0.1)
         raise e
     state.key = key
     return state

@@ -1,0 +1,24 @@
+# Use an official CUDA runtime as a parent image
+FROM test:latest
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the requirements file into the container
+COPY requirements.txt .
+
+# Install the dependencies
+# RUN pip install --no-cache-dir -r requirements.txt
+RUN python3.12 -m pip install --no-cache-dir -r requirements.txt
+
+# Create the state_cache directory
+RUN mkdir state_cache
+
+# Copy the rest of the application code into the container
+COPY src/ src/
+
+# Expose the port that the app runs on
+EXPOSE 8081
+
+# Command to run the application
+ENTRYPOINT ["python3.12", "src/app.py"]

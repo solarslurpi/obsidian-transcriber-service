@@ -18,6 +18,7 @@
 # Author: Margaret Johnson
 # Copyright (c) 2024 Margaret Johnson
 ###########################################################################################
+import asyncio
 import logging
 import os
 
@@ -49,29 +50,30 @@ class TranscribeAudio:
             logger.debug(f"Model loaded. Size: {audio_quality}")
         except Exception as e:
             logger.error(f"Error loading model. {e}")
-            send_sse_message("server-error", f"Error loading model. {e}")
             raise TranscriberException(f"Error loading model. {e}")
 
-    def transcribe(self, audio: str, state_chapters: list[Chapter] = None) -> str:
+    async def transcribe(self, audio: str, state_chapters: list[Chapter] = None) -> str:
         # whisper is not thread safe.  It does not like to reuse a loaded model.
         logging.debug(f"--->Start Transcription for {audio}")
 
         # Returns a generator
         segments, info = self.model.transcribe(audio, beam_size=5)
         total_duration = info.duration_after_vad
+        await send_sse_message("status", f"Content length:  {format(total_duration)}.")
+        await asyncio.sleep(0.1)
         logger.debug(f"total_duration: {total_duration}")
-        chapters = self.break_audio_into_chapters(segments, total_duration, state_chapters)
+        chapters = await self.break_audio_into_chapters(segments, total_duration, state_chapters)
         logger.debug(f"<---Done transcribing {audio}.")
         return chapters
 
-    def break_audio_into_chapters(self, segments, total_duration, state_chapters):
+    async def break_audio_into_chapters(self, segments, total_duration, state_chapters):
         chapter_duration = CHAPTER_TIME_CHUNK * 60   # in seconds
         if self._is_short_audio(state_chapters, total_duration, chapter_duration):
             return self._create_single_chapter(segments)
         if self._is_broken_into_chapters(state_chapters):
-            return self._create_chapters_from_metadata(segments, state_chapters)
+            return await self._create_chapters_from_metadata(segments, state_chapters, total_duration)
         else:
-            return self._create_time_based_chapters(segments, chapter_duration)
+            return await self._create_time_based_chapters(segments, chapter_duration, total_duration)
 
     def _is_short_audio(self, state_chapters, total_duration, chapter_duration):
         if self._is_broken_into_chapters(state_chapters) or total_duration > chapter_duration:
@@ -90,7 +92,7 @@ class TranscribeAudio:
         chapter = Chapter(start_time=round(results[0].start, 2), end_time=round(results[-1].end, 2), text=text, number=1)
         return [chapter]
 
-    def _create_time_based_chapters(self, segments, chapter_duration):
+    async def _create_time_based_chapters(self, segments, chapter_duration, total_duration):
         # Start a new chapter
         chapters = []
         new_end_time = chapter_duration
@@ -107,6 +109,9 @@ class TranscribeAudio:
                 chapter_number += 1
                 current_chapter = Chapter(start_time=segment.start, end_time=0.0, text='', number=chapter_number)
                 new_end_time = segment.end + chapter_duration
+                percent_complete = round((segment.end / total_duration) * 100)
+                await send_sse_message("status", f"Transcribed {percent_complete}%")
+                await asyncio.sleep(0.1)
 
             else:
                 # Add the text to the current chapter
@@ -120,7 +125,7 @@ class TranscribeAudio:
 
         return chapters
 
-    def _create_chapters_from_metadata(self, segments, state_chapters):
+    async def _create_chapters_from_metadata(self, segments, state_chapters, total_duration):
         for index, chapter in enumerate(state_chapters):
             logger.debug(f"Chapter {index}: {chapter.start_time} -> {chapter.end_time}")
             chapter_segments = []
@@ -135,6 +140,9 @@ class TranscribeAudio:
                     # We need to set the start of the next chapter to the end of the segment.
                     if index+1 < len(state_chapters):
                         state_chapters[index+1].start_time = end_time
+                    percent_complete = round((segment.end / total_duration) * 100)
+                    await send_sse_message("status", f"Transcribed {percent_complete}%")
+                    await asyncio.sleep(0.1)
                     break
                 # If the start time of the segment is within the start and end times of a chapter, add the segments to the
                 # chapter_segments list.
