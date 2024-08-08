@@ -1,5 +1,5 @@
 # Use an official CUDA runtime as a parent image
-FROM test:latest
+FROM solarslurpie/ctranslate2_python3.12:latest
 
 # Set the working directory in the container
 WORKDIR /app
