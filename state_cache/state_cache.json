@@ -1,0 +1,139 @@
+{
+  "test_tiny": {
+    "key": "test_tiny",
+    "basename": "test",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local\\test.mp3",
+    "metadata": {
+      "audio_input": {
+        "youtube_url": null,
+        "audio_filepath": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local\\test.mp3",
+        "audio_quality": "tiny"
+      },
+      "title": "test.mp3",
+      "tags": null,
+      "description": null,
+      "duration": "00:05:17",
+      "channel": null,
+      "upload_date": "2024-08-03",
+      "uploader_id": null,
+      "download_time": "00:00:00",
+      "transcription_time": "00:00:14"
+    },
+    "chapters": [
+      {
+        "title": "",
+        "start_time": 0.0,
+        "end_time": 316.0,
+        "text": " This is the Blue Lab Pulse Meter.  I'm very excited to be able to add it to our lineup of products at Kiss Organics and we have the best price online.  This meter is not for everyone, but here's what it does.  It measures moisture, conductivity, or EC, and temperature directly in the root zone with one click.  It connects to the Blue Lab Pulse app to view, analyze, and store all your measurement data, the app's available in English, Spanish, Dutch, German, and Korean.  It has a built-in depth gauge to get consistent measurements with every reading.  It works in soil, coco core, nutrient solution, and living soils.  So how and why would you want something like this for your garden?  Well, first off, it will quickly measure moisture levels.  It is waterproof, unlike the blue mat moisture meter, and I love that I can get a reading immediately,  instead of having to wait for a while between readings.  This means I can use one meter and check multiple pots or beds in a matter of seconds to see how evenly I'm watering,  or if I have any dry spots or if any containers got missed when watering.  Secondly, it tells me EC.  EC is a measurement of electrical conductivity in your soil, which is a good way of seeing what level of fertility you have in your media.  Cat ions like calcium, magnesium, potassium, sodium, and ammonium, as well as an ions like sulfur, chloride, nitrates, and bicarbonates,  are all salts that when dissolved in solution in soils will carry electrical charges in current.  Now, to high of an EC, we'll potentially put osmotic pressure on your roots, and that can be bad.  So it's about getting it into the proper range, and we really want to soil test so we can determine what is making up the salt concentration in our soil.  But it will give us a rough idea of fertility in our soil mix if we know all our inputs.  And staying within certain EC ranges, typically 0.72.8, will allow for good microbial activity and important soil processes like respiration and decomposition.  Keep in mind that several factors can affect soil EC such as moisture content, soil structure, and the presence of dissolved salts.  As the soil moisture increases, so will your EC.  And lastly, I get an idea of temperature.  Cold brood zone temperatures can inhibit plant growth, and the uptake of many essential nutrients like phosphorus, and two high of soil attempts can make it easier for plant pathogens to grow.  I'm currently calibrating it with my blue mat moisture meter, and we'll be comparing it with an arometer here soon.  Okay, so this is the iPhone app that comes along with it.  And use it on Android as well though. The app is called pulse, again it's available in multiple languages, and essentially I just push the button on the pulse meter itself to connect it.  It connects quickly via Bluetooth, and then at that point I don't have to keep reconnecting with every calibration or every every photo I want to take.  I just click the measure button, and then I can go in is I'm doing here, and I can add a photo to that measurement, as well as any notes that I may want.  So here's a good place I can add, say the VPD in the room at the time, any pest pressures I may dealing with when I watered, and keep track of all of that right here in the app.  So it's a nice little kind of like journal in some ways. Now this could get complicated in a facility where you have multiple plants and things like that, but you do have the ability to export the data.  So if you had a facility for example, you could just measure one room, export that data, and then keep the files somewhere else associated with it.  But since I just have using it in this room, I can go back through historically and look at my notes, and in time you see an orange dot there, next to the recording, that tells me that I took a picture, or added extra notes.  So that's a really handy feature to quickly go back through and look at what was going on in the room at that time for tracking things.  So again, not for everyone, but if you're in the data, this is a really cool tool that could potentially help you in your grow.  And so you can see what I was doing here was I was comparing the 35% moisture in this case correlated approximately with my blue mat moisture meter.  At that point it said, I was at about 75 m bar. Now I've been playing around with this for a little while and getting a bunch of measurements to kind of get an idea of EC and moisture level and how those things relate to say something like the blue mat moisture meter.  And I find I probably want to be around 35 to 45% is a moisture range.  And that probably correlates to about 80, let's say 70 to 90 in terms of m bar ratings.  But one other cool feature here, I can now export this data, I can send it to someone or I can save it to a file or email it to myself. And I think that's another really great feature associated with this. You can configure it based on the type of media are using in this case. I just configured it to a mixed media for living soil.  Well that's it. That's the blue lab pulse meter. I hope I covered the pros and cons as well as why someone might want to use this tool in their garden.  Thanks for checking out my review and you can go to kisorganics.com to learn more or order one for yourself. Thanks.",
+        "number": 1
+      }
+    ]
+  },
+  "https://www.youtube.com/watch?v=itZ_x_nDBxU_tiny": {
+    "key": "https://www.youtube.com/watch?v=itZ_x_nDBxU_tiny",
+    "basename": "Docker Networking Made Simple- Connecting Containers Like a Pro",
+    "local_audio_path": "c:\\Users\\happy\\Documents\\Projects\\obsidian-transcriber-service\\local/Docker Networking Made Simple- Connecting Containers Like a Pro.mp3",
+    "metadata": {
+      "audio_input": {
+        "youtube_url": "https://www.youtube.com/watch?v=itZ_x_nDBxU",
+        "audio_filepath": null,
+        "audio_quality": "tiny"
+      },
+      "title": "Docker Networking Made Simple: Connecting Containers Like a Pro",
+      "tags": "ollama, ai, llm, localai, docker_networking_explained, docker_networking, docker_networking_basics",
+      "description": "Unlock the mysteries of Docker networking in this practical guide! Learn how to:\n\u2022 Understand the basics of Docker's default bridge network\n\u2022 Create custom networks for better container communication\n\u2022 Use container names instead of IP addresses\n\u2022 Troubleshoot common connectivity issues between containers\n\u2022 Connect services like SearXNG to other applications (e.g., Dify)\nPerfect for Docker beginners and those looking to level up their containerization skills. We'll demystify concepts like port exposure, container-to-container communication, and custom networks. By the end of this video, you'll have the knowledge to solve real-world Docker networking challenges and optimize your containerized applications.\n#Docker #Networking #ContainerizationTips #DevOpsYou\n\n can find the code for every video I make at https://github.com/technovangelist/videoprojects. Then find the folder name that starts with the date this video was published and a title that makes sense for what the video covers. \n\nBe sure to sign up to my monthly newsletter at https://technovangelist.substack.com/subscribe\n\nI have a Patreon at https://patreon.com/technovangelist\n\nYou can find the Technovangelist discord at: https://discord.gg/uS4gJMCRH2\nThe Ollama discord is at https://discord.gg/ollama\n\n(they have a pretty url because they are paying at least $100 per month for Discord. You help get more viewers to this channel and I can afford that too.)\n\n00:00 - Start\n01:01 - Chi\n01:32 - New to Docker?\n02:32 - reviewing a docker command\n03:16 - The Default Bridge Network\n03:48 - Get the container IP address\n04:20 - Creating a new network\n05:28 - Add Searxng to the network\n05:49 - Curl from the container\n06:27 - Adding Dify\n06:59 - Network Chuck is awesome\n07:11 - Devops and Docker Talk",
+      "duration": "00:08:08",
+      "channel": "Matt Williams",
+      "upload_date": "20240808",
+      "uploader_id": "@technovangelist",
+      "download_time": "00:00:08",
+      "transcription_time": "00:00:21"
+    },
+    "chapters": [
+      {
+        "title": "Start",
+        "start_time": 0.0,
+        "end_time": 68.0,
+        "text": " Recently, I put out a video about Defi.  In that video, I suggested using Search NG or Searching for web searches.  One of my viewers said they couldn't connect to Search NG or Search NG from Defi, Defi,  and asked if I had any suggestion for getting them connected.  I don't know why host.doctor.local wasn't working, but let's take a look at how you can get around this,  which means we have to peek a little bit into how networking works in Docker.  Now, this is not a full networking tutorial in Docker, because it gets kind of complicated.  I just want to take the highest level look to solve this exact problem.  Now, a few folks have asked for videos about Docker here as well, since it gets used a lot with  some of the various AI front ends. So, we might see some more Docker content as well in the near future.",
+        "number": 1
+      },
+      {
+        "title": "Chi",
+        "start_time": 68.0,
+        "end_time": 99.52,
+        "text": " CHI. So, replace X with CHI in Search NG, and it's searching.  So, do I pronounce the product as Search King, because it's Kai? I don't know.  But thanks to Dixon 1E for pointing that out. It makes both more and less sense to me now.",
+        "number": 2
+      },
+      {
+        "title": "New to Docker?",
+        "start_time": 99.52,
+        "end_time": 158.56,
+        "text": " that's running NGX or some other web server, but you can't access the web server.  That new container, let's give it a name of web, has been given an IP address,  and it probably is using port 80. But I can't go to that address in the web browser and hit the  server, but a service running in that container can use your network and get to the outside world.  So, the easiest way to get access to that container is to expose a port. On the Docker  command line, on the host, we could add dash p, and then we want to use the local host port 8181,  for instance, to connect to the container's port. Now, if we open a browser to local host port 8181,  we see the NGX default page. But what happens when we start an Ubuntu container and run a",
+        "number": 3
+      },
+      {
+        "title": "reviewing a docker command",
+        "start_time": 158.56,
+        "end_time": 200.56,
+        "text": " bash, and I'm dropped into a prompt. That command is basically saying run a new container,  give it a name of Ubuntu, run interactively, use the image on Docker hub called Ubuntu,  and when you start it up, run bash. And then try ping, and since our container name is web,  enter web, it says there is no ping. Ubuntu has nothing installed, but at least we can install  stuff, which you can't do with things like busybox. So, apt update, and then apt install IP  tools, ping, and curl and jqs, since we're going to use those in a little bit. Now, ping web,",
+        "number": 4
+      },
+      {
+        "title": "The Default Bridge Network",
+        "start_time": 200.56,
+        "end_time": 228.4,
+        "text": " network. That's a bridge network, which does a lot of magic stuff. It gives the containers a new IP  address, and gives them access to the outside world, but the outside world and you don't have  access to the container. But all the containers on the same network have access to each other.  Now, wait, if they all have access to each other, why couldn't I ping web from my Ubuntu container?",
+        "number": 5
+      },
+      {
+        "title": "Get the container IP address",
+        "start_time": 228.4,
+        "end_time": 263.92,
+        "text": " So, we can ping if we can figure out the IP address of the internet's container.  But how do we do that? The Docker inspect command is the key to understanding everything there  is to know about Docker. So, Docker inspect web from your host terminal gets us a JSON dog that  shows a lot of info. Towards the bottom is networks and bridge is the one network there.  And there we can see IP address. So, grab that and back in the Ubuntu terminal run ping and that",
+        "number": 6
+      },
+      {
+        "title": "Creating a new network",
+        "start_time": 263.92,
+        "end_time": 332.8,
+        "text": " network, and then you get the ability to access container by his name for free. And sometimes you  want to put containers on different networks so they don't have access to what they shouldn't.  The best way to do this is to add the network to the Docker file or the Docker compose file you're  using for your app. But let's work with what we have. The first thing I want to do is create a new network.  I'll call it Minet. From my host terminal, not the Ubuntu container, I can run the command  Docker network, create Minet. If you don't specify a driver to use, which we didn't, then I'll  create a local bridge network, just like the default bridge. But Minet gets us bonus feature.  Let's add web to it and my Ubuntu container. Docker Network Connect Minet Web, and then Docker  Network Connect Minet Ubuntu. Now, in the Ubuntu container, ping web again and magically it works.  Okay, so in my environment, I have search and g searching already running. But if from Ubuntu,",
+        "number": 7
+      },
+      {
+        "title": "Add Searxng to the network",
+        "start_time": 332.8,
+        "end_time": 350.72,
+        "text": " add searching to the same network. There isn't an explicit number to the number of networks. You  can add to a container, but each takes resources so don't go crazy. So Docker Network Connect",
+        "number": 8
+      },
+      {
+        "title": "Curl from the container",
+        "start_time": 350.72,
+        "end_time": 392.16,
+        "text": " hdba colon slash slash searching port 8080 slash search question mark format equals JSON  ampersand Q equals test. But that doesn't work. In bash with curl, you need to wrap the URL  in quotes. So do that, but that's super ugly. So run the curl command again and pipe it to jq.  That will do the search and pretty printed. In order for this to work, you first have to enable JSON  output in searching. I'll let you figure out how to get that going. So now we have it working from",
+        "number": 9
+      },
+      {
+        "title": "Adding Dify",
+        "start_time": 392.16,
+        "end_time": 422.88,
+        "text": " slash searching colon 8080 and it should just work. You might find that you need to add another  container to that network, but you know how to do that now. There's a lot more you can do with  Docker and networking. And I think there is like eight different types of networks available.",
+        "number": 10
+      },
+      {
+        "title": "Network Chuck is awesome",
+        "start_time": 422.88,
+        "end_time": 435.2,
+        "text": " exact topic, and it goes into far more detail. And it's pretty cool what you can do. And if you get",
+        "number": 11
+      },
+      {
+        "title": "Devops and Docker Talk",
+        "start_time": 435.2,
+        "end_time": 488.0,
+        "text": " Brett Fisher. In fact, I used to be the co-host of the show. Up until we pivoted for making a tool  for SSH keys to building what we all now know as olama. Hopefully this has given you some  insight into how Docker and networking works. And maybe it's a touch less confusing. If you have  any questions, you can ask in my discord or the olama discord, both of which are listed below.  Or just in the comments to this video, who knows? Maybe your question will inspire me to create  another video that solves your question. Thanks so much for watching. Goodbye.  What does he do this time?",
+        "number": 12
+      }
+    ]
+  }
+}

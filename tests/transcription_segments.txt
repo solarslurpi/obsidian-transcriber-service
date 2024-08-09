@@ -1,0 +1,84 @@
+[0.00s -> 3.00s]  This is the Blue Lab Pulse Meter.
+[3.00s -> 7.00s]  I'm very excited to be able to add it to our lineup of products at Kiss Organics
+[7.00s -> 9.00s]  and we have the best price online.
+[9.00s -> 13.00s]  This meter is not for everyone, but here's what it does.
+[13.00s -> 20.00s]  It measures moisture, conductivity, or EC, and temperature directly in the root zone with one click.
+[20.00s -> 25.00s]  It connects to the Blue Lab Pulse app to view, analyze, and store all your measurement data,
+[25.00s -> 29.00s]  the apps available in English, Spanish, Dutch, German, and Korean,
+[29.00s -> 36.00s]  and it has a built-in depth gauge to get consistent measurements with every reading.
+[36.00s -> 42.00s]  It works in soil, cocoa core, nutrient solution, and living soils.
+[42.00s -> 45.00s]  So how and why would you want something like this for your garden?
+[45.00s -> 48.00s]  Well, first off, it will quickly measure moisture levels.
+[48.00s -> 51.00s]  It is waterproof, unlike the Blue Map Moisture Meter,
+[51.00s -> 53.00s]  and I love that I can get a reading immediately
+[53.00s -> 56.00s]  instead of having to wait for a while between readings.
+[56.00s -> 61.00s]  This means I can use one meter and check multiple pots or beds in a matter of seconds
+[61.00s -> 66.00s]  to see how evenly I'm watering or if I have any dry spots or if any containers got missed when watering.
+[66.00s -> 69.00s]  Secondly, it tells me EC.
+[69.00s -> 72.00s]  EC is a measurement of electrical conductivity in your soil,
+[72.00s -> 76.00s]  which is a good way of seeing what level of fertility you have in your media.
+[76.00s -> 80.00s]  Cat ions like calcium, magnesium, potassium, sodium, and ammonium,
+[80.00s -> 84.00s]  as well as anions like sulfur, chloride, nitrates, and bicarbonates
+[84.00s -> 89.00s]  are all salts that when dissolved in solution in soils will carry electrical charges and current.
+[89.00s -> 93.00s]  Now, too high of an EC will potentially put osmotic pressure on your roots,
+[93.00s -> 95.00s]  and that can be bad.
+[95.00s -> 97.00s]  So it's about getting it into the proper range,
+[97.00s -> 102.00s]  and we really want a soil test so we can determine what is making up the salt concentration in our soil.
+[102.00s -> 106.00s]  But it will give us a rough idea of fertility in our soil mix if we know all our inputs,
+[106.00s -> 111.00s]  and staying within certain EC ranges, typically 0.7 to 2.8,
+[111.00s -> 117.00s]  will allow for good microbial activity and important soil processes like respiration and decomposition.
+[117.00s -> 123.00s]  Keep in mind that several factors can affect soil EC such as moisture content, soil structure,
+[123.00s -> 125.00s]  and the presence of dissolved salts.
+[125.00s -> 129.00s]  As the soil moisture increases, so will your EC.
+[129.00s -> 131.00s]  And lastly, I get an idea of temperature.
+[131.00s -> 134.00s]  Cold root zone temperatures can inhibit plant growth
+[134.00s -> 137.00s]  and the uptake of many essential nutrients like phosphorus
+[137.00s -> 141.00s]  and too high of soil temps can make it easier for plant pathogens to grow.
+[141.00s -> 144.00s]  I'm currently calibrating it with my BlueMap moisture meter,
+[144.00s -> 147.00s]  and we'll be comparing it with an arrometer here soon.
+[150.00s -> 153.00s]  Okay, so this is the iPhone app that comes along with it.
+[153.00s -> 155.00s]  You can use it on Android as well though.
+[155.00s -> 157.00s]  The app is called Pulse.
+[157.00s -> 159.00s]  Again, it's available in multiple languages,
+[159.00s -> 165.00s]  and essentially I just push the button on the Pulse meter itself to connect it.
+[165.00s -> 167.00s]  It connects quickly via Bluetooth,
+[167.00s -> 171.00s]  and then at that point I don't have to keep reconnecting with every calibration
+[171.00s -> 174.00s]  or every photo I want to take.
+[174.00s -> 177.00s]  I just click the measure button and then I can go in as I'm doing here
+[177.00s -> 182.00s]  and I can add a photo to that measurement as well as any notes that I may want.
+[182.00s -> 187.00s]  So here's a good place I can add, say, the VPD in the room at the time,
+[187.00s -> 191.00s]  any pest pressures I may be dealing with when I watered,
+[192.00s -> 195.00s]  and keep track of all of that right here in the app.
+[195.00s -> 199.00s]  So it's a nice little journal in some ways.
+[199.00s -> 203.00s]  Now this could get complicated in a facility where you have multiple plants and things like that,
+[203.00s -> 205.00s]  but you do have the ability to export the data.
+[205.00s -> 208.00s]  So if you had a facility, for example, you could just measure one room,
+[208.00s -> 212.00s]  export that data and then keep the files somewhere else associated with it.
+[212.00s -> 214.00s]  But since I just have them using it in this room,
+[214.00s -> 217.00s]  I can go back through historically and look at my notes,
+[217.00s -> 220.00s]  and anytime you see an orange dot there next to the recording,
+[220.00s -> 224.00s]  that tells me that I took a picture or added extra notes.
+[224.00s -> 227.00s]  So that's a really handy feature to quickly go back through
+[227.00s -> 232.00s]  and look at what was going on in the room at that time for tracking things.
+[232.00s -> 235.00s]  So again, not for everyone, but if you're into data,
+[235.00s -> 241.00s]  this is a really cool tool that could potentially help you in your grow.
+[241.00s -> 247.00s]  And so you can see what I was doing here was I was comparing the 35% moisture,
+[247.00s -> 252.00s]  in this case correlated approximately with my blue matte moisture meter.
+[252.00s -> 255.00s]  At that point it said I was at about 75 m bar.
+[255.00s -> 258.00s]  Now I've been playing around with this for a little while
+[258.00s -> 263.00s]  and getting a bunch of measurements to kind of get an idea of EC and moisture level
+[263.00s -> 267.00s]  and how those things relate to say something like the blue matte moisture meter.
+[267.00s -> 273.00s]  And I find I probably want to be around 35 to 45% is a moisture range.
+[273.00s -> 276.00s]  And that probably correlates to about 80.
+[276.00s -> 281.00s]  Let's say 70 to 90 in terms of m bar ratings.
+[281.00s -> 284.00s]  But one other cool feature here I can now export this data.
+[284.00s -> 290.00s]  I can send it to someone or I can save it to a file or email it to myself.
+[290.00s -> 295.00s]  And I think that's another really great feature associated with this.
+[295.00s -> 298.00s]  You can configure it based on the type of media you're using.
+[298.00s -> 302.00s]  In this case, I just configured it to a mixed media for living soil.
+[302.00s -> 303.00s]  Well, that's it.
+[303.00s -> 305.00s]  That's the blue lab pulse meter.
+[305.00s -> 309.00s]  I want to cover the pros and cons as well as why someone might want to use this tool in their garden.
+[309.00s -> 311.00s]  Thanks for checking out my review.
+[311.00s -> 316.00s]  And you can go to kisorganics.com to learn more or order one for yourself.
+[316.00s -> 317.00s]  Thanks.

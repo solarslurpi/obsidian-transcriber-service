@@ -22,6 +22,7 @@ import asyncio
 import logging
 import os
 import time
+from typing import List
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -77,7 +78,7 @@ async def process_check(audio_input):
         if state:
             state = None
         return
-    transcribe_audio_instance = TranscribeAudio(audio_input.audio_quality)
+    transcribe_audio_instance = TranscribeAudio(audio_input.audio_quality, audio_input.compute_type)
 
 
     try:
@@ -108,7 +109,7 @@ async def process_check(audio_input):
         raise
 
 class ContentTextsModel(BaseModel):
-    content_texts: list[str]
+    content_texts: List[str]
 
     @field_validator('content_texts')
     def validate_content_texts(cls, v):
@@ -118,7 +119,7 @@ class ContentTextsModel(BaseModel):
                 raise ValueError(f"Invalid content text: {item}")
         return v
 
-async def send_sse_data_messages(state:TranscriptionState, content_texts: list):
+async def send_sse_data_messages(state:TranscriptionState, content_texts: List):
     '''The data messages:
     1. key
     2. basename

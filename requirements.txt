@@ -7,4 +7,3 @@ sse_starlette==2.1.2
 tinytag==1.10.1
 uvicorn==0.30.3
 yt_dlp==2024.7.25
-torch

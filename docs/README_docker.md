@@ -1,3 +1,8 @@
+- i was using python3.12 and installed and used that but it adds significant overhead...
+- use yt_dlp which uses ffmpeg and ffprobe. I install this.
+- go up the application stack and start with the docker file at the head of the stack.
+
+
 # Docker on Windows -> WSL2
 > Note: After much gnashing of teeth, I was finally able to get a dockerfile that worked on Windows and used the GPU.  While I acknowledge limitless cluelessnes, I found building this dockerfile extremely tedious.  I do acknowledge my limited knowledge of docker did not make this challenge any easier.
 # WSL2 Dockerfile
@@ -5,9 +10,7 @@ Requires the following to be installed on your Windows PC:
 - Docker Desktop or VS Code Docker extension.
 - WSL2.
 -
-STOPPED: GETTING ERROR IN DOCKER CONTAINER:  /usr/local/bin/python3.12: /usr/local/bin/python3.12: cannot execute binary file
-one stackoverflow:
-The problem is running a binary for a different processor architecture.  This started when i installed ffmpeg????
+
 
 # Building the Container on WSL2
 
