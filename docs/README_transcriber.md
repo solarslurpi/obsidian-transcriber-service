@@ -25,3 +25,8 @@ The transcript is broken into either chunks of time or topic if the video has be
 
 
 - if the transcript is less than the max chapter time, the transcript is returned as a single chapter.
+
+## Data
+The transcription content is returned as sse data messages.  The messages sent include:
+- `key`: The first data message is the `key`.  The `key` is created by the service when the transcribed content is cached.  If data messages are lost, the Obsidian client can request one or more messages associated with the `key`.
+- `basename` -

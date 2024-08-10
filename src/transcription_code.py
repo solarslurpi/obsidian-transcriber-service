@@ -45,7 +45,7 @@ class TranscribeAudio:
     def __init__(self, audio_quality:str, compute_type:str):
         # Load the model
         try:
-            self.model =  WhisperModel(audio_quality, device="cuda", compute_type="int8")
+            self.model =  WhisperModel(audio_quality, device="cuda", compute_type=compute_type)
             # whisper.load_model(audio_quality)
             logger.debug(f"Model loaded. Size: {audio_quality}")
         except Exception as e:

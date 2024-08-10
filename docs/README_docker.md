@@ -1,15 +1,4 @@
-- i was using python3.12 and installed and used that but it adds significant overhead...
-- use yt_dlp which uses ffmpeg and ffprobe. I install this.
-- go up the application stack and start with the docker file at the head of the stack.
 
-
-# Docker on Windows -> WSL2
-> Note: After much gnashing of teeth, I was finally able to get a dockerfile that worked on Windows and used the GPU.  While I acknowledge limitless cluelessnes, I found building this dockerfile extremely tedious.  I do acknowledge my limited knowledge of docker did not make this challenge any easier.
-# WSL2 Dockerfile
-Requires the following to be installed on your Windows PC:
-- Docker Desktop or VS Code Docker extension.
-- WSL2.
--
 
 
 # Building the Container on WSL2
@@ -36,3 +25,25 @@ docker logs <name>
 `-p 8081:8081`: Map port 8081 on the host to port 8081 on the container.
 `--restart always`: Restart the container if it stops.
 `solarslurpie/transcriber_cuda_wsl:latest`: The name of the image to run.
+
+
+```python
+from faster_whisper import WhisperModel, BatchedInferencePipeline
+
+model = WhisperModel("medium", device="cuda", compute_type="float16")
+batched_model = BatchedInferencePipeline(model=model)
+segments, info = batched_model.transcribe("audio.wav", batch_size=16)
+
+for segment in segments:
+print("[%.2fs -> %.2fs] %s" % (segment.start, segment.end, segment.text))
+
+ImportError: cannot import name 'BatchedInferencePipeline' from 'faster_whisper'
+https://github.com/SYSTRAN/faster-whisper/issues/935
+
+```
+The batched inference pull request has been merged but hasn't been published to PYPI yet. Try installing faster-whisper directly from the source:
+
+```sh
+pip install --force-reinstall "faster-whisper @ https://github.com/SYSTRAN/faster-whisper/archive/refs/heads/master.tar.gz"
+```
+-> Batched

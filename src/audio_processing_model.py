@@ -104,12 +104,11 @@ class AudioProcessRequest(BaseModel):
     def is_valid_compute_type(cls,v):
         # Remove and new lines or blanks at beginning and end of the string
         v = v.strip(" \n")
-        logger.debug(f"compute_type: {v}")
         # Verify that the compute_type is in the list of supported compute types.
         if v not in COMPUTE_TYPE_LIST:
-            logger.debug(f"{v} is not a valid compute type. Defaulting to {COMPUTE_TYPE_LIST[0]}.")
             compute_type = COMPUTE_TYPE_LIST[0]
-            logger.debug(f"{v} will be converted to {compute_type}.")
+            logger.debug(f"{v} is not a valid compute type. Defaulting to {compute_type}.")
+
             return compute_type
         return v
 
