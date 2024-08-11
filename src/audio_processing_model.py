@@ -26,8 +26,7 @@ load_dotenv()
 
 from fastapi import UploadFile, HTTPException
 from pathvalidate import validate_filepath, ValidationError
-from pydantic import BaseModel, Field, field_validator, model_validator, field_serializer
-import torch
+from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Optional
 
 # Create a logger instance for this module
@@ -39,24 +38,23 @@ LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 # Audio formats that can be processed by the whisper model.
 SUPPORTED_AUDIO_FORMATS = {'.mp3', '.m4a', '.wav', '.flac', '.aac', '.ogg', '.opus'}
 
-AUDIO_QUALITY_MAP = {
-    "default":  "tiny.en",
-    "tiny": "tiny.en",
-    "small": "small.en",
-    "medium": "medium.en",
-    "large": "large-v3"
-}
 
-COMPUTE_TYPE_MAP = {
-    "default": torch.float16,
-    "float16": torch.float16,
-    "float32": torch.float32,
+AUDIO_QUALITY_MAP = {
+    "default":  "Systran/faster-whisper-tiny.en",
+    "tiny": "Systran/faster-whisper-tiny.en",
+    "small": "Systran/faster-distil-whisper-small.en",
+    "medium": "Systran/faster-distil-whisper-medium.en",
+    "large": "Systran/faster-distil-whisper-large-v3"
 }
+# see https://opennmt.net/CTranslate2/quantization.html
+COMPUTE_TYPE_LIST = ["int8", "float16", "float32", "int8_float32", "int8_float16", "int8_bfloat16", "int16", "bfloat16"]
 
 class AudioProcessRequest(BaseModel):
     youtube_url: Optional[str] = Field(None, description="YouTube URL to download audio from. Input requires either a YouTube URL or mp3 file.")
     audio_filepath: Optional[str] = Field(None, description="The stored local audio file.")
     audio_quality: str = Field(default="default", description="Audio quality setting for processing.")
+    compute_type: str = Field(default="int8", description="Compute type for processing.")
+    chapter_time_chunk: int = Field(default=10, description="Time chunk in minutes for dividing audio into chapters.")
 
 
     @model_validator(mode='before')
@@ -64,11 +62,11 @@ class AudioProcessRequest(BaseModel):
     def check_audio_source(cls, values):
         youtube_url = values.get('youtube_url')
         audio_filepath = values.get('audio_filepath')
-        match (youtube_url is not None, audio_filepath is not None):
-            case (True, True):
-                raise HTTPException(status_code=400, detail="Both youtube_url and file cannot have values.")
-            case (False, False):
-                raise HTTPException(status_code=400, detail="Need either a YouTube URL or mp3 file.")
+        if youtube_url is not None and audio_filepath is not None:
+            raise HTTPException(status_code=400, detail="Both youtube_url and file cannot have values.")
+        elif youtube_url is None and audio_filepath is None:
+            raise HTTPException(status_code=400, detail="Need either a YouTube URL or mp3 file.")
+
         return values
 
     @field_validator('audio_filepath')
@@ -101,6 +99,18 @@ class AudioProcessRequest(BaseModel):
             audio_quality = AUDIO_QUALITY_MAP["default"]
             logger.debug(f"{v} will be converted to {audio_quality}.")
             return audio_quality
+        return v
+
+    @field_validator('compute_type')
+    def is_valid_compute_type(cls,v):
+        # Remove and new lines or blanks at beginning and end of the string
+        v = v.strip(" \n")
+        # Verify that the compute_type is in the list of supported compute types.
+        if v not in COMPUTE_TYPE_LIST:
+            compute_type = COMPUTE_TYPE_LIST[0]
+            logger.debug(f"{v} is not a valid compute type. Defaulting to {compute_type}.")
+
+            return compute_type
         return v
 
     @staticmethod

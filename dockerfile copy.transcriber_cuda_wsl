@@ -1,0 +1,30 @@
+# Stage 1: Build stage
+FROM solarslurpie/cuda_ctranslate_python3_12:latest AS build
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Install ffmpeg and python3-distutils, and clean up apt cache
+RUN apt-get update && \
+    apt-get install -y ffmpeg   && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy the requirements file into the container
+COPY requirements.txt .
+
+# Install the dependencies and create the state_cache directory in a single RUN command
+RUN python3.12 -m pip install --no-cache-dir -r requirements.txt && \
+    mkdir state_cache
+
+# Copy the rest of the application code into the container
+COPY src/ src/
+
+# Set the working directory in the container
+WORKDIR /app
+
+
+# Expose the port that the app runs on
+EXPOSE 8081
+
+# Command to run the application
+ENTRYPOINT ["python3.12", "src/app.py"]

@@ -14,18 +14,20 @@ allowed_modules = ['app']
 # Configure the root logger
 logging.basicConfig(
     level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(pathname)s:%(lineno)d ',
     handlers=[
         logging.StreamHandler()
     ]
 )
-# Create a logger for the specific module
-logger = logging.getLogger('app')
-# Set the logging level for the sse_starlette.sse logger to WARNING
+# Set the logging levels
 logging.getLogger('sse_starlette.sse').setLevel(logging.WARNING)
 logging.getLogger('watchfiles.main').setLevel(logging.WARNING)
 logging.getLogger('multipart.multipart').setLevel(logging.WARNING)
-logging.getLogger('transcription_state_code').setLevel(logging.WARNING)
-logging.getLogger('utils').setLevel(logging.WARNING)
-logging.getLogger('youtube_handler_code').setLevel(logging.WARNING)
-logging.getLogger('transcripton_code').setLevel(logging.WARNING)
+logging.getLogger('transcription_state_code').setLevel(logging.INFO)
+logging.getLogger('metadata_extractor_code').setLevel(logging.INFO)
+logging.getLogger('utils').setLevel(logging.INFO)
+logging.getLogger('youtube_handler_code').setLevel(logging.INFO)
+logging.getLogger('transcription_code').setLevel(logging.INFO)
+logging.getLogger('app').setLevel(logging.INFO)
+logging.getLogger('process_check_code').setLevel(logging.INFO)
+logging.getLogger('faster_whisper').setLevel(logging.WARNING)

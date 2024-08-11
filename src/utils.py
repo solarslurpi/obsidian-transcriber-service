@@ -56,6 +56,7 @@ async def put_message_in_queue(message):
 async def send_sse_message(event: str, data: dict):
     message = format_sse(event, data)
     await put_message_in_queue(message)
+    await asyncio.sleep(0.1)
 
 def mock_info_dict():
     '''Here we attach a cache to the mock_info_dict function to avoid reading the file multiple times.'''

@@ -22,207 +22,137 @@ import asyncio
 import logging
 import os
 
-from pydub import AudioSegment
-import psutil
-import torch
+import ctranslate2
+from faster_whisper import WhisperModel
+
 
 import logging_config
 from exceptions_code import TranscriberException
-from logger_code import LoggerBase
-from transcription_state_code import TranscriptionState, Chapter
+from transcription_state_code import Chapter
 from utils import send_sse_message
-import whisper
 
 # Create a logger instance for this module
 logger = logging.getLogger(__name__)
 
 # This is for storing the temporary audio slice when the audio is divided into chapters.
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
+
 # Ensure the local directory exists
 if not os.path.exists(LOCAL_DIRECTORY):
     os.makedirs(LOCAL_DIRECTORY)
 
 class TranscribeAudio:
-    def __init__(self, audio_quality:str):
+    def __init__(self, audio_quality:str="default", compute_type:str="int8", chapter_time_chunk:int=10):
+        self.chapter_time_chunk = chapter_time_chunk
+        # Load the model
         try:
-            self.model = whisper.load_model(audio_quality)
+            device = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
+            logger.debug(f"GPU found: {device == 'cuda'}")
+            self.model =  WhisperModel(audio_quality, device= device, compute_type=compute_type)
+            # whisper.load_model(audio_quality)
             logger.debug(f"Model loaded. Size: {audio_quality}")
         except Exception as e:
             logger.error(f"Error loading model. {e}")
-            send_sse_message("server-error", f"Error loading model. {e}")
             raise TranscriberException(f"Error loading model. {e}")
 
-    async def transcribe_chapters(self, state: TranscriptionState):
-        # Check if GPU is available
-        if torch.cuda.is_available():
-            device = 'GPU'
-        else:
-            device = 'CPU'
-        logging.debug(f"Running on {device}")
-        # Run monitor_system and transcribe_audio_slices concurrently
-        # await asyncio.gather(
-        #     self.monitor_system(),
-        #     self.transcribe_audio_slices(state)
-        # )
-        state = await self.transcribe_audio_slices(state)
-        return state
-
-    async def transcribe_audio_slices(self, state: TranscriptionState):
-        audio_slices = self.make_audio_slices(state)
-
-        results_list = []
-        length_audio_slices = len(audio_slices)
-        await send_sse_message("status",f"Starting to transcribe {length_audio_slices} chapters.")
-        for index, audio_slice in enumerate(audio_slices, start=1):
-            try:
-                # I started thinking breaking up the audio into chapters (when available in the metadata) would be a way to speed up the transcription process.  However, I found out the whisper model is not thread safe.
-                await send_sse_message("status",f"Transcribing chapter {index}/{length_audio_slices}")
-                logger.debug(f"Transcribing chapter {index}/{length_audio_slices}")
-                result = await self.transcribe_audio(audio = audio_slice, audio_quality=state.metadata.audio_input.audio_quality)
-                results_list.append(result)
-            except TranscriberException as e:
-                raise e
-
-        await send_sse_message("status","Transcription Complete. On to collecting and sending the results.")
-        logging.debug("***Transcription Complete. On to collecting and sending the results.***")
-        # Check if the transcription did not come with chapter metadata information.  Chapters exists,
-        # however the end_time = 0.0 and the len of chapters is 1.
-        if len(state.chapters) == 1:
-            # Build Chapters based on the segments provided in the results dict.
-            state.chapters = self.make_chapters(results_list[0])
-        else: # Add the transcript text to each chapter.
-            chapter_number = 1
-            # The chapters were pulled out separately through concurrent extraction of the audio slices.
-            # At this stage, the transcribed text and chapter number is added to each chapter.
-            for chapter, results in zip(state.chapters, results_list):
-                chapter.text = results['text']
-                chapter.number = chapter_number
-                chapter_number += 1
-
-        logger.debug(f"transcription_code.TranscribeAudio.transcribe_chapters: All chapters transcribed. ")
-        return state # The state is returned.  However it is a singleton.
-
-    async def transcribe_audio(self, audio: str, audio_quality:str) -> str:
+    async def transcribe(self, audio: str, state_chapters: list[Chapter] = None) -> str:
         # whisper is not thread safe.  It does not like to reuse a loaded model.
-        logging.debug(f"--->Start Transcription for {audio}")
-        result = self.model.transcribe(audio)
-        logger.debug(f"<---Done transcribing {audio}.")
-        return result
+        logging.info(f"--->Start Transcription for {audio}")
 
+        # Returns a generator
+        segments, info = self.model.transcribe(audio, beam_size=5)
+        total_duration = format(info.duration_after_vad, '.0f')
+        await send_sse_message("status", f"Content length:  {total_duration} seconds.")
+        logger.debug(f"total_duration: {total_duration} seconds")
+        chapters = await self.break_audio_into_chapters(segments, total_duration, state_chapters)
+        logger.info(f"<---Done transcribing {audio}. Duration: {total_duration} seconds.  {len(chapters)} chapters.")
+        return chapters
 
-    async def monitor_system(self):
-        try:
-            # await asyncio.sleep(20) # Wait a bit for transcription to get under way
-            # cpu_threshold, gpu_threshold = await self.determine_baseline(duration=6)
-            # Keep It Simple until the system is better understood.
-            cpu_threshold = 5.0
-            gpu_threshold = 5.0
-            # Monitor transcription progress and detect frozen state
-            frozen_start_time = None
-            frozen_threshold_seconds = 20 # If transcription has been inactive for this amount of time, it is considered frozen.
-            while True:
-                # Monitor CPU usage
-                cpu_usage = psutil.cpu_percent(interval=1)
-                logger.debug(f"CPU Usage: {cpu_usage}%")
+    async def break_audio_into_chapters(self, segments, total_duration, state_chapters):
+        chapter_duration = self.chapter_time_chunk * 60   # in seconds
+        if self._is_short_audio(state_chapters, total_duration, chapter_duration):
+            return self._create_single_chapter(segments)
+        if self._is_broken_into_chapters(state_chapters):
+            return await self._create_chapters_from_metadata(segments, state_chapters, total_duration)
+        else:
+            return await self._create_time_based_chapters(segments, chapter_duration, total_duration)
 
-                # Monitor GPU usage if available
-                gpu_usage = None
-                if torch.cuda.is_available():
-                    gpu_usage = torch.cuda.memory_allocated() / torch.cuda.max_memory_allocated() * 100
-                    logger.debug(f"GPU Usage: {gpu_usage:.2f}%")
-                # Check if the system is frozen
-                if cpu_usage < cpu_threshold and (gpu_threshold is None or gpu_usage < gpu_threshold):
-                    if frozen_start_time is None:
-                        frozen_start_time = asyncio.get_event_loop().time()
-                    elif asyncio.get_event_loop().time() - frozen_start_time > frozen_threshold_seconds:
-                        logger.error("Transcription process is frozen based on low CPU/GPU usage.")
-                        await send_sse_message("server-error", "Transcription process is frozen based on low CPU/GPU usage.")
-                        raise TranscriberException("Transcription process is frozen based on low CPU/GPU usage.")
-                else:
-                    frozen_start_time = None
-                # Let the system keep going.
-                await asyncio.sleep(1)
+    def _is_short_audio(self, state_chapters, total_duration, chapter_duration):
+        if self._is_broken_into_chapters(state_chapters) or total_duration > chapter_duration:
+            return False
+        return True
 
-        except asyncio.CancelledError:
-            logger.debug("Monitoring task was cancelled.")
+    def _is_broken_into_chapters(self, state_chapters):
+        if len(state_chapters) > 0 and state_chapters[0].end_time != 0:
+            return True
+        return False
 
-    def make_audio_slices(self, state: TranscriptionState):
-        # Initialize the audio slices
-        audio_slices = []
-        if state.chapters is None:
-            raise ValueError("Cannot Continue transcribing. The state information does not include chapters.")
-        if state.local_audio_path is None or not os.path.exists(state.local_audio_path):
-            raise FileNotFoundError("Cannot Continue transcribing. The state information does not include a valid audio file.")
-        if state.chapters[0].end_time == 0: # The audio is not divided into chapters
-            audio_slices.append(state.local_audio_path)
-            return audio_slices
-        audio_segments = AudioSegment.from_file(state.local_audio_path)
-        # chapters contains chapter objects
-        for chapter in state.chapters:
-            audio_segment = audio_segments[chapter.start_time*1000:chapter.end_time*1000]
-            temp_audio_path =  os.path.join(f'{LOCAL_DIRECTORY}', f"temp_{chapter.start_time}_{chapter.end_time}.wav")
-            audio_segment.export(temp_audio_path, format="wav")
-            audio_slices.append(temp_audio_path)
-        return audio_slices
+    def _create_single_chapter(self, segments):
+        """Create a single chapter for short audio."""
+        results = list(segments)
+        text = ' '.join([segment.text for segment in results])
+        chapter = Chapter(start_time=round(results[0].start, 2), end_time=round(results[-1].end, 2), text=text, number=1)
+        return [chapter]
 
-    def make_chapters(self, results, time_length:float =120.0):
-        '''Whisper results can be one long line of characters.  This is difficult for clients like Obsidian to handle.  By using the segment information that is returned in the results, we can chunk transcripts that do not have chapter info (so far the only one this code has seen are YouTube chapters) into manageable chapters.  Unlike YouTube chapters, these chapters are only based on time and not the content of the discussion.'''
-        try:
-            segments = results['segments']
-        except KeyError as e:
-            logger.error(f"transcription_code.TranscribeAudio.make_chapters: Error {e}.")
-            raise
+    async def _create_time_based_chapters(self, segments, chapter_duration, total_duration):
+        # Start a new chapter
         chapters = []
-        current_chunk = {
-            'start_time': segments[0]['start'],
-            'end_time': segments[0]['end'],
-            'text': segments[0]['text']
-        }
+        new_end_time = chapter_duration
+        current_chapter = Chapter(start_time=0.0, end_time=round(new_end_time,2), text='', number=1)
+        chapter_number = 1
+        # Go through the generator
+        for segment in segments:
+            logger.debug("[%.2fs -> %.2fs] %s" % (segment.start, segment.end, segment.text))
+            if segment.start >= new_end_time:
+                # We've reached the end of a timed chapter. Append it to the list.
+                chapters.append(current_chapter)
+                # Start on a new chapter.  The end time is determined by the segments that will be added.
+                logger.debug(f"---Chapter {chapter_number} appended. on to chapter {chapter_number+1}segment start: {segment.start} ---")
+                chapter_number += 1
+                current_chapter = Chapter(start_time=segment.start, end_time=0.0, text='', number=chapter_number)
+                new_end_time = segment.end + chapter_duration
+                percent_complete = round((segment.end / total_duration) * 100)
+                await send_sse_message("status", f"Transcribed {percent_complete}%")
 
-        current_duration = segments[0]['end'] - segments[0]['start']
-        current_chapter = 1
-        # Step 4: Iterate over the segments
-        for segment in segments[1:]: # This will cover all the text that was transcribed.
-            segment_duration = segment['end'] - segment['start']
-            # The transcript is broken into time_length chapters (say 2 minutes for example).
-            # Until time_length is reached given the segment times, the text is added to the chunk which then becomes a Chapter.
-            if current_duration + segment_duration <= time_length:
-                current_chunk['end_time'] = segment['end']
-                current_chunk['text'] += ' ' + segment['text']
-                current_duration += segment_duration
             else:
-                # Have the time_length text and start/stop times.  Create a chapter.
-                chapter = Chapter(title=' ', start_time=current_chunk['start_time'], end_time=current_chunk['end_time'], text=current_chunk['text'],number=current_chapter)
-                chapters.append(chapter)
-                current_chapter += 1
-                # onto the next chapter
-                current_chunk = {
-                    'start_time': segment['start'],
-                    'end_time': segment['end'],
-                    'text': segment['text']
-                }
+                # Add the text to the current chapter
+                current_chapter.text += segment.text
+                # Keep track of the end time of the last segment in the chapter to use as a chapter endpoint when appending the chapter.
+                current_chapter.end_time = round(segment.end,2)
 
-                current_duration = segment_duration
-
-        # Add any remaining chunk
-        if current_chunk:
-            chapter = Chapter(title=' ', start_time=current_chunk['start_time'], end_time=current_chunk['end_time'], text=current_chunk['text'],number=current_chapter)
-            chapters.append(chapter)
+        # Add the last chapter
+        if current_chapter.text:
+            chapters.append(current_chapter)
 
         return chapters
 
-    async def determine_baseline(self,duration=10):
-        cpu_usages = []
-        gpu_usages = []
-        for _ in range(duration):
-            cpu_usage = psutil.cpu_percent(interval=1)
-            cpu_usages.append(cpu_usage)
-            if torch.cuda.is_available():
-                gpu_usage = torch.cuda.memory_allocated() / torch.cuda.max_memory_allocated() * 100
-                gpu_usages.append(gpu_usage)
+    async def _create_chapters_from_metadata(self, segments, state_chapters, total_duration):
+        for index, chapter in enumerate(state_chapters):
+            logger.debug(f"Chapter {index}: {chapter.start_time} -> {chapter.end_time}")
+            chapter_segments = []
+            for segment in segments:
+                logger.debug(f"Segment: {segment.start} -> {segment.end}")
+                if segment.end >= chapter.end_time:
+                    # We've got all the segments for the chapter. It may not be event so, we'll also set the chapter end_time..
+                    end_time = round(segment.end,2)
+                    chapter.end_time = end_time
+                    chapter.text = ' '.join(segment.text for segment in chapter_segments)
+                    chapter.number = index+1
+                    # We need to set the start of the next chapter to the end of the segment.
+                    if index+1 < len(state_chapters):
+                        state_chapters[index+1].start_time = end_time
+                    percent_complete = round((segment.end / total_duration) * 100)
+                    await send_sse_message("status", f"Transcribed {percent_complete}%")
+                    break
+                # If the start time of the segment is within the start and end times of a chapter, add the segments to the
+                # chapter_segments list.
+                if chapter.start_time <= segment.start < chapter.end_time:
+                    chapter_segments.append(segment)
 
-            await asyncio.sleep(1)
-        cpu_threshold = sum(cpu_usages) / len(cpu_usages) / 2
-        gpu_threshold = sum(gpu_usages) / len(gpu_usages) / 2
-        logger.debug(f"CPU Threshold: {cpu_threshold}, GPU Threshold: {gpu_threshold}")
-        return cpu_threshold, gpu_threshold
+            continue
+        # The last chapter may not have been processed
+        if len(chapter_segments) > 0:
+            state_chapters[-1].text = ' '.join(segment.text for segment in chapter_segments)
+            state_chapters[-1].number = len(state_chapters)
+            state_chapters[-1].start_time = round(chapter_segments[0].start,2)
+        return state_chapters

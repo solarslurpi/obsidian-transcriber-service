@@ -10,8 +10,8 @@ COPY requirements.txt .
 # Install the dependencies (except for torch)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install torch with the specified CUDA version - we are on Windows at this point.
-RUN pip install torch --index-url https://download.pytorch.org/whl/cu124
+# Create the state_cache directory
+RUN mkdir state_cache
 
 # Copy the rest of the application code into the container
 COPY src/ src/

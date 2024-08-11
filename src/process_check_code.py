@@ -22,6 +22,7 @@ import asyncio
 import logging
 import os
 import time
+from typing import List
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -35,14 +36,13 @@ from exceptions_code import   LocalFileException, MetadataExtractionException, T
 from transcription_state_code import initialize_transcription_state
 from utils import send_sse_message, format_time
 
+# Create a logger instance for this module
+logger = logging.getLogger(__name__)
 
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 # Ensure the local directory exists
 if not os.path.exists(LOCAL_DIRECTORY):
     os.makedirs(LOCAL_DIRECTORY)
-
-# Create a logger instance for this module
-logger = logging.getLogger(__name__)
 
 async def process_check(audio_input):
     # State data client requires:
@@ -52,17 +52,18 @@ async def process_check(audio_input):
     # Fill up as much of the state as possible.
     state = None # Once instantiated, it is a TranscriptionState instance.
     try:
-
+        logger.info("Initializing transcription state.")
         state = await initialize_transcription_state(audio_input)
 
         # If all the properties of the state are cached, we can send the all fields the client needs.
         if state.is_complete(): # This means the transcript text is already in the state instance.
-            logger.debug("State is complete. Sending content to the client.")
+            logger.info("State is complete. Sending content to the client.")
             await send_sse_data_messages(state, ["key","basename","num_chapters","metadata","chapters"])
             return
 
     except MetadataExtractionException as e:
         await send_sse_message("server-error", "Error extracting metadata.")
+        logger.error(f"Error extracting metadata",exc_info=e)
         # iF the metadata can't be read, there is no state to save.
         return
     except LocalFileException as e:
@@ -70,44 +71,50 @@ async def process_check(audio_input):
         # The uploaded mp3 file isn't saved, so there is no state to save.
         if state:
             state = None
+        logger.error(f"Error saving uploaded mp3 file",exc_info=e)
         return
     except Exception as e:
         await send_sse_message("server-error", str(e))
+        logger.error(f"An unexpected error occurred",exc_info=e)
 
         # This is an unexpected error, so not sure the state is valid.
         if state:
             state = None
         return
-    transcribe_audio_instance = TranscribeAudio(audio_input.audio_quality)
 
-    "Each chapter is represented as a coroutine, allowing for concurrent processing. The code waits for all these coroutines to complete execution."
+    transcribe_audio_instance = TranscribeAudio(audio_input.audio_quality, audio_input.compute_type, audio_input.chapter_time_chunk)
+
     try:
         start_time = time.time()
-        # The data chapters are sent in transcribe_chapters.
-        state = await transcribe_audio_instance.transcribe_chapters(state)
+        # The chapters currently have th start/stop metadata but not chapter num and not chapter text.
+        state.chapters = await transcribe_audio_instance.transcribe(state.local_audio_path,state.chapters)
         end_time = time.time()
         state.metadata.transcription_time = format_time(float(end_time - start_time))
-        # Finally we have all the metadata info.")
-        await send_sse_message("status", "Have the content.  Need a few moments to process.  Please hang on.")
-        # Ordered the num_chapters early on because keeping track of the number of chapters. This way the client can better keep track of incoming chapters.
+        # The state is now complete.  Add the transcript text to the cache by readding the state to the cache.
         states = TranscriptionStatesSingleton().get_states()
-        states.save_state(state)
+        states.add_state(state)
+        logging.debug(f"Transcription complete.  Transcription time: {state.metadata.transcription_time}.  Final State added to cache.")
+
+        await send_sse_message("status", "Have the content.  Need a few moments to process.  Please hang on.")
+        # Ordered the num_chapters early on. This way the client can better keep track of incoming chapters.
         await send_sse_data_messages(state,["key","num_chapters","basename","metadata","chapters"])
 
     except TranscriptionException as e:
         await send_sse_message("server-error", f"Error during transcription {e}")
+        logger.error(f"Error during transcription",exc_info=e)
         # Keep the state in case the client wants to try again.
         raise
 
     except Exception as e:
         await send_sse_message("server-error", f"An unexpected error occurred: {e}")
+        logger.error(f"An unexpected error occurred",exc_info=e)
         # This is an unexpected error, so not sure the state is valid.
         if state:
             state = None
         raise
 
 class ContentTextsModel(BaseModel):
-    content_texts: list[str]
+    content_texts: List[str]
 
     @field_validator('content_texts')
     def validate_content_texts(cls, v):
@@ -117,7 +124,7 @@ class ContentTextsModel(BaseModel):
                 raise ValueError(f"Invalid content text: {item}")
         return v
 
-async def send_sse_data_messages(state:TranscriptionState, content_texts: list):
+async def send_sse_data_messages(state:TranscriptionState, content_texts: List):
     '''The data messages:
     1. key
     2. basename
@@ -132,8 +139,7 @@ async def send_sse_data_messages(state:TranscriptionState, content_texts: list):
     except ValueError as e:
         errors = e.errors()
         invalid_values = [str(error['input']) for error in errors if 'input' in error]
-        logger.error(f"Number of validation errors: {len(errors)}")
-        logger.error(f"Invalid values: {invalid_values}")
+        logger.error(f"Number of validation errors: {len(errors)}.  Invalid values: {invalid_values}")
 
         await send_sse_message("status", f"Invalid values: {invalid_values}")
         return
@@ -141,27 +147,33 @@ async def send_sse_data_messages(state:TranscriptionState, content_texts: list):
     await asyncio.sleep(2)
     # Reset the state
     await send_sse_message("reset-state", "Clear out the previous content.")
+    logger.debug('sent reset-state')
     await asyncio.sleep(2)
     for content_text_property in content_texts:
         try:
             if content_text_property == "metadata":
                 await send_sse_message("data", {'metadata': state.metadata.model_dump(mode='json')})
+                logger.debug('sent metadata')
             elif content_text_property == "chapters":
 
                 for chapter in state.chapters:
                     await send_sse_message("data", {'chapter': chapter.to_dict_with_start_end_strings()})
                     # Add a delay to allow the service to process the data as well as allow the client to have time to process the data.
                     # I used 2 seconds.  This is a bit arbitrary.  It could be adjusted.
+                    logger.debug(f'sent chapter {chapter.number} ')
                     await asyncio.sleep(2)
             elif content_text_property == "num_chapters":
                 value = len(state.chapters)
                 await send_sse_message("data", {content_text_property:value})
+                logger.debug(f'sent num_chapters {value}')
             else:
                 value = getattr(state, content_text_property)
                 await send_sse_message("data", {content_text_property:value})
+                logger.debug(f'sent {content_text_property} {value}')
             # Add a delay to allow the service to process the data as well as allow the client to have time to process the data.
             # I used 2 seconds.  This is a bit arbitrary.  It could be adjusted.
             await asyncio.sleep(2)
         except SendSSEDataException as e:
             logger.error(f"process_check_code.send_sse_data_messages: Error {e}.")
             raise e
+    logger.info(f'***Content: {", ".join(content_texts)} sent***')

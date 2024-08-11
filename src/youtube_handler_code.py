@@ -68,9 +68,11 @@ class YouTubeHandler():
         Extracts metadata and audio from a YouTube video synchronously.
         """
         loop = asyncio.get_event_loop()
+        logger.info(f"--->Starting YouTube download of {self.audio_input.youtube_url}")
         download_task = asyncio.create_task(self.download_video(self.audio_input.youtube_url, global_message_queue, loop))
         # The transcription can't start until the download is complete. So... wait for it.
         metadata_dict, chapter_dicts, mp3_filepath = await download_task
+        logger.info(f"<---Done downloading {self.audio_input.youtube_url}")
         return metadata_dict, chapter_dicts, mp3_filepath
 
     async def download_video(self, url: str, queue: asyncio.Queue, loop: asyncio.AbstractEventLoop) -> Tuple[Metadata, List, str]:
@@ -99,10 +101,8 @@ class YouTubeHandler():
                 sanitized_filename = re.sub(r'[:]', '-', info_dict['title'])  # Replace colon with hyphen
                 sanitized_filename = re.sub(r'[\<\>\"/|?*]', '', sanitized_filename)  # Remove other problematic
                 mp3_filepath = LOCAL_DIRECTORY + '/' + sanitized_filename + '.mp3'
-                try:
+                if not os.path.exists(mp3_filepath):
                     os.rename(potential_problems_filepath, mp3_filepath)
-                except FileExistsError:
-                    logger.warning(f"Warning: The file '{mp3_filepath}' already exists.")
                 # add in the audio quality.
                 info_dict['audio_quality'] = self.audio_input.audio_quality
                 chapter_dicts = info_dict.get('chapters', [])

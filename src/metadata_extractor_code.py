@@ -20,15 +20,17 @@
 ###########################################################################################
 import logging
 import os
+
+import logging_config
 from exceptions_code import MetadataExtractionException
-from logger_code import LoggerBase
 from audio_handler_code import AudioHandler
 from youtube_handler_code import YouTubeHandler
-from dotenv import load_dotenv
 
-load_dotenv()
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
-logger = LoggerBase.setup_logger(__name__, logging.DEBUG)
+
+# Create a logger instance for this module
+logger = logging.getLogger(__name__)
+
 
 class MetadataExtractor:
     async def extract_metadata_and_chapter_dicts(self, audio_input):
