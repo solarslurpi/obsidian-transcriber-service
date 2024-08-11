@@ -20,6 +20,7 @@ Key features include:
 - Content is organized into chapters by either utilizing chapter information embedded within a YouTube video or dividing the audio file into manageable time slices.
 - Returns status, data, and error messages to the client using Server-Sent Events (SSE).
 
+YouTube chapters metadata contains a list of timestamps and corresponding chapter titles that divide a video into distinct, labeled sections, allowing viewers to easily navigate to specific parts of the video. These chapter titles typically represent the topic or subject matter of each section, providing contextual information that can be leveraged by transcripts to enhance understanding and navigation, as the title itself serves as a brief summary of the content that follows.
 
 
 # Installation Through GitHub

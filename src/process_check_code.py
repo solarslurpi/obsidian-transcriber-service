@@ -78,8 +78,8 @@ async def process_check(audio_input):
         if state:
             state = None
         return
-    transcribe_audio_instance = TranscribeAudio(audio_input.audio_quality, audio_input.compute_type)
 
+    transcribe_audio_instance = TranscribeAudio(audio_input.audio_quality, audio_input.compute_type, audio_input.chapter_time_chunk)
 
     try:
         start_time = time.time()
@@ -134,8 +134,7 @@ async def send_sse_data_messages(state:TranscriptionState, content_texts: List):
     except ValueError as e:
         errors = e.errors()
         invalid_values = [str(error['input']) for error in errors if 'input' in error]
-        logger.error(f"Number of validation errors: {len(errors)}")
-        logger.error(f"Invalid values: {invalid_values}")
+        logger.error(f"Number of validation errors: {len(errors)}.  Invalid values: {invalid_values}")
 
         await send_sse_message("status", f"Invalid values: {invalid_values}")
         return

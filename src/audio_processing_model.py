@@ -54,6 +54,7 @@ class AudioProcessRequest(BaseModel):
     audio_filepath: Optional[str] = Field(None, description="The stored local audio file.")
     audio_quality: str = Field(default="default", description="Audio quality setting for processing.")
     compute_type: str = Field(default="int8", description="Compute type for processing.")
+    chapter_time_chunk: int = Field(default=10, description="Time chunk in minutes for dividing audio into chapters.")
 
 
     @model_validator(mode='before')

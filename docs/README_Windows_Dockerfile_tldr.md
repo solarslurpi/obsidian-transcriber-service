@@ -1,7 +1,7 @@
 > Note The purpose of this document is to capture the thought process and steps taken to build the Windows Dockerfile.  This was a new experience for me.  I stepped into many rabbit holes and wanted to capture some of the lessons learned for reference. _spoiler alert_ - A big AHA moment was understanding the power in Linux-based Docker containers vs the agony of attempting to build a native Windows Docker container. AND installing the software goop required to gain access to the GPU is a R-E-A-L S-L-O-G.  The amount of wasted hours - lifetimes of hours - by all of us who go through it must be staggering.
 
 # Windows Dockerfile
-The Windows Dockerfile, `dockerfile.wsl2`, runs the Obsidian Transcriber Service (OTS) using GPUs when available.  The OTS is dependent on the `ctranslate2` Python package to provide audio to text translation. The `WSL2` compatibility layer is used so that Linux-based Docker containers (like those from NVidia and others) can run directly on the `WSL2` layer.
+The Windows Dockerfile, `dockerfile.wsl`, runs the Obsidian Transcriber Service (OTS) using GPUs when available.  The OTS is dependent on `faster-whisper` which is a layer on top of the `ctranslate2` Python package to provide audio to text translation. The `WSL2` compatibility layer is used so that Linux-based Docker containers (like those from NVidia and others) can run directly on the `WSL2` layer.
 
 The biggest challenge in building the OTS docker image is understanding what `cuda` components to install and where to install them.  Looking at NVidia's `cuda` layers:
 <div style="text-align: center;">
@@ -24,7 +24,7 @@ The boxes in this image are intended to give a good idea on how the Windows Dock
 ### Start  with a Good Base - the ctranslate2 Docker Image
 
 ### ctranslate2 dockerfile
-A Yoga lesson I learned awhile back was to start with a Good Base.  This implementation of this project assumes `ctranslate2`.  The [`ctranslate2` github includes a dockerfile](https://github.com/OpenNMT/CTranslate2/blob/master/docker/Dockerfile) that will be the base docker image used for the OTS dockerfile.
+A Yoga lesson I learned awhile back was to start with a Good Base.  This project relies on `ctranslate2`.  The [`ctranslate2` github includes a dockerfile](https://github.com/OpenNMT/CTranslate2/blob/master/docker/Dockerfile) that will be the base docker image used for the OTS dockerfile.
 
 The `ctranslate2` image relies on NVidia's base image.  The NVidia base image includes :
 - Ubuntu 20.04 LTS is used as the container base image (AKA "Container OS User Space" in the NVidia image).  This also includes Python 3.8

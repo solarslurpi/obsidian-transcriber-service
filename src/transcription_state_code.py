@@ -190,11 +190,10 @@ class TranscriptionStates:
         if audio_input.youtube_url:
             name_part = audio_input.youtube_url
         elif audio_input.audio_filepath:
-            name_part = os.path.splitext(os.path.basename(audio_input.audio_filepath))[0]
+            name_part = os.path.basename(audio_input.audio_filepath)
         else: # Given both the youtube URL are None and the audio_file is None, the code doesn't have an audio file to transcribe.
             raise KeyException("No youtube url or audio file to transcribe.")
-        quality_part = audio_input.audio_quality
-        key = name_part + "_" + quality_part
+        key = name_part + "_" + audio_input.audio_quality + "_" + audio_input.compute_type + "_" + str(audio_input.chapter_time_chunk)
         return key
 
 class TranscriptionStatesSingleton:
@@ -265,11 +264,9 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
         # Since we are here, add the first process of audio prep prior to transcription to the cache
         states.add_state(state)
         await send_sse_message(event="status", data="Content has been prepped. All systems go for transcription.")
-        await asyncio.sleep(0.1)
     except Exception as e:
         logger.error(f"Error building state",exc_info=e)
         await send_sse_message(event="server-error", data=f"Error building state: {e}")
-        asyncio.sleep(0.1)
         raise e
     state.key = key
     return state

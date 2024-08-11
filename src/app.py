@@ -72,7 +72,8 @@ app.add_middleware(
 async def init_process_audio(youtube_url: Optional[str] = Form(None),
                              upload_file: UploadFile = File(None),
                              audio_quality: str = Form("default"),
-                             compute_type: str = Form("int8")):
+                             compute_type: str = Form("int8"),
+                             chapter_time_chunk: int = Form(10)):
     async def clear_queue(queue):
         while True:
             try:
@@ -80,13 +81,16 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
             except asyncio.QueueEmpty:
                 break
     try:
+        await send_sse_message("status", "Received audio processing request.")
+
         await clear_queue(global_message_queue)
         # Instantiante and trigger Pydantic class validation.
         audio_input = AudioProcessRequest(
             youtube_url=youtube_url,
             audio_filepath=upload_file.filename if upload_file else None,
             audio_quality=audio_quality,
-            compute_type = compute_type
+            compute_type = compute_type,
+            chapter_time_chunk = chapter_time_chunk
         )
         logger.info(f"Audio input: youtube_url: {audio_input.youtube_url}, audio_filepath: {audio_input.audio_filepath}, audio_quality: {audio_input.audio_quality}, compute_type: {audio_input.compute_type}")
     except ValueError as e:
@@ -154,7 +158,6 @@ async def event_generator(request: Request):
                 data = message['data']
 
                 if event == "server-error" or (event == "data" and data == 'done'):
-                    logger.debug(f"--> EXITING EVENT GENERATOR. Event: {event}, Data: {data}")
                     asyncio.sleep(0.1)
                     break
 
@@ -178,6 +181,7 @@ async def event_generator(request: Request):
                         "retry": RETRY_TIMEOUT,
                         "data": data
                     }
+                    await asyncio.sleep(0.1)
             except Exception as e:
                 logger.error(f"Error sending message: {message}", exc_info=e)
     except KeyboardInterrupt:

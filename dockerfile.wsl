@@ -1,14 +1,12 @@
+# faster-whisper is used for transcribing.  It is a wrapper around ctranslate2.
+# This base image provides ubuntu
 FROM ghcr.io/opennmt/ctranslate2:4.3.1-ubuntu20.04-cuda12.2
-
-RUN apt-get update -qqq
-
-RUN apt-get install -y -qqq software-properties-common wget
-
-RUN add-apt-repository -y ppa:deadsnakes
-
-RUN apt-get install -y -qqq python3.12
-
-RUN apt-get install -y -qqq python3.12-distutils
+# Install Python 3.12
+RUN apt-get update -qqq && \
+    apt-get install -y -qqq software-properties-common wget && \
+    add-apt-repository -y ppa:deadsnakes && \
+    apt-get install -y -qqq python3.12 && \
+    apt-get install -y -qqq python3.12-distutils
 
 # The app uses yt_dlp for converting youtube videos to audio files.  This requires ffmpeg and ffprobe.
 RUN apt-get install -y -qqq ffmpeg

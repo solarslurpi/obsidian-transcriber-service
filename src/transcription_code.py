@@ -22,6 +22,7 @@ import asyncio
 import logging
 import os
 
+import ctranslate2
 from faster_whisper import WhisperModel
 
 
@@ -35,17 +36,19 @@ logger = logging.getLogger(__name__)
 
 # This is for storing the temporary audio slice when the audio is divided into chapters.
 LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
-# Environment variables are strings.
-CHAPTER_TIME_CHUNK = int(os.getenv("CHAPTER_TIME_CHUNK", 10))  # in minutes
+
 # Ensure the local directory exists
 if not os.path.exists(LOCAL_DIRECTORY):
     os.makedirs(LOCAL_DIRECTORY)
 
 class TranscribeAudio:
-    def __init__(self, audio_quality:str, compute_type:str):
+    def __init__(self, audio_quality:str="default", compute_type:str="int8", chapter_time_chunk:int=10):
+        self.chapter_time_chunk = chapter_time_chunk
         # Load the model
         try:
-            self.model =  WhisperModel(audio_quality, device="cuda", compute_type=compute_type)
+            device = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
+            logger.debug(f"GPU found: {device == 'cuda'}")
+            self.model =  WhisperModel(audio_quality, device= device, compute_type=compute_type)
             # whisper.load_model(audio_quality)
             logger.debug(f"Model loaded. Size: {audio_quality}")
         except Exception as e:
@@ -59,15 +62,14 @@ class TranscribeAudio:
         # Returns a generator
         segments, info = self.model.transcribe(audio, beam_size=5)
         total_duration = info.duration_after_vad
-        await send_sse_message("status", f"Content length:  {format(total_duration)}.")
-        await asyncio.sleep(0.1)
+        await send_sse_message("status", f"Content length:  {format(total_duration, '.0f')} seconds.")
         logger.debug(f"total_duration: {total_duration}")
         chapters = await self.break_audio_into_chapters(segments, total_duration, state_chapters)
         logger.debug(f"<---Done transcribing {audio}.")
         return chapters
 
     async def break_audio_into_chapters(self, segments, total_duration, state_chapters):
-        chapter_duration = CHAPTER_TIME_CHUNK * 60   # in seconds
+        chapter_duration = self.chapter_time_chunk * 60   # in seconds
         if self._is_short_audio(state_chapters, total_duration, chapter_duration):
             return self._create_single_chapter(segments)
         if self._is_broken_into_chapters(state_chapters):
@@ -111,7 +113,6 @@ class TranscribeAudio:
                 new_end_time = segment.end + chapter_duration
                 percent_complete = round((segment.end / total_duration) * 100)
                 await send_sse_message("status", f"Transcribed {percent_complete}%")
-                await asyncio.sleep(0.1)
 
             else:
                 # Add the text to the current chapter
@@ -142,7 +143,6 @@ class TranscribeAudio:
                         state_chapters[index+1].start_time = end_time
                     percent_complete = round((segment.end / total_duration) * 100)
                     await send_sse_message("status", f"Transcribed {percent_complete}%")
-                    await asyncio.sleep(0.1)
                     break
                 # If the start time of the segment is within the start and end times of a chapter, add the segments to the
                 # chapter_segments list.
