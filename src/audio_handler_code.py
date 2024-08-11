@@ -36,7 +36,9 @@ class AudioHandler():
         self.audio_input = audio_input
 
     async def extract(self) -> Tuple[Dict, List, str]:
+        logger.info(f"--> Starting extraction of audio attributes from {self.audio_input.audio_filepath}")
         audio_info_dict, chapter_dicts = self._build_audio_info_dict_and_chapter_dicts(self.audio_input.audio_filepath)
+        logger.info(f"--> Finished extraction of audio attributes.")
         return audio_info_dict, chapter_dicts, self.audio_input.audio_filepath
 
     def _build_audio_info_dict_and_chapter_dicts(self, audio_filepath: str) -> Tuple[Dict, List]:

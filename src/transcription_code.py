@@ -57,15 +57,15 @@ class TranscribeAudio:
 
     async def transcribe(self, audio: str, state_chapters: list[Chapter] = None) -> str:
         # whisper is not thread safe.  It does not like to reuse a loaded model.
-        logging.debug(f"--->Start Transcription for {audio}")
+        logging.info(f"--->Start Transcription for {audio}")
 
         # Returns a generator
         segments, info = self.model.transcribe(audio, beam_size=5)
-        total_duration = info.duration_after_vad
-        await send_sse_message("status", f"Content length:  {format(total_duration, '.0f')} seconds.")
-        logger.debug(f"total_duration: {total_duration}")
+        total_duration = format(info.duration_after_vad, '.0f')
+        await send_sse_message("status", f"Content length:  {total_duration} seconds.")
+        logger.debug(f"total_duration: {total_duration} seconds")
         chapters = await self.break_audio_into_chapters(segments, total_duration, state_chapters)
-        logger.debug(f"<---Done transcribing {audio}.")
+        logger.info(f"<---Done transcribing {audio}. Duration: {total_duration} seconds.  {len(chapters)} chapters.")
         return chapters
 
     async def break_audio_into_chapters(self, segments, total_duration, state_chapters):

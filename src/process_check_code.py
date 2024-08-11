@@ -52,17 +52,18 @@ async def process_check(audio_input):
     # Fill up as much of the state as possible.
     state = None # Once instantiated, it is a TranscriptionState instance.
     try:
-
+        logger.info("Initializing transcription state.")
         state = await initialize_transcription_state(audio_input)
 
         # If all the properties of the state are cached, we can send the all fields the client needs.
         if state.is_complete(): # This means the transcript text is already in the state instance.
-            logger.debug("State is complete. Sending content to the client.")
+            logger.info("State is complete. Sending content to the client.")
             await send_sse_data_messages(state, ["key","basename","num_chapters","metadata","chapters"])
             return
 
     except MetadataExtractionException as e:
         await send_sse_message("server-error", "Error extracting metadata.")
+        logger.error(f"Error extracting metadata",exc_info=e)
         # iF the metadata can't be read, there is no state to save.
         return
     except LocalFileException as e:
@@ -70,9 +71,11 @@ async def process_check(audio_input):
         # The uploaded mp3 file isn't saved, so there is no state to save.
         if state:
             state = None
+        logger.error(f"Error saving uploaded mp3 file",exc_info=e)
         return
     except Exception as e:
         await send_sse_message("server-error", str(e))
+        logger.error(f"An unexpected error occurred",exc_info=e)
 
         # This is an unexpected error, so not sure the state is valid.
         if state:
@@ -87,11 +90,13 @@ async def process_check(audio_input):
         state.chapters = await transcribe_audio_instance.transcribe(state.local_audio_path,state.chapters)
         end_time = time.time()
         state.metadata.transcription_time = format_time(float(end_time - start_time))
-        # Finally we have all the metadata info.")
-        await send_sse_message("status", "Have the content.  Need a few moments to process.  Please hang on.")
-        # Ordered the num_chapters early on because keeping track of the number of chapters. This way the client can better keep track of incoming chapters.
+        # The state is now complete.  Add the transcript text to the cache by readding the state to the cache.
         states = TranscriptionStatesSingleton().get_states()
-        states.save_state(state)
+        states.add_state(state)
+        logging.debug(f"Transcription complete.  Transcription time: {state.metadata.transcription_time}.  Final State added to cache.")
+
+        await send_sse_message("status", "Have the content.  Need a few moments to process.  Please hang on.")
+        # Ordered the num_chapters early on. This way the client can better keep track of incoming chapters.
         await send_sse_data_messages(state,["key","num_chapters","basename","metadata","chapters"])
 
     except TranscriptionException as e:
@@ -171,3 +176,4 @@ async def send_sse_data_messages(state:TranscriptionState, content_texts: List):
         except SendSSEDataException as e:
             logger.error(f"process_check_code.send_sse_data_messages: Error {e}.")
             raise e
+    logger.info(f'***Content: {", ".join(content_texts)} sent***')

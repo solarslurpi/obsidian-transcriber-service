@@ -68,9 +68,11 @@ class YouTubeHandler():
         Extracts metadata and audio from a YouTube video synchronously.
         """
         loop = asyncio.get_event_loop()
+        logger.info(f"--->Starting YouTube download of {self.audio_input.youtube_url}")
         download_task = asyncio.create_task(self.download_video(self.audio_input.youtube_url, global_message_queue, loop))
         # The transcription can't start until the download is complete. So... wait for it.
         metadata_dict, chapter_dicts, mp3_filepath = await download_task
+        logger.info(f"<---Done downloading {self.audio_input.youtube_url}")
         return metadata_dict, chapter_dicts, mp3_filepath
 
     async def download_video(self, url: str, queue: asyncio.Queue, loop: asyncio.AbstractEventLoop) -> Tuple[Metadata, List, str]:

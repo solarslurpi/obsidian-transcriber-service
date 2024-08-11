@@ -18,16 +18,17 @@
 # Author: Margaret Johnson
 # Copyright (c) 2024 Margaret Johnson
 ###########################################################################################
-import asyncio
 import json
 import logging
 import os
 import time
-from typing import Optional, List, Tuple, Dict, Union
+from typing import Optional, List, Tuple, Dict
 
-
-from pydantic import BaseModel, Field, field_validator, ConfigDict, field_serializer
-
+# Using the diskcache library to cache transcription results in case
+# multiple requests are made for the same content.
+from diskcache import Cache
+from pydantic import BaseModel, Field, field_validator, ConfigDict
+# logging_config is used to configure the logging for the application.
 import logging_config
 from exceptions_code import KeyException, MetadataExtractionException
 from metadata_extractor_code import MetadataExtractor
@@ -131,56 +132,17 @@ class TranscriptionState(BaseModel):
 
 class TranscriptionStates:
     # Manages a collection of multiple TranscriptionState instances.
-    def __init__(self):
-        self.cache = {}
-        self.state_file = 'state_cache/state_cache.json'
+    def __init__(self, cache_dir: str = 'state_cache'):
+        # Default eviction policy is LRU
+        # Default max size is 1 GB
+        # (see https://github.com/grantjenks/python-diskcache/blob/ebfa37cd99d7ef716ec452ad8af4b4276a8e2233/diskcache/core.py#L48)
+        # The directory where the cache will be stored is passed in.
+        self.cache = Cache(cache_dir)
 
     def add_state(self, transcription_state: TranscriptionState):
-        '''This method stres an instance of the transcription_state in the cache dictionary with the specified key, making it available for retrieval during subsequent requests, assuming the application's state is preserved between those requests.'''
         if not isinstance(transcription_state, TranscriptionState):
             raise ValueError("transcription_state must be an instance of TranscriptionState.")
         self.cache[transcription_state.key] = transcription_state
-        self.save_state(transcription_state)
-
-
-    def save_state(self, state):
-        '''This method saves the transcription_state to a file with the specified key as the filename.'''
-        states_dict = {}
-        try:
-            with open(self.state_file, 'r') as file:
-                states_dict = json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError):
-            states_dict = {}
-
-        except Exception as e:
-            return
-        # The state has been validated.
-        states_dict[state.key] = state.model_dump()
-        # Save the model to a JSON file
-        with open(self.state_file, 'w') as file:
-            json.dump(states_dict, file, indent=2)
-
-
-    def load_states(self):
-        '''Open state_cache.json and load any of the stored state dictionaries into the cache.'''
-        state_loaded = False
-        try:
-            with open(self.state_file, 'r') as file:
-                data = json.load(file)
-            for key, value in data.items():
-                try:
-                    # Create TranscriptionState object from the loaded data
-                    state = TranscriptionState(**value)
-                    # Verify the audio file is available locally for transcription. If it isn't available, skip this state.
-                    if not os.path.exists(state.local_audio_path):
-                        continue
-                    self.cache[key] = state
-                    state_loaded = True
-                except (TypeError, KeyError, ValueError) as e:
-                    continue
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            return state_loaded
-        return state_loaded
 
 
     def get_state(self, key: str) -> Optional[TranscriptionState]:
@@ -199,19 +161,17 @@ class TranscriptionStates:
 class TranscriptionStatesSingleton:
     '''To maintain the states across requests.'''
     _instance = None
-
-    def __new__(cls, *args, **kwargs):
+    # Hard coding the cache directory for now.
+    def __new__(cls, cache_dir:str='state_cache', *args, **kwargs):
         if not cls._instance:
             cls._instance = super(TranscriptionStatesSingleton, cls).__new__(cls, *args, **kwargs)
-            cls._instance.states = TranscriptionStates()
+            cls._instance.states = TranscriptionStates(cache_dir=cache_dir)
         return cls._instance
 
     @classmethod
-    def get_states(cls,load_from_store:bool=True):
+    def get_states(cls):
         if cls._instance is None:
             cls._instance = cls()
-        if load_from_store:
-            cls._instance.states.load_states()
         return cls._instance.states
 
 async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tuple[TranscriptionState, Metadata]:
@@ -261,8 +221,10 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
         chapters = build_chapters(chapter_dicts)
         filename_no_extension = os.path.splitext(os.path.basename(audio_filepath))[0]
         state = TranscriptionState(key=key, basename=filename_no_extension, local_audio_path=audio_filepath, hf_model=audio_input.audio_quality,  metadata=metadata, chapters=chapters)
-        # Since we are here, add the first process of audio prep prior to transcription to the cache
+        # Since we are here, add the first process of audio prep prior to transcription to the cache.
+        # The transcribed text is not in the state yet. That will come later.
         states.add_state(state)
+        logger.debug("State metadata added to the cache.")
         await send_sse_message(event="status", data="Content has been prepped. All systems go for transcription.")
     except Exception as e:
         logger.error(f"Error building state",exc_info=e)
