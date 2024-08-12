@@ -23,6 +23,7 @@ logging.basicConfig(
 logging.getLogger('sse_starlette.sse').setLevel(logging.WARNING)
 logging.getLogger('watchfiles.main').setLevel(logging.WARNING)
 logging.getLogger('multipart.multipart').setLevel(logging.WARNING)
+logging.getLogger('filelock').setLevel(logging.WARNING)
 logging.getLogger('transcription_state_code').setLevel(logging.INFO)
 logging.getLogger('metadata_extractor_code').setLevel(logging.INFO)
 logging.getLogger('utils').setLevel(logging.INFO)

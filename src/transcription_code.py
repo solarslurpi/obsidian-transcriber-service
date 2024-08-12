@@ -61,11 +61,11 @@ class TranscribeAudio:
 
         # Returns a generator
         segments, info = self.model.transcribe(audio, beam_size=5)
-        total_duration = format(info.duration_after_vad, '.0f')
-        await send_sse_message("status", f"Content length:  {total_duration} seconds.")
-        logger.debug(f"total_duration: {total_duration} seconds")
+        total_duration = info.duration_after_vad
+        await send_sse_message("status", f"Content length:  {total_duration:.1f} seconds.")
+        logger.debug(f"total_duration: {total_duration:.1f} seconds")
         chapters = await self.break_audio_into_chapters(segments, total_duration, state_chapters)
-        logger.info(f"<---Done transcribing {audio}. Duration: {total_duration} seconds.  {len(chapters)} chapters.")
+        logger.info(f"<---Done transcribing {audio}. Duration: {total_duration:.1f} seconds.  {len(chapters)} chapters.")
         return chapters
 
     async def break_audio_into_chapters(self, segments, total_duration, state_chapters):

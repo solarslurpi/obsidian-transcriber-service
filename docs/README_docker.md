@@ -12,7 +12,6 @@
 # Running the Container on WSL2
 
 `docker run --name transcriber  --gpus all -d -p 8081:8081 --restart always solarslurpie/transcriber_wsl:latest`
-
 `--name`: name of the container. Assigning a name is optional but makes it easier to interact with the container. For example:
 ```
 docker stop <name>
