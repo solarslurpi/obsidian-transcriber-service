@@ -20,12 +20,11 @@
 ###########################################################################################
 import os
 from typing import Dict, Optional
-from audio_processing_model import AUDIO_QUALITY_MAP, AudioProcessRequest
+from audio_processing_model import  AudioProcessRequest
 from pydantic import BaseModel, Field
 
 from utils import format_time
 
-LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 
 class Metadata(BaseModel):
     audio_input: Optional[AudioProcessRequest] = Field(default=None, description="YouTube URL or audio filepath as well as audio_quality.")

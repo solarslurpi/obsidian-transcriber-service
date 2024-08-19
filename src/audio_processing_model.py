@@ -21,10 +21,8 @@
 import logging
 import os
 import re
-from dotenv import load_dotenv
-load_dotenv()
 
-from fastapi import UploadFile, HTTPException
+from fastapi import  HTTPException
 from pathvalidate import validate_filepath, ValidationError
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Optional
@@ -32,8 +30,6 @@ from typing import Optional
 # Create a logger instance for this module
 logger = logging.getLogger(__name__)
 
-
-LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 
 # Audio formats that can be processed by the whisper model.
 SUPPORTED_AUDIO_FORMATS = {'.mp3', '.m4a', '.wav', '.flac', '.aac', '.ogg', '.opus'}
@@ -51,25 +47,25 @@ COMPUTE_TYPE_LIST = ["int8", "float16", "float32", "int8_float32", "int8_float16
 
 class AudioProcessRequest(BaseModel):
     youtube_url: Optional[str] = Field(None, description="YouTube URL to download audio from. Input requires either a YouTube URL or mp3 file.")
-    audio_filepath: Optional[str] = Field(None, description="The stored local audio file.")
+    audio_filename: Optional[str] = Field(None, description="The basename of the audio file sent through upload_file.")
     audio_quality: str = Field(default="default", description="Audio quality setting for processing.")
     compute_type: str = Field(default="int8", description="Compute type for processing.")
-    chapter_time_chunk: int = Field(default=10, description="Time chunk in minutes for dividing audio into chapters.")
+    chapter_chunk_time: int = Field(default=10, description="Time chunk in minutes for dividing audio into chapters.")
 
 
     @model_validator(mode='before')
     @classmethod
     def check_audio_source(cls, values):
         youtube_url = values.get('youtube_url')
-        audio_filepath = values.get('audio_filepath')
-        if youtube_url is not None and audio_filepath is not None:
+        audio_filename = values.get('audio_filename')
+        if youtube_url is not None and audio_filename is not None:
             raise HTTPException(status_code=400, detail="Both youtube_url and file cannot have values.")
-        elif youtube_url is None and audio_filepath is None:
+        elif youtube_url is None and audio_filename is None:
             raise HTTPException(status_code=400, detail="Need either a YouTube URL or mp3 file.")
 
         return values
 
-    @field_validator('audio_filepath')
+    @field_validator('audio_filename')
     def is_valid_audio_file_path(cls, v):
         # Note: Audio file can be None if a YouTube URL is provided.
         if v is None:
@@ -119,24 +115,3 @@ class AudioProcessRequest(BaseModel):
             r'^(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/'
             r'((watch\?v=)|(embed/)|(v/)|(.+\?v=))?([^&=%\?]{11})')
         return youtube_regex.match(url) is not None
-
-def save_local_audio_file(upload_file: UploadFile):
-    try:
-        # Ensure the local directory exists
-        if not os.path.exists(LOCAL_DIRECTORY):
-            os.makedirs(LOCAL_DIRECTORY)
-
-        file_location = os.path.join(LOCAL_DIRECTORY, upload_file.filename)
-        if not os.path.exists(file_location):
-            with open(file_location, "wb+") as file_object:
-                file_object.write(upload_file.file.read())
-            logger.debug(f"File saved to {file_location}")
-        else:
-            logger.debug(f"File {file_location} already exists.")
-        return file_location
-    except OSError as e:
-        logger.error(f"Failed to save file {upload_file.filename} due to OS error: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"An unexpected error occurred while saving file {upload_file.filename}: {e}")
-        raise

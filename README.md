@@ -3,25 +3,38 @@
 The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
 
 # Obsidian Transcriber Service
-The Obsidian Transcriber Service is a FastAPI-based application designed to transcribe YouTube videos or audio files into Obsidian notes. It assumes Obidian will be the front end through the Obsidian Transcriber plugin.  The service leverages OpenAI's whisper model to process audio files and generate metadata and text from the audio files into an Obsidian note with the metadata as front matter.
+The Obsidian Transcriber Service (OTS) is a FastAPI-based application designed to transcribe YouTube videos or audio files into Obsidian notes. It assumes Obidian will be the front end through the Obsidian Transcriber plugin.
 
 # Key Features
 Key features include:
 - Transcription of YouTube videos.
 - Transcription of '.mp3', '.m4a', '.wav', '.flac', '.aac', '.ogg', '.opus' audio files.
-- Custom setting the audio quality per transcription to:
-    - "default":  "tiny.en",
-    - "tiny": "tiny.en",
-    - "small": "small.en",
-    - medium": "medium.en",
-    - "large": "large-v3"
-> Note: The quality mappings map a user friendly name to the actual quality setting used by Whisper.
+- Adjustable transcription speed and quality based on model selection (e.g.: `tiny`, `small`, `medium`, `large`).
 - Extraction of metadata from YouTube videos or audio files to populate the front matter of the Obsidian note.
-- Content is organized into chapters by either utilizing chapter information embedded within a YouTube video or dividing the audio file into manageable time slices.
-- Returns status, data, and error messages to the client using Server-Sent Events (SSE).
+- Content organization into chapters using YouTube's embedded chapter data (title/topic, start time, end time) or by segmenting the audio into time slices.
+- Server-Sent Events (SSE) for status updates, data delivery, and error messages to the client.
 
-YouTube chapters metadata contains a list of timestamps and corresponding chapter titles that divide a video into distinct, labeled sections, allowing viewers to easily navigate to specific parts of the video. These chapter titles typically represent the topic or subject matter of each section, providing contextual information that can be leveraged by transcripts to enhance understanding and navigation, as the title itself serves as a brief summary of the content that follows.
+# Installation
+The service can be installed through GitHub or Docker.
+> Docker is the preferred method.  It is less hassle to use the Docker image.
 
+The docker image assumes a Linux distribution on the host machine. This includes `WSL2`on Windows.  It is assumed Docker is installed on your machine.
+
+> To take advantage of GPUs, ensure that the NVIDIA (cuda) drivers are installed on your Linux-based machine.  For example, I installed the `WSL2` [cuda drivers](https://developer.nvidia.com/cuda/wsl) since I built the docker image on a Windows machine.  See [more information on the layout of the docker image](docs\README_Linux_Dockerfile_tldr.md).
+
+
+## Docker
+> To get into the details of how the dockerfile was built, see [details on the layout of the docker image](/docs/README_Windows_Dockerfile_tldr.md).
+
+## Pull the image from Docker Hub
+Docker images can be downloaded from [Docker Hub](https://hub.docker.com/repository/docker/solarslurpie/transcriber_wsl/general):
+```sh
+docker pull solarslurpie/transcriber_wsl:latest
+```
+## Run the image
+`docker run --name transcriber  --gpus all -d -p 8081:8081 --restart always solarslurpie/transcriber_wsl:latest`
+
+For more information, see the section on [Running the Container](/docs/README_Linux_Dockerfile_tldr.md#running-the-container)
 
 # Installation Through GitHub
 
@@ -42,8 +55,6 @@ Install the required dependencies using pip:
 ```sh
 pip install -r requirements.txt
 ```
-##### Install ffmpeg
-`ffmpeg` is a beast and is required for YouTube download processing of the audio file.  If on a Linux based system (including WSL2), use `apt-get install -y -qqq ffmpeg` If on Windows, I used `choco install ffmpeg` running my Windows with Admin privileges to install it.  If you are using a different package manager, you will need to find the appropriate command to install `ffmpeg`.
 #### Start the Service
 From the root directory, start the service:
 ```sh
@@ -56,7 +67,7 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 ```
 
-#### Test the Service
+# Test the Service
 Navigate to the Swagger UI at `http://<ip address to the machine hosting the service>:8081/docs` to test the service. The Swagger UI provides an interactive interface for testing the service's endpoints.  The server exposes the following endpoints:
 - `/api/v1/health` - Health check endpoint to verify the service is running.
 - `/api/v1/process_audio` - Start the transcription process of either a YouTube video or audio file.
@@ -71,14 +82,9 @@ Open the heath check endpoint and click the "Try it out" then "Execute" buttons 
 ```
 
 
-## Through Docker
-TODO
-
-
-
 # Troubleshooting
 ## Check Port Settings
-If you are unable to connect to the service, check the port settings. The default IP and port setting used is `0.0.0.0:8081`,  `0.0.0.0` Means the server will listen on all available network interfaces, allowing you to access it from localhost or any other IP address associated with the machine.
+The first thing to check if you are unable to connect to the service is the port settings. The default IP and port setting used is `0.0.0.0:8081`,  `0.0.0.0` means the server will listen on all available network interfaces, allowing you to access it from localhost or any other IP address associated with the machine.
 ### app.py
 Check these settings in `app.py`:
 ```python

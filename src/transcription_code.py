@@ -18,9 +18,7 @@
 # Author: Margaret Johnson
 # Copyright (c) 2024 Margaret Johnson
 ###########################################################################################
-import asyncio
 import logging
-import os
 
 import ctranslate2
 from faster_whisper import WhisperModel
@@ -31,19 +29,13 @@ from exceptions_code import TranscriberException
 from transcription_state_code import Chapter
 from utils import send_sse_message
 
+
 # Create a logger instance for this module
 logger = logging.getLogger(__name__)
 
-# This is for storing the temporary audio slice when the audio is divided into chapters.
-LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
-
-# Ensure the local directory exists
-if not os.path.exists(LOCAL_DIRECTORY):
-    os.makedirs(LOCAL_DIRECTORY)
-
 class TranscribeAudio:
-    def __init__(self, audio_quality:str="default", compute_type:str="int8", chapter_time_chunk:int=10):
-        self.chapter_time_chunk = chapter_time_chunk
+    def __init__(self, audio_quality:str="default", compute_type:str="int8", chapter_chunk_time:int=10):
+        self.chapter_chunk_time = chapter_chunk_time
         # Load the model
         try:
             device = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
@@ -69,7 +61,7 @@ class TranscribeAudio:
         return chapters
 
     async def break_audio_into_chapters(self, segments, total_duration, state_chapters):
-        chapter_duration = self.chapter_time_chunk * 60   # in seconds
+        chapter_duration = self.chapter_chunk_time * 60   # in seconds
         if self._is_short_audio(state_chapters, total_duration, chapter_duration):
             return self._create_single_chapter(segments)
         if self._is_broken_into_chapters(state_chapters):

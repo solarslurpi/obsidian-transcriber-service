@@ -18,15 +18,16 @@
 # Author: Margaret Johnson
 # Copyright (c) 2024 Margaret Johnson
 ###########################################################################################
+
 import logging
-import os
 
 import logging_config
 from exceptions_code import MetadataExtractionException
 from audio_handler_code import AudioHandler
+from utils import get_audio_directory
 from youtube_handler_code import YouTubeHandler
 
-LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
+
 
 # Create a logger instance for this module
 logger = logging.getLogger(__name__)
@@ -36,15 +37,16 @@ class MetadataExtractor:
     async def extract_metadata_and_chapter_dicts(self, audio_input):
         handler = self.get_handler(audio_input)
         try:
-            metadata, chapters, audio_filepath = await handler.extract()
+            audio_directory = get_audio_directory()
+            metadata, chapters, audio_filename = await handler.extract(audio_directory)
         except Exception as e:
             raise MetadataExtractionException("Error extracting metadata") from e
-        return metadata, chapters, audio_filepath
+        return metadata, chapters, audio_filename
 
     def get_handler(self, audio_input):
         if audio_input.youtube_url:
             return YouTubeHandler(audio_input)
-        elif audio_input.audio_filepath:
+        elif audio_input.audio_filename:
             return AudioHandler(audio_input)
         else:
             raise AttributeError("audio_input does not have a supported attribute")

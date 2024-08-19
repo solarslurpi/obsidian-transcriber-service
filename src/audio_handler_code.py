@@ -35,18 +35,21 @@ class AudioHandler():
     def __init__(self, audio_input: AudioProcessRequest):
         self.audio_input = audio_input
 
-    async def extract(self) -> Tuple[Dict, List, str]:
-        logger.info(f"--> Starting extraction of audio attributes from {self.audio_input.audio_filepath}")
-        audio_info_dict, chapter_dicts = self._build_audio_info_dict_and_chapter_dicts(self.audio_input.audio_filepath)
+    async def extract(self, audio_directory) -> Tuple[Dict, List, str]:
+        local_audio_filepath = os.path.join(audio_directory, self.audio_input.audio_filename)
+        logger.info(f"--> Starting extraction of audio attributes from {self.audio_input.audio_filename}")
+        audio_info_dict, chapter_dicts = self._build_audio_info_dict_and_chapter_dicts(local_audio_filepath)
         logger.info(f"--> Finished extraction of audio attributes.")
-        return audio_info_dict, chapter_dicts, self.audio_input.audio_filepath
+        return audio_info_dict, chapter_dicts, local_audio_filepath
 
     def _build_audio_info_dict_and_chapter_dicts(self, audio_filepath: str) -> Tuple[Dict, List]:
         # Using the TinyTag library to extract metadata from the audio file.
         audio_info_dict = None
         audio_info_dict = self._extract_audio_attributes(audio_filepath)
         audio_info_dict["upload_date"] = datetime.fromtimestamp(os.path.getmtime(audio_filepath)).strftime('%Y-%m-%d')
-        audio_info_dict["title"] = os.path.basename(audio_filepath).replace('_', ' ')
+        # Split the filename and extension
+        filename_without_extension = os.path.splitext(os.path.basename(audio_filepath))[0]
+        audio_info_dict["title"] = filename_without_extension
         # The format of a chapter comes from the format used by YouTube chapters.
         chapter_dicts =  [{'title': '', 'start_time': 0.0, 'end_time': 0.0}]
         # audio files do not have chapters, so we set the start and end times to 0.0.

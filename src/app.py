@@ -18,7 +18,29 @@
 # Author: Margaret Johnson
 # Copyright (c) 2024 Margaret Johnson
 ###########################################################################################
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+###########################################################################################
+# Author: Margaret Johnson
+# Copyright (c) 2024 Margaret Johnson
+###########################################################################################
 import asyncio
+
+import json
 
 import json
 import logging
@@ -30,23 +52,23 @@ from typing import Optional, List
 
 from fastapi import FastAPI, Request, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sse_starlette import EventSourceResponse
 
 
 from exceptions_code import MissingContentException
+
+
+from exceptions_code import MissingContentException
 from global_stuff import global_message_queue
 from process_check_code import process_check, send_sse_data_messages
-from audio_processing_model import AudioProcessRequest, save_local_audio_file
+from audio_processing_model import AudioProcessRequest
 from transcription_state_code import TranscriptionStatesSingleton
-from utils import send_sse_message
+from utils import send_sse_message, get_audio_directory
 
 # Create a logger instance for this module
 logger = logging.getLogger(__name__)
-
-
-LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
-# Ensure the local directory exists
 
 RETRY_TIMEOUT = 3000 # For sending SSE messages
 
@@ -68,16 +90,21 @@ app.add_middleware(
 )
 
 
+# Mount the audio files directory
+app.mount("/audio", StaticFiles(directory="audio"), name="audio")
+
 @app.post("/api/v1/process_audio")
 async def init_process_audio(youtube_url: Optional[str] = Form(None),
                              upload_file: UploadFile = File(None),
                              audio_quality: str = Form("default"),
                              compute_type: str = Form("int8"),
-                             chapter_time_chunk: int = Form(10)):
+                             chapter_chunk_time: int = Form(10)):
     async def clear_queue(queue):
+        logger.debug(f"Number of items in queue: {global_message_queue.qsize()}")
         while True:
             try:
-                queue.get_nowait()  # remove an item
+                item = queue.get_nowait()  # remove an item
+                logging.debug(f"Removed item from queue: {item}")
             except asyncio.QueueEmpty:
                 break
     try:
@@ -87,19 +114,19 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
         # Instantiante and trigger Pydantic class validation.
         audio_input = AudioProcessRequest(
             youtube_url=youtube_url,
-            audio_filepath=upload_file.filename if upload_file else None,
+            audio_filename=upload_file.filename if upload_file else None,
             audio_quality=audio_quality,
             compute_type = compute_type,
-            chapter_time_chunk = chapter_time_chunk
+            chapter_chunk_time = chapter_chunk_time
         )
-        logger.info(f"Audio input: youtube_url: {audio_input.youtube_url}, audio_filepath: {audio_input.audio_filepath}, audio_quality: {audio_input.audio_quality}, compute_type: {audio_input.compute_type}")
+        logger.info(f"Audio input: youtube_url: {audio_input.youtube_url}, audio_filename: {audio_input.audio_filename}, audio_quality: {audio_input.audio_quality}, compute_type: {audio_input.compute_type}, chapter_chunk_time: {audio_input.chapter_chunk_time}")
     except ValueError as e:
         await send_sse_message("server-error", str(e))
         return {"status": f"Error reading in the audio input. Error: {e}"}
     if upload_file:
         # Save the audio file locally to use for transcription processing.
         try:
-            audio_input.audio_filepath = save_local_audio_file(upload_file)
+            save_local_audio_file(upload_file)
         except OSError as e:
             error_message = f"OS error occurred while saving uploaded audio file: {e}"
             await send_sse_message("server-error", error_message)
@@ -110,6 +137,24 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
             return {"status": error_message}
     asyncio.create_task(process_check(audio_input))
     return {"status": "Transcription process has started."}
+
+def save_local_audio_file(upload_file: UploadFile):
+    try:
+        audio_directory = get_audio_directory()
+        file_location = os.path.join(audio_directory, upload_file.filename)
+        if not os.path.exists(file_location):
+            with open(file_location, "wb+") as file_object:
+                file_object.write(upload_file.file.read())
+            logger.debug(f"File saved to {file_location}")
+        else:
+            logger.debug(f"File {file_location} already exists.")
+        return file_location
+    except OSError as e:
+        logger.error(f"Failed to save file {upload_file.filename} due to OS error: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"An unexpected error occurred while saving file {upload_file.filename}: {e}")
+        raise
 
 @app.post("/api/v1/missing_content")
 # Body(...) tells fastapi that the input is json. It will then validate the input again the MissingContentRequest model.  If the input does not match the model, an error will be returned.
@@ -144,6 +189,8 @@ async def sse_endpoint(request: Request):
     logger.debug(f"app.get.sse: User-Agent: {user_agent}")
     # I should learn pytest better. I want to test sse messages.
     # return EventSourceResponse(mock_event_generator(request))
+    # I should learn pytest better. I want to test sse messages.
+    # return EventSourceResponse(mock_event_generator(request))
     return EventSourceResponse(event_generator(request))
 
 async def event_generator(request: Request):
@@ -158,7 +205,7 @@ async def event_generator(request: Request):
                 data = message['data']
 
                 if event == "server-error" or (event == "data" and data == 'done'):
-                    asyncio.sleep(0.1)
+                    await asyncio.sleep(0.1)
                     break
 
                 # Just in case the message is an empty string or None.
@@ -181,7 +228,9 @@ async def event_generator(request: Request):
                         "retry": RETRY_TIMEOUT,
                         "data": data
                     }
-                    await asyncio.sleep(0.1)
+
+
+
             except Exception as e:
                 logger.error(f"Error sending message: {message}", exc_info=e)
     except KeyboardInterrupt:
@@ -193,6 +242,8 @@ async def health_check():
     return {"status": "ok"}
 
 
+
 if __name__ == "__main__":
     import uvicorn
+    uvicorn.run("app:app", host="0.0.0.0", port=8081, reload=True)
     uvicorn.run("app:app", host="0.0.0.0", port=8081, reload=True)

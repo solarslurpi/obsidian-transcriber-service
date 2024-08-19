@@ -18,9 +18,28 @@
 # Author: Margaret Johnson
 # Copyright (c) 2024 Margaret Johnson
 ###########################################################################################
-import json
 import logging
 import os
+import time
+from typing import Optional, List, Tuple, Dict
+
+# Using the diskcache library to cache transcription results in case
+# multiple requests are made for the same content.
+from diskcache import Cache
+from pydantic import BaseModel, Field, field_validator, ConfigDict
+# logging_config is used to configure the logging for the application.
+import logging_config
+from exceptions_code import KeyException, MetadataExtractionException
+from metadata_extractor_code import MetadataExtractor
+from metadata_shared_code import Metadata, build_metadata_instance
+from audio_processing_model import AudioProcessRequest
+from utils import send_sse_message, format_time
+
+
+# Create a logger instance for this module
+logger = logging.getLogger(__name__)
+
+from typing import Dict,List, Optional
 import time
 from typing import Optional, List, Tuple, Dict
 
@@ -70,12 +89,37 @@ def build_chapters(chapter_dicts: List[Dict]) -> List[Chapter]:
     except Exception as e:
         raise e
     return chapters
+    title: Optional[str] = Field(default='', description="Title of the chapter.")
+    start_time: float = Field(..., description="Start time of the chapter in seconds.")
+    end_time: float = Field(..., description="End time of the chapter in seconds.")
+    text: Optional[str] = Field(default=None, description="Transcription of the chapter.")
+    number: Optional[int] = Field(default=None, description="Chapter number.")
+
+    def to_dict_with_start_end_strings(self) -> dict:
+        '''Used to return a dictionary with straing formated start and end times.'''
+        return {
+            "title": self.title,
+            "start_time": format_time(self.start_time),
+            "end_time": format_time(self.end_time),
+            "text": self.text,
+            "number": self.number
+        }
+
+def build_chapters(chapter_dicts: List[Dict]) -> List[Chapter]:
+    chapters = []
+    try:
+        for chapter_dict in chapter_dicts:
+            # At this point the chapter_dict contains the title, start_time, and end_time. The transcript is added later.
+            chapter = Chapter(**chapter_dict)
+            chapters.append(chapter)
+    except Exception as e:
+        raise e
+    return chapters
 
 class TranscriptionState(BaseModel):
     # Manages the state and behavior of a single transcription.
     key: str = Field(..., description="A unique key that allows the client to request the same content again by querying the state with this key.")
-    basename: str = Field(..., description="Basename of the transcript note to be used by the client when creating the note.")
-    local_audio_path: str = Field(..., description="Local storage of the audio file. ")
+    basename: str = Field(..., description="Name part of the audio file sent to the client to be used as the transcript filename.")
     metadata: Metadata = Field(default=None, description="Turned into YAML frontmatter for a (Obsidian) note. YouTube metadata is very rich.  audio files not so much...")
     chapters: List[Chapter] = Field(default_factory=list, description="Each entry provides the metadata as well as the transcript text of a chapter of audio content.")
 
@@ -93,6 +137,8 @@ class TranscriptionState(BaseModel):
         for chapter in self.chapters:
             if chapter.start_time == start:
                 chapter.text = transcription
+            if chapter.start_time == start:
+                chapter.text = transcription
                 break
         else:
             raise ValueError(f"No chapter found with start time {start}")
@@ -102,7 +148,7 @@ class TranscriptionState(BaseModel):
 
     def is_complete(self) -> bool:
         # Check if all required fields are set.
-        required_fields = ['key', 'basename', 'local_audio_path', 'metadata', 'chapters']
+        required_fields = ['key', 'basename', 'metadata', 'chapters']
         for field in required_fields:
             try:
                 if getattr(self, field) is None: # field exists and is None
@@ -124,7 +170,6 @@ class TranscriptionState(BaseModel):
         # Clear chapters
         self.clear_chapters()
         # Nullify other fields
-        self.local_audio_path = None
         self.key = None
         self.metadata = None
         self.transcript_done = False
@@ -138,12 +183,25 @@ class TranscriptionStates:
         # (see https://github.com/grantjenks/python-diskcache/blob/ebfa37cd99d7ef716ec452ad8af4b4276a8e2233/diskcache/core.py#L48)
         # The directory where the cache will be stored is passed in.
         self.cache = Cache(cache_dir)
+    def __init__(self, cache_dir: str = 'state_cache'):
+        # Default eviction policy is LRU
+        # Default max size is 1 GB
+        # (see https://github.com/grantjenks/python-diskcache/blob/ebfa37cd99d7ef716ec452ad8af4b4276a8e2233/diskcache/core.py#L48)
+        # The directory where the cache will be stored is passed in.
+        self.cache = Cache(cache_dir)
 
+    def add_state(self, transcription_state: TranscriptionState):
     def add_state(self, transcription_state: TranscriptionState):
         if not isinstance(transcription_state, TranscriptionState):
             raise ValueError("transcription_state must be an instance of TranscriptionState.")
         self.cache[transcription_state.key] = transcription_state
 
+    def delete_state(self, key: str):
+        if key in self.cache:
+            del self.cache[key]
+            logger.info(f"Deleted state with key: {key}")
+        else:
+            logger.warning(f"Key not found: {key}")
 
     def get_state(self, key: str) -> Optional[TranscriptionState]:
         return self.cache.get(key)
@@ -151,11 +209,12 @@ class TranscriptionStates:
     def make_key(self, audio_input: AudioProcessRequest) -> str:
         if audio_input.youtube_url:
             name_part = audio_input.youtube_url
-        elif audio_input.audio_filepath:
-            name_part = os.path.basename(audio_input.audio_filepath)
+        elif audio_input.audio_filename:
+            name_part = audio_input.audio_filename
         else: # Given both the youtube URL are None and the audio_file is None, the code doesn't have an audio file to transcribe.
             raise KeyException("No youtube url or audio file to transcribe.")
-        key = name_part + "_" + audio_input.audio_quality + "_" + audio_input.compute_type + "_" + str(audio_input.chapter_time_chunk)
+        key = name_part + "_" + audio_input.audio_quality + "_" + audio_input.compute_type + "_" + str(audio_input.chapter_chunk_time)
+        logger.info(f"key is: {key}")
         return key
 
 class TranscriptionStatesSingleton:
@@ -174,7 +233,7 @@ class TranscriptionStatesSingleton:
             cls._instance = cls()
         return cls._instance.states
 
-async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tuple[TranscriptionState, Metadata]:
+async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tuple[TranscriptionState, str]:
     logger.debug(f"audio_input: {audio_input}")
     try:
         states = TranscriptionStatesSingleton().get_states()
@@ -190,21 +249,28 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
     # END COMMENTING OUT FOR TESTS.
     # maintain the key for the client in case content is missing.
 
+    # END COMMENTING OUT FOR TESTS.
+    # maintain the key for the client in case content is missing.
+
     logger.debug(f"state key is: {key}")
+    # The state is in the cache. Check to see if the state is complete.
+    if state and not state.is_complete():
+        # The state is not complete. Delete the state and start over.
+        logger.debug("State is not complete. Deleting the state and starting over.")
+        states.delete_state(key)
+        state = None
     if state:
         logger.debug("state is in the cache.")
         await send_sse_message("status", "Sheer happiness! We already have the content.")
-        return state
+        return state, None # The local_audio_filename is not needed since the state is already in the cache.
     else:
         await send_sse_message(event="status", data="Setting up stuff, back shortly!")
         logger.debug("state is not in the cache. Retrieving content.")
         extractor = MetadataExtractor()
         try:
             start_time = time.time()
-            info_dict, chapter_dicts, audio_filepath = await extractor.extract_metadata_and_chapter_dicts(audio_input)
+            info_dict, chapter_dicts, local_audio_filename = await extractor.extract_metadata_and_chapter_dicts(audio_input)
             end_time = time.time()
-
-
         except MetadataExtractionException as e:
             raise e
         except Exception as e:
@@ -219,8 +285,8 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
         metadata.audio_input = audio_input
 
         chapters = build_chapters(chapter_dicts)
-        filename_no_extension = os.path.splitext(os.path.basename(audio_filepath))[0]
-        state = TranscriptionState(key=key, basename=filename_no_extension, local_audio_path=audio_filepath, hf_model=audio_input.audio_quality,  metadata=metadata, chapters=chapters)
+        filename_no_extension = os.path.splitext(os.path.basename(local_audio_filename))[0]
+        state = TranscriptionState(key=key, basename=filename_no_extension, hf_model=audio_input.audio_quality,  metadata=metadata, chapters=chapters)
         # Since we are here, add the first process of audio prep prior to transcription to the cache.
         # The transcribed text is not in the state yet. That will come later.
         states.add_state(state)
@@ -231,4 +297,4 @@ async def initialize_transcription_state(audio_input: AudioProcessRequest) -> Tu
         await send_sse_message(event="server-error", data=f"Error building state: {e}")
         raise e
     state.key = key
-    return state
+    return state, local_audio_filename
