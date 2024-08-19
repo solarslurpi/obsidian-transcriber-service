@@ -191,7 +191,6 @@ class TranscriptionStates:
         self.cache = Cache(cache_dir)
 
     def add_state(self, transcription_state: TranscriptionState):
-    def add_state(self, transcription_state: TranscriptionState):
         if not isinstance(transcription_state, TranscriptionState):
             raise ValueError("transcription_state must be an instance of TranscriptionState.")
         self.cache[transcription_state.key] = transcription_state

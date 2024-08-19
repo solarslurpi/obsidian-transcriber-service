@@ -20,15 +20,11 @@
 ###########################################################################################
 import asyncio
 import logging
-import os
 import time
 from typing import List
-from dotenv import load_dotenv
-load_dotenv()
 
 import logging_config
-from audio_processing_model import AUDIO_QUALITY_MAP
-from pydantic import BaseModel, field_validator, ValidationError
+from pydantic import BaseModel, field_validator
 from transcription_code import TranscribeAudio
 from transcription_state_code import TranscriptionState, TranscriptionStatesSingleton
 from exceptions_code import   LocalFileException, MetadataExtractionException, TranscriptionException, SendSSEDataException
@@ -39,10 +35,6 @@ from utils import send_sse_message, format_time
 # Create a logger instance for this module
 logger = logging.getLogger(__name__)
 
-LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
-# Ensure the local directory exists
-if not os.path.exists(LOCAL_DIRECTORY):
-    os.makedirs(LOCAL_DIRECTORY)
 
 async def process_check(audio_input):
     # State data client requires:
@@ -53,7 +45,7 @@ async def process_check(audio_input):
     state = None # Once instantiated, it is a TranscriptionState instance.
     try:
         logger.info("Initializing transcription state.")
-        state = await initialize_transcription_state(audio_input)
+        state, local_audio_filename = await initialize_transcription_state(audio_input)
 
         # If all the properties of the state are cached, we can send the all fields the client needs.
         if state.is_complete(): # This means the transcript text is already in the state instance.
@@ -82,12 +74,12 @@ async def process_check(audio_input):
             state = None
         return
 
-    transcribe_audio_instance = TranscribeAudio(audio_input.audio_quality, audio_input.compute_type, audio_input.chapter_time_chunk)
+    transcribe_audio_instance = TranscribeAudio(audio_input.audio_quality, audio_input.compute_type, audio_input.chapter_chunk_time)
 
     try:
         start_time = time.time()
         # The chapters currently have th start/stop metadata but not chapter num and not chapter text.
-        state.chapters = await transcribe_audio_instance.transcribe(state.local_audio_path,state.chapters)
+        state.chapters = await transcribe_audio_instance.transcribe(local_audio_filename,state.chapters)
         end_time = time.time()
         state.metadata.transcription_time = format_time(float(end_time - start_time))
         # The state is now complete.  Add the transcript text to the cache by readding the state to the cache.
@@ -152,6 +144,7 @@ async def send_sse_data_messages(state:TranscriptionState, content_texts: List):
     for content_text_property in content_texts:
         try:
             if content_text_property == "metadata":
+                l = state.metadata.model_dump(mode='json')
                 await send_sse_message("data", {'metadata': state.metadata.model_dump(mode='json')})
                 logger.debug('sent metadata')
             elif content_text_property == "chapters":

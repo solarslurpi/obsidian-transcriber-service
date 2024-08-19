@@ -18,12 +18,14 @@ Key features include:
 The service can be installed through GitHub or Docker.
 > Docker is the preferred method.  It is less hassle to use the Docker image.
 
+
+
+## Docker
+
 The docker image assumes a Linux distribution on the host machine. This includes `WSL2`on Windows.  It is assumed Docker is installed on your machine.
 
 > To take advantage of GPUs, ensure that the NVIDIA (cuda) drivers are installed on your Linux-based machine.  For example, I installed the `WSL2` [cuda drivers](https://developer.nvidia.com/cuda/wsl) since I built the docker image on a Windows machine.  See [more information on the layout of the docker image](docs\README_Linux_Dockerfile_tldr.md).
 
-
-## Docker
 > To get into the details of how the dockerfile was built, see [details on the layout of the docker image](/docs/README_Windows_Dockerfile_tldr.md).
 
 ## Pull the image from Docker Hub

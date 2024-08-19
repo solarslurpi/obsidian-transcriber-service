@@ -33,11 +33,6 @@ from metadata_shared_code import Metadata
 
 from utils import format_sse
 
-from dotenv import load_dotenv
-
-load_dotenv()
-LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
-YOUTUBE_CACHE_FILEPATH = os.path.join(os.getenv("YOUTUBE_CACHE_DIRECTORY", "youtube_cache"), "youtube_cache.json")
 # Create a logger instance for this module
 logger = logging.getLogger(__name__)
 
@@ -63,20 +58,20 @@ class YouTubeHandler():
     def __init__(self, audio_input):
         self.audio_input = audio_input
 
-    async def extract(self) -> Tuple[dict, List, str]:
+    async def extract(self,audio_directory:str) -> Tuple[dict, List, str]:
         """
         Extracts metadata and audio from a YouTube video synchronously.
         """
         loop = asyncio.get_event_loop()
         logger.info(f"--->Starting YouTube download of {self.audio_input.youtube_url}")
-        download_task = asyncio.create_task(self.download_video(self.audio_input.youtube_url, global_message_queue, loop))
+        download_task = asyncio.create_task(self.download_video(self.audio_input.youtube_url, audio_directory,global_message_queue, loop))
         # The transcription can't start until the download is complete. So... wait for it.
         metadata_dict, chapter_dicts, mp3_filepath = await download_task
         logger.info(f"<---Done downloading {self.audio_input.youtube_url}")
         return metadata_dict, chapter_dicts, mp3_filepath
 
-    async def download_video(self, url: str, queue: asyncio.Queue, loop: asyncio.AbstractEventLoop) -> Tuple[Metadata, List, str]:
-        ydl_opts = self.get_ydl_opts(queue, loop)
+    async def download_video(self, url: str, audio_directory:str, queue: asyncio.Queue, loop: asyncio.AbstractEventLoop) -> Tuple[Metadata, List, str]:
+        ydl_opts = self.get_ydl_opts(audio_directory, queue,  loop)
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 try:
@@ -100,7 +95,7 @@ class YouTubeHandler():
                 logger.debug(f"The file: {potential_problems_filepath} exists: {os.path.exists(potential_problems_filepath)}")
                 sanitized_filename = re.sub(r'[:]', '-', info_dict['title'])  # Replace colon with hyphen
                 sanitized_filename = re.sub(r'[\<\>\"/|?*]', '', sanitized_filename)  # Remove other problematic
-                mp3_filepath = LOCAL_DIRECTORY + '/' + sanitized_filename + '.mp3'
+                mp3_filepath = audio_directory + '/' + sanitized_filename + '.mp3'
                 if not os.path.exists(mp3_filepath):
                     os.rename(potential_problems_filepath, mp3_filepath)
                 # add in the audio quality.
@@ -115,7 +110,7 @@ class YouTubeHandler():
 
         return info_dict, chapter_dicts, mp3_filepath
 
-    def get_ydl_opts(self, queue: asyncio.Queue, loop: asyncio.AbstractEventLoop) -> dict:
+    def get_ydl_opts(self, audio_directory: str, queue: asyncio.Queue, loop: asyncio.AbstractEventLoop) -> dict:
         ydl_opts = {
             'logger': logger,
             'verbose': True, # Enable verbose logging for debugging.
@@ -125,7 +120,7 @@ class YouTubeHandler():
             'simulate': False,
             'format': 'bestaudio/best',
             'restrict-filenames': True,
-            'outtmpl': os.path.join(LOCAL_DIRECTORY, '%(title)s.%(ext)s'),
+            'outtmpl': os.path.join(audio_directory, '%(title)s.%(ext)s'),
             'quiet': True,
             'progress_hooks': [partial(progress_hook, queue=queue, loop=loop)],
             'postprocessors': [{

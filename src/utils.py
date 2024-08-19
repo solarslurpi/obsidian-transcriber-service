@@ -2,21 +2,14 @@ import asyncio
 import json
 import logging
 import os
-import re
-import sys
-import time
 from typing import Dict
 
 import logging_config
-from dotenv import load_dotenv
-load_dotenv()
 
 from global_stuff import global_message_queue
 
 # Create a logger instance for this module
 logger = logging.getLogger(__name__)
-
-LOCAL_DIRECTORY = os.getenv("LOCAL_DIRECTORY", "local")
 
 
 def format_time(seconds: float) -> str:
@@ -58,53 +51,11 @@ async def send_sse_message(event: str, data: dict):
     await put_message_in_queue(message)
     await asyncio.sleep(0.1)
 
-def mock_info_dict():
-    '''Here we attach a cache to the mock_info_dict function to avoid reading the file multiple times.'''
-    if not hasattr(mock_info_dict, "_cache"):
-        filepath = f"{LOCAL_DIRECTORY}/test_info_dict_KbZDsrs5roI.json"
-        with open(filepath) as f:
-            mock_info_dict._cache = json.load(f)
-    return mock_info_dict._cache
-
-def mock_chapters(info_dict):
-    chapters_list = []
-    if not hasattr(mock_chapters, "_cache"):
-        chapters_list = info_dict.get('chapters', [])
-        if len(chapters_list) > 0:
-            # The chapters are deleted here because info_dict evolves into the metadata.
-            # The chapters end up in the TranscriptionState as part of the transcription text layout.
-            del info_dict['chapters']
-        else:
-            chapters_list = [{'start_time': 0.0, 'end_time': 0.0}]
-        mock_chapters._cache = chapters_list
-
-    return mock_chapters._cache
-
-def mock_youtube_download(youtube_url:str, mp3_filename:str):
-    time.sleep(2)
-    return
-def add_src_to_sys_path():
-    """
-    Adds the 'src' directory to sys.path if it's not already included.
-    Assumes the workspace directory is the parent of the parent directory
-    of the script that calls this function.
-    """
-    # Determine the directory containing this script
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # Assume the workspace directory is two levels up from this script directory
-    workspace_dir = os.path.abspath(os.path.join(script_dir, '..', '..'))
-
-    # Path to the 'src' directory relative to the workspace directory
-    src_path = os.path.join(workspace_dir, 'src')
-
-    # Append the 'src' directory to sys.path if it's not already there
-    if src_path not in sys.path:
-        sys.path.append(src_path)
-
-
-
-def cleaned_name(uncleaned_name:str) -> str:
-
-    cleaned_name = re.sub(r"[^a-zA-Z0-9 \.-]", "", uncleaned_name)
-    return cleaned_name.replace(" ", "_")
+def get_audio_directory():
+    audio_directory = 'audio' # Hardcoded...
+    workspace_directory = os.getcwd()
+    full_path_to_audio = os.path.join(workspace_directory, audio_directory)
+    # Create the directory if it does not exist
+    os.makedirs(full_path_to_audio, exist_ok=True)
+    logger.debug(f"Ensured audio directory exists at: {full_path_to_audio}")
+    return full_path_to_audio
