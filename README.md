@@ -42,6 +42,8 @@ Install the required dependencies using pip:
 ```sh
 pip install -r requirements.txt
 ```
+##### Install ffmpeg
+`ffmpeg` is a beast and is required for YouTube download processing of the audio file.  If on a Linux based system (including WSL2), use `apt-get install -y -qqq ffmpeg` If on Windows, I used `choco install ffmpeg` running my Windows with Admin privileges to install it.  If you are using a different package manager, you will need to find the appropriate command to install `ffmpeg`.
 #### Start the Service
 From the root directory, start the service:
 ```sh
