@@ -18,8 +18,6 @@ Key features include:
 The service can be installed through GitHub or Docker.
 > Docker is the preferred method.  It is less hassle to use the Docker image.
 
-
-
 ## Docker
 
 The docker image assumes a Linux distribution on the host machine. This includes `WSL2`on Windows.  It is assumed Docker is installed on your machine.
@@ -57,6 +55,12 @@ Install the required dependencies using pip:
 ```sh
 pip install -r requirements.txt
 ```
+#### Install FFmpeg
+`yt-dlp` is used to download and process the YouTube videos. It requires `FFmpeg`.  Installation of `FFmpeg` varies depending on the operating system.
+- Windows: I used `choco install ffmpeg`.  See [gyan.dev builds](https://www.gyan.dev/ffmpeg/builds/) for more information.
+- Linux: `apt-get install -y -qqq ffmpeg`
+- MacOS: `brew install ffmpeg` I don't have a Mac, so I can't verify this.
+
 #### Start the Service
 From the root directory, start the service:
 ```sh
