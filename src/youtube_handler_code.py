@@ -30,8 +30,7 @@ import logging_config
 from exceptions_code import ProgressHookException, YouTubeDownloadException, YouTubePostProcessingException
 from global_stuff import global_message_queue
 from metadata_shared_code import Metadata
-
-from utils import format_sse
+from utils import format_sse, send_sse_message
 
 # Create a logger instance for this module
 logger = logging.getLogger(__name__)
@@ -62,12 +61,17 @@ class YouTubeHandler():
         """
         Extracts metadata and audio from a YouTube video synchronously.
         """
-        loop = asyncio.get_event_loop()
-        logger.info(f"--->Starting YouTube download of {self.audio_input.youtube_url}")
-        download_task = asyncio.create_task(self.download_video(self.audio_input.youtube_url, audio_directory,global_message_queue, loop))
-        # The transcription can't start until the download is complete. So... wait for it.
-        metadata_dict, chapter_dicts, mp3_filepath = await download_task
-        logger.info(f"<---Done downloading {self.audio_input.youtube_url}")
+        try:
+            loop = asyncio.get_event_loop()
+            logger.info(f"--->Starting YouTube download of {self.audio_input.youtube_url}")
+            download_task = asyncio.create_task(self.download_video(self.audio_input.youtube_url, audio_directory,global_message_queue, loop))
+            # The transcription can't start until the download is complete. So... wait for it.
+            metadata_dict, chapter_dicts, mp3_filepath = await download_task
+            logger.info(f"<---Done downloading {self.audio_input.youtube_url}")
+        except YouTubeDownloadException as e:
+            logger.error(f"Failed to download video for {self.audio_input.youtube_url}",exc_info=e)
+            raise
+
         return metadata_dict, chapter_dicts, mp3_filepath
 
     async def download_video(self, url: str, audio_directory:str, queue: asyncio.Queue, loop: asyncio.AbstractEventLoop) -> Tuple[Metadata, List, str]:

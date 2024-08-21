@@ -52,6 +52,12 @@ async def process_check(audio_input):
             logger.info("State is complete. Sending content to the client.")
             await send_sse_data_messages(state, ["key","basename","num_chapters","metadata","chapters"])
             return
+    except asyncio.CancelledError as e:
+        logger.debug("Transcription cancelled.")
+        if state:
+            state = None
+        await send_sse_message("server-error", "Transcription cancelled.")
+        return
 
     except MetadataExtractionException as e:
         await send_sse_message("server-error", "Error extracting metadata.")
@@ -74,6 +80,7 @@ async def process_check(audio_input):
             state = None
         return
 
+
     transcribe_audio_instance = TranscribeAudio(audio_input.audio_quality, audio_input.compute_type, audio_input.chapter_chunk_time)
 
     try:
@@ -82,14 +89,12 @@ async def process_check(audio_input):
         state.chapters = await transcribe_audio_instance.transcribe(local_audio_filename,state.chapters)
         end_time = time.time()
         state.metadata.transcription_time = format_time(float(end_time - start_time))
-        # The state is now complete.  Add the transcript text to the cache by readding the state to the cache.
-        states = TranscriptionStatesSingleton().get_states()
-        states.add_state(state)
-        logging.debug(f"Transcription complete.  Transcription time: {state.metadata.transcription_time}.  Final State added to cache.")
-
-        await send_sse_message("status", "Have the content.  Need a few moments to process.  Please hang on.")
-        # Ordered the num_chapters early on. This way the client can better keep track of incoming chapters.
-        await send_sse_data_messages(state,["key","num_chapters","basename","metadata","chapters"])
+    except asyncio.CancelledError as e:
+        logger.debug("Transcription cancelled.")
+        await send_sse_message("server-error", "Transcription cancelled.")
+        if state:
+            state = None
+        return
 
     except TranscriptionException as e:
         await send_sse_message("server-error", f"Error during transcription {e}")
@@ -104,6 +109,14 @@ async def process_check(audio_input):
         if state:
             state = None
         raise
+    # The state is now complete.  Add the transcript text to the cache.
+    states = TranscriptionStatesSingleton().get_states()
+    states.add_state(state)
+    logging.debug(f"Transcription complete.  Transcription time: {state.metadata.transcription_time}.  Final State added to cache.")
+
+    await send_sse_message("status", "Have the content.  Need a few moments to process.  Please hang on.")
+    # Ordered the num_chapters early on. This way the client can better keep track of incoming chapters.
+    await send_sse_data_messages(state,["key","num_chapters","basename","metadata","chapters"])
 
 class ContentTextsModel(BaseModel):
     content_texts: List[str]

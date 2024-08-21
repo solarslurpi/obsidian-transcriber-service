@@ -183,12 +183,6 @@ class TranscriptionStates:
         # (see https://github.com/grantjenks/python-diskcache/blob/ebfa37cd99d7ef716ec452ad8af4b4276a8e2233/diskcache/core.py#L48)
         # The directory where the cache will be stored is passed in.
         self.cache = Cache(cache_dir)
-    def __init__(self, cache_dir: str = 'state_cache'):
-        # Default eviction policy is LRU
-        # Default max size is 1 GB
-        # (see https://github.com/grantjenks/python-diskcache/blob/ebfa37cd99d7ef716ec452ad8af4b4276a8e2233/diskcache/core.py#L48)
-        # The directory where the cache will be stored is passed in.
-        self.cache = Cache(cache_dir)
 
     def add_state(self, transcription_state: TranscriptionState):
         if not isinstance(transcription_state, TranscriptionState):

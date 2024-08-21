@@ -92,6 +92,8 @@ app.add_middleware(
 # Ensure the audio directory exists
 os.makedirs("audio", exist_ok=True)
 
+# Initialize a task variable to handle asyncio.cancel() calls
+task = None
 # Mount the audio files directory
 app.mount("/audio", StaticFiles(directory="audio"), name="audio")
 
@@ -101,6 +103,7 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
                              audio_quality: str = Form("default"),
                              compute_type: str = Form("int8"),
                              chapter_chunk_time: int = Form(10)):
+    global task
     async def clear_queue(queue):
         logger.debug(f"Number of items in queue: {global_message_queue.qsize()}")
         while True:
@@ -137,7 +140,7 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
             error_message = f"Unexpected error occurred while saving uploaded audio file: {e}"
             await send_sse_message("server-error", error_message)
             return {"status": error_message}
-    asyncio.create_task(process_check(audio_input))
+    task = asyncio.create_task(process_check(audio_input))
     return {"status": "Transcription process has started."}
 
 def save_local_audio_file(upload_file: UploadFile):
@@ -157,6 +160,25 @@ def save_local_audio_file(upload_file: UploadFile):
     except Exception as e:
         logger.error(f"An unexpected error occurred while saving file {upload_file.filename}: {e}")
         raise
+
+@app.get("/api/v1/cancel")
+async def cancel_task(request: Request):
+    global task
+    client_ip = request.client.host
+    method = request.method
+    url = str(request.url)
+    user_agent = request.headers.get('user-agent', 'unknown')
+
+    logger.debug(f"app.get.cancel_task: Request received: {method} {url} from {client_ip}")
+
+    if task:
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            logger.info("Task cancelled.")
+            return {"status": "Task cancelled."}
+    return {"status": "No task to cancel."}
 
 @app.post("/api/v1/missing_content")
 # Body(...) tells fastapi that the input is json. It will then validate the input again the MissingContentRequest model.  If the input does not match the model, an error will be returned.
@@ -201,13 +223,19 @@ async def event_generator(request: Request):
         while True:
             if await request.is_disconnected():
                 break
-            message = await global_message_queue.get()
+
+            try:
+                # The wait for a message might be a long time. In this case, unblock so other pieces of the code can run.
+                message = await asyncio.wait_for(global_message_queue.get(), timeout=30)
+            except asyncio.TimeoutError:
+                logger.warning("Timeout waiting for message from queue")
+                continue
+
             try:
                 event = message['event']
                 data = message['data']
 
                 if event == "server-error" or (event == "data" and data == 'done'):
-                    await asyncio.sleep(0.1)
                     break
 
                 # Just in case the message is an empty string or None.
@@ -216,11 +244,12 @@ async def event_generator(request: Request):
                     if event == "data":
                     # FOR DEBUGGING START
                         dict_data = json.loads(data)
-                        key = list(dict_data.keys())[0]
+                        key = next(iter(dict_data), None)
                         if key not in ['num_chapters', 'basename', 'key']:
                             info = key
-                        if key in ['chapter']:
-                            info ="chapter" + json.dumps(dict_data["chapter"]["number"]) + json.dumps(dict_data["chapter"]["text"][:200] )
+                        if key == 'chapter':
+                            chapter_data = dict_data["chapter"]
+                            info = f"chapter{chapter_data['number']}{chapter_data['text'][:200]}"
                     logger.debug(f"--> SENDING MESSAGE. Event: {event}, Info: {info}")
                     # FOR DEBUGGING STOP
                     message_id_counter += 1
@@ -231,12 +260,24 @@ async def event_generator(request: Request):
                         "data": data
                     }
 
-
-
+            except (KeyError, json.JSONDecodeError) as e:
+                logger.error(f"Key Error processing message: {message}", exc_info=e)
             except Exception as e:
-                logger.error(f"Error sending message: {message}", exc_info=e)
+                logger.error(f"Unexpected error processing message: {message}", exc_info=e)
+
+    except asyncio.CancelledError:
+        flush_messages()
+        logger.info("Event generator task cancelled")
     except KeyboardInterrupt:
         logger.info("KeyboardInterrupt received. ")
+
+async def flush_messages():
+    while not global_message_queue.empty():
+        try:
+            message = global_message_queue.get_nowait()
+            logger.debug(f"Flushing message: {message}")
+        except asyncio.QueueEmpty:
+            break
 
 @app.get("/api/v1/health")
 async def health_check():
