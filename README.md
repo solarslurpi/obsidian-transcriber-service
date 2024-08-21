@@ -77,6 +77,7 @@ INFO:     Application startup complete.
 Navigate to the Swagger UI at `http://<ip address to the machine hosting the service>:8081/docs` to test the service. The Swagger UI provides an interactive interface for testing the service's endpoints.  The server exposes the following endpoints:
 - `/api/v1/health` - Health check endpoint to verify the service is running.
 - `/api/v1/process_audio` - Start the transcription process of either a YouTube video or audio file.
+- `/api/v1/cancel` - Cancel the transcription process.
 - `/api/v1/sse` - Server-Sent Events endpoint to send status, data, and error messages to the client.
 - `/api/v1/missing_content` - Request from the client to retrieve content that should have been sent but the client did not receive.
 

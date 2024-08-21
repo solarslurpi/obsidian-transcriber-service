@@ -78,8 +78,29 @@ class MissingContent(BaseModel):
     key: str
     missing_contents: List[str]
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logger.info("Application startup")
+    # Ensure the audio directory exists
+    os.makedirs("audio", exist_ok=True)
 
-app = FastAPI()
+    # Initialize a task variable to handle asyncio.cancel() calls
+    global task
+    task = None
+
+    yield # Run the task.
+
+    # Shutdown
+    logger.info("Application shutdown")
+    if task:
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            logger.info("Background task cancelled during shutdown")
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -89,11 +110,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Ensure the audio directory exists
-os.makedirs("audio", exist_ok=True)
 
-# Initialize a task variable to handle asyncio.cancel() calls
-task = None
 # Mount the audio files directory
 app.mount("/audio", StaticFiles(directory="audio"), name="audio")
 
@@ -103,7 +120,6 @@ async def init_process_audio(youtube_url: Optional[str] = Form(None),
                              audio_quality: str = Form("default"),
                              compute_type: str = Form("int8"),
                              chapter_chunk_time: int = Form(10)):
-    global task
     async def clear_queue(queue):
         logger.debug(f"Number of items in queue: {global_message_queue.qsize()}")
         while True:
