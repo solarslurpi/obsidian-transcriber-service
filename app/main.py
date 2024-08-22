@@ -1,3 +1,6 @@
+import os
+import asyncio
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -5,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from app.config import settings
 from app.dependencies import get_queue_manager
 from app.routes import audio_processing, sse, health
+from app.logger import logger
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -17,7 +21,11 @@ async def lifespan(app: FastAPI):
     global task
     task = None
 
-    yield # Run the task.
+    # Initialize queue manager
+    queue_manager = await get_queue_manager()
+    await queue_manager.initialize()
+
+    yield # Run the application
 
     # Shutdown
     logger.info("Application shutdown")
@@ -28,8 +36,10 @@ async def lifespan(app: FastAPI):
         except asyncio.CancelledError:
             logger.info("Background task cancelled during shutdown")
 
-app = FastAPI(lifespan=lifespan)
+    # Cleanup queue manager
+    await queue_manager.cleanup()
 
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -44,16 +54,6 @@ app.mount("/audio", StaticFiles(directory="audio"), name="audio")
 app.include_router(audio_processing.router, prefix="/api/v1", tags=["audio"])
 app.include_router(sse.router, prefix="/api/v1", tags=["sse"])
 app.include_router(health.router, prefix="/api/v1", tags=["health"])
-
-@app.on_event("startup")
-async def startup_event():
-    queue_manager = await get_queue_manager()
-    await queue_manager.initialize()
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    queue_manager = await get_queue_manager()
-    await queue_manager.cleanup()
 
 if __name__ == "__main__":
     import uvicorn
