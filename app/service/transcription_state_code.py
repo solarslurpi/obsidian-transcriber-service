@@ -247,7 +247,6 @@ async def initialize_transcription_state(queue: MessageQueueManager, audio_input
 
     # At this point, we have everything except the transcript_text of the chapters.
     try:
-        # Build the state
         metadata = build_metadata_instance(info_dict)
         metadata.download_time = format_time(float(end_time - start_time))
         metadata.audio_input = audio_input

@@ -7,7 +7,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import app.logging_config
-from app.config import settings
 from app.service.message_queue_manager import initialize_message_queue_manager
 from app.routes import process_audio_endpoint, sse_endpoint, health_endpoint, cancel_endpoint, missing_content_endpoint
 from app.routes.cancel_endpoint import cleanup_task
@@ -31,17 +30,17 @@ async def lifespan(app: FastAPI):
      await cleanup_task(app.state.task, app.state.message_queue_manager)
 
 
-app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
-
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+os.makedirs("audio", exist_ok=True)
 app.mount("/audio", StaticFiles(directory="audio"), name="audio")
 
 # Note: Only one client at a time. See the route.
@@ -53,4 +52,4 @@ app.include_router(missing_content_endpoint.router, prefix="/api/v1", tags=["mis
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=settings.PORT, reload=True)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8081, reload=True)

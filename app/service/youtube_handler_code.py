@@ -80,6 +80,7 @@ class YouTubeHandler():
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 try:
                     # The info that can be extracted is listed at https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#output-template
+                    # Using the YouTube transcript so don't download the video/audio.
                     info_dict = await loop.run_in_executor(None, ydl.extract_info, url, True)
                 except yt_dlp.utils.DownloadError as e:
                     logger.error(f"Failed to download video for {url}: {e}")

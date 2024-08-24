@@ -1,0 +1,29 @@
+# Exclude version control
+.git
+.gitignore
+
+# Exclude Python cache files
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Exclude development and test files
+tests/
+*.test.py
+*.spec
+pytest.ini
+
+# Exclude directories
+archive/
+docs/
+tools/
+
+# Exclude any local configuration or sensitive files
+*.env
+*.log
+*.wsl
+
+# Exclude any other unnecessary directories or files
+node_modules/
+*.md

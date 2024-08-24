@@ -25,11 +25,11 @@ from faster_whisper import WhisperModel
 
 
 import app.logging_config
+from app.service.audio_processing_model import AudioProcessRequest
 from app.service.exceptions_code import TranscriberException
 from app.service.message_queue_manager import MessageQueueManager
 from app.service.transcription_state_code import Chapter
 from app.service.utils import send_sse_message
-
 
 # Create a logger instance for this module
 logger = logging.getLogger(__name__)

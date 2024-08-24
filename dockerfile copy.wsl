@@ -27,14 +27,14 @@ RUN python3.12 -m pip install --no-cache-dir -r requirements.txt && \
     mkdir state_cache
 
 # Copy the rest of the application code into the container
-COPY . .
+COPY app/ .
 
-# Create necessary directories
-RUN mkdir -p state_cache audio
 
 # Set the PYTHONPATH environment variable
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/
 
+# Set the working directory in the container
+WORKDIR /
 
 # Expose the port that the app runs on
 EXPOSE 8081

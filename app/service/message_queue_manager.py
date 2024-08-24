@@ -11,6 +11,7 @@ class MessageQueueManager:
     async def initialize(self):
         self.queue = Queue()
         logger.info("MessageQueueManager initialized")
+        logger.info("MessageQueueManager initialized")
 
     async def cleanup(self):
         self.queue = None
