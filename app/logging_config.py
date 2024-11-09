@@ -29,7 +29,7 @@ logging.getLogger('app.service.transcription_state_code').setLevel(logging.INFO)
 logging.getLogger('app.service.metadata_extractor_code').setLevel(logging.INFO)
 logging.getLogger('app.service.utils').setLevel(logging.INFO)
 logging.getLogger('app.service.youtube_handler_code').setLevel(logging.INFO)
-logging.getLogger('app.service.transcription_code').setLevel(logging.INFO)
+logging.getLogger('app.service.transcription_code').setLevel(logging.DEBUG)
 logging.getLogger('app.main').setLevel(logging.INFO)
 logging.getLogger('app.service.process_audio').setLevel(logging.INFO)
 

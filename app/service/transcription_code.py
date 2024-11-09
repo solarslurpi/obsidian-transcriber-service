@@ -39,11 +39,13 @@ class TranscribeAudio:
         self.chapter_chunk_time = chapter_chunk_time
         # Load the model
         try:
-            device = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
-            logger.debug(f"GPU found: {device == 'cuda'}")
-            self.model =  WhisperModel(audio_quality, device= device, compute_type=compute_type)
-            # whisper.load_model(audio_quality)
-            logger.debug(f"Model loaded. Size: {audio_quality}")
+            # Check CUDA availability first
+            cuda_available = ctranslate2.get_cuda_device_count() > 0
+            device = "cuda" if cuda_available else "cpu"
+
+            # Create the model with the correct device string
+            self.model = WhisperModel(audio_quality, device=device, compute_type=compute_type)
+            logger.debug(f"Model loaded successfully on {device}")
         except Exception as e:
             logger.error(f"Error loading model. {e}")
             raise TranscriberException(f"Error loading model. {e}")

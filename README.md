@@ -61,10 +61,13 @@ pip install -r requirements.txt
 - Linux: `apt-get install -y -qqq ffmpeg`
 - MacOS: `brew install ffmpeg` I don't have a Mac, so I can't verify this.
 
+#### CUDA Check
+If you have a CUDA-enabled GPU, you'll need to install the CUDA drivers and the cuDNN library.  These are available from the NVIDIA website.  There is a script in the `service` directory called `check_cuda.py` that helps with checking what the PATH is set to as well as information on the CUDA drivers and cuDNN library.
+
 #### Start the Service
-From the root directory, start the service:
+From the root directory of the repository, start the service:
 ```sh
-python src/app.py
+python -m app.main
 ```
 If the service is started successfully, the log messages will be:\
 ```
